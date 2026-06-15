@@ -65,17 +65,16 @@ struct PrivacyPolicyView: View {
     }
 
     private func policySection(title: String, body: String) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(title)
-                .font(.headline)
-                .foregroundColor(Theme.accent)
-            Text(body)
-                .font(.body)
-                .foregroundColor(Theme.parchment.opacity(0.88))
-                .fixedSize(horizontal: false, vertical: true)
+        SettingsCard {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(title)
+                    .font(.headline)
+                    .foregroundColor(Theme.accent)
+                Text(body)
+                    .font(.body)
+                    .foregroundColor(Theme.parchment.opacity(0.88))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Theme.accent.opacity(0.35)))
     }
 }

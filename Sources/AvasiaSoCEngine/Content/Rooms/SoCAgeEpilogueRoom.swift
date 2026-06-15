@@ -1,7 +1,7 @@
 import Foundation
 import AvasiaEngine
 
-/// Age-era epilogue at Aylova — closes Sword of Courage (iOS authored).
+/// Age-era epilogue at Aylova — closes Blade of Courage (iOS authored).
 struct SoCAgeEpilogueRoom: SoCRoomScript {
     let id: SoCRoomID = .ageEpilogue
     var parseMode: Parser.Mode { .raw }
@@ -54,7 +54,7 @@ struct SoCAgeEpilogueRoom: SoCRoomScript {
             state.gameComplete = true
             state.unlockTrophy(.ageComplete)
             var lines = kaefdenSpeechLines(state)
-            lines.append(.title("Sword of Courage — Complete"))
+            lines.append(.title("Blade of Courage — Complete"))
             lines.append(.body("The Age-era text saga ends here. A new era awaits in a different form."))
             if !state.ruinsVisited {
                 lines.append(.hint("Optional: VISIT RUINS before you rest."))
@@ -93,9 +93,10 @@ struct SoCAgeEpilogueRoom: SoCRoomScript {
         let name = state.playerName.isEmpty ? "Survivor" : state.playerName
         var lines: [StyledLine] = [
             .speech("Kaefden IV: Cataracta burned so this coalition could learn the cost of delay."),
-            .speech("Vashirr's portals are shattered. His war mages scatter. He will answer to Kaefden law."),
+            .speech("Vashirr's portals are shattered. His Paladins scatter. He will answer to Kaefden law."),
             .blank,
-            .speech("\(name) — you delivered his threat to my throne, and you held Oceandale when I asked.")
+            .speech("\(name) — you delivered his threat to my throne, and you held Oceandale when I asked."),
+            .speech("Envoys brought the Blade from Varatro Falls — Ofelos marched beside us. This victory will mean something lasting."),
         ]
         if state.throneRecountStyle == .honorDentros {
             lines.append(.speech("Kaefden IV: You honored Dentros before my court. That matters to me."))
@@ -119,7 +120,7 @@ struct SoCAgeEpilogueRoom: SoCRoomScript {
         if state.ruinsVisited {
             lines.append(.body("You walked Cataracta's ruins and closed the circle."))
         }
-        lines.append(.hint("Thank you for playing Avasia: Sword of Courage."))
+        lines.append(.hint("Thank you for playing Avasia: Blade of Courage."))
         return lines
     }
 }

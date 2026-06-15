@@ -119,7 +119,7 @@ def cataracta_battle():
 
     talk("My friends! The time to fight is drawing near!")
     talk("Our people are under constant threat of an Agromanian invasion.")
-    talk("The attack on Oceandale was far too close to Cataracta.")
+    talk("Seven years after Oceandale, we still live in its shadow — and now Vashirr's Paladins stride openly against us.")
     talk("We can no longer rely on our hidden passages and the mountainess terrain to defend us.")
     talk("We must take the fight to them!", "\n")
 
@@ -130,7 +130,7 @@ def cataracta_battle():
     print("Kimious is interrupted by a blinding flash of light, followed by a cascade of darkness.")
     print("The sky turns blood red as a dark portal forms at the entrance of the keep.")
     print("A man donned in a dark hooded robe, holding a gray wooden staff walks out of the portal.")
-    print("From behind the man floods dozens of what brutish warriors.\n")
+    print("From behind the man floods dozens of brutish warriors — some wrapped in spell-light, the Paladins Vashirr forged.\n")
 
     print("Dentros shouts out to you.\n")
 

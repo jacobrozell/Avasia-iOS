@@ -19,7 +19,7 @@ public enum SoCDeathCatalog {
         switch state.currentRoom {
         case .cataractaCourtyard:
             return "Cataracta fell around you before you could warn the world."
-        case .oceandaleFront, .mageOutpost, .vashirrStand, .northernMarch:
+        case .oceandaleFront, .mageOutpost, .vashirrStand, .northernMarch, .varatroFalls:
             return "The war took another Cataractan name — but the coalition remembers."
         default:
             return "Your courage was not enough this time."

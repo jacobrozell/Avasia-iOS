@@ -162,7 +162,7 @@ struct MenuButton: View {
                     .stroke(Theme.palette.cardStroke.opacity(style == .primary ? 0 : 1), lineWidth: 1)
             )
         }
-        .buttonStyle(.plain)
+        .buttonStyle(PressScaleButtonStyle())
         .accessibilityLabel(title)
         .accessibilityIdentifier(accessibilityIdentifier ?? title)
     }
@@ -181,6 +181,137 @@ struct SettingsCard<Content: View>: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Theme.palette.cardFill, in: RoundedRectangle(cornerRadius: 10))
             .overlay(RoundedRectangle(cornerRadius: 10).stroke(Theme.palette.cardStroke))
+    }
+}
+
+// MARK: - Interaction
+
+struct PressScaleButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.97 : 1)
+            .opacity(configuration.isPressed ? 0.92 : 1)
+            .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
+    }
+}
+
+// MARK: - Surfaces
+
+/// Subtle parchment wash behind the game transcript (WIREFRAMES art direction).
+struct ParchmentBackground: View {
+    var body: some View {
+        ZStack {
+            Theme.background.opacity(Theme.isLight ? 0.92 : 0.55)
+            LinearGradient(
+                colors: [
+                    Theme.parchment.opacity(Theme.isLight ? 0.06 : 0.04),
+                    Theme.background.opacity(0),
+                    Theme.parchment.opacity(Theme.isLight ? 0.03 : 0.02)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        }
+    }
+}
+
+struct ProgressBar: View {
+    let value: Double
+
+    var body: some View {
+        GeometryReader { geo in
+            ZStack(alignment: .leading) {
+                Capsule().fill(Theme.palette.cardFill)
+                Capsule()
+                    .fill(
+                        LinearGradient(
+                            colors: [Theme.accent, Theme.accent.opacity(0.7)],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .frame(width: max(geo.size.width * min(max(value, 0), 1), value > 0 ? 4 : 0))
+            }
+        }
+        .frame(height: 5)
+        .accessibilityLabel("Progress")
+        .accessibilityValue("\(Int(value * 100)) percent")
+    }
+}
+
+struct ChapterCard: View {
+    let product: AvasiaProduct
+    let systemImage: String
+    var hasSave: Bool
+    var saveHint: String?
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(alignment: .top, spacing: 14) {
+                Image(systemName: systemImage)
+                    .font(.title2.weight(.semibold))
+                    .foregroundStyle(Theme.accent)
+                    .frame(width: 44, height: 44)
+                    .background(Theme.accent.opacity(0.14), in: RoundedRectangle(cornerRadius: 10))
+
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(alignment: .firstTextBaseline) {
+                        Text(product.menuTitle)
+                            .font(.system(.headline, design: .serif).weight(.semibold))
+                            .foregroundColor(Theme.parchment)
+                        Spacer(minLength: 8)
+                        if hasSave {
+                            Label("Saved", systemImage: "bookmark.fill")
+                                .font(.caption2.weight(.semibold))
+                                .foregroundColor(Theme.accent)
+                                .labelStyle(.titleAndIcon)
+                        }
+                    }
+                    Text(product.subtitle)
+                        .font(.subheadline)
+                        .foregroundColor(Theme.parchment.opacity(0.72))
+                        .fixedSize(horizontal: false, vertical: true)
+                    if let saveHint {
+                        Text(saveHint)
+                            .font(.caption)
+                            .foregroundColor(Theme.parchment.opacity(0.55))
+                    }
+                }
+
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundColor(Theme.parchment.opacity(0.35))
+                    .padding(.top, 4)
+            }
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Theme.accent.opacity(0.10), in: RoundedRectangle(cornerRadius: 14))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(Theme.palette.cardStroke, lineWidth: 1)
+            )
+        }
+        .buttonStyle(PressScaleButtonStyle())
+        .accessibilityLabel(product.menuTitle)
+        .accessibilityHint(product.subtitle)
+        .accessibilityValue(hasSave ? "Save in progress" : "No save")
+        .accessibilityIdentifier(product == .kon ? "saga-kon" : "saga-soc")
+    }
+}
+
+struct StatusBadge: View {
+    let title: String
+    let systemImage: String
+    var tint: Color = Theme.accent
+
+    var body: some View {
+        Label(title, systemImage: systemImage)
+            .font(.caption2.weight(.semibold))
+            .foregroundColor(tint)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(tint.opacity(0.14), in: Capsule())
     }
 }
 

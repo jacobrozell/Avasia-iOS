@@ -1,4 +1,4 @@
-# Avasia: Sword of Courage — Content Manifest
+# Avasia: Blade of Courage — Content Manifest
 
 > Maps Python prototype room IDs to Swift `SoCRoomID` values. **Per-room detail**
 > (NPCs, options, items, flags): [`rooms/README.md`](rooms/README.md).

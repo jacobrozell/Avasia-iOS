@@ -1,7 +1,7 @@
 import Foundation
 import AvasiaEngine
 
-/// Every location in *Avasia: Sword of Courage*. IDs match the Python prototype
+/// Every location in *Avasia: Blade of Courage*. IDs match the Python prototype
 /// (`Avasia-SoC/`) `config.current_room_id` strings.
 public enum SoCRoomID: String, Codable, CaseIterable, Sendable {
     case cataractaHousing = "Cataracta_Housing"
@@ -20,6 +20,9 @@ public enum SoCRoomID: String, Codable, CaseIterable, Sendable {
     case westHallway = "west_hallway"
     case throneRoom = "throne_room"
     case aylovaWarCamp = "aylova_war_camp"
+    case silvariumElders = "silvarium_elders"
+    case varatroFalls = "varatro_falls"
+    case ofelos = "ofelos"
     case northernMarch = "northern_march"
     case oceandaleFront = "oceandale_front"
     case mageOutpost = "mage_outpost"
@@ -35,6 +38,12 @@ public extension SoCRoomID {
             return .nacastrum
         case .aylovaWarCamp, .northernMarch:
             return .aylova
+        case .silvariumElders:
+            return .tree
+        case .varatroFalls:
+            return .mountain
+        case .ofelos:
+            return .splitpath
         case .oceandaleFront:
             return .oceandale
         case .mageOutpost:

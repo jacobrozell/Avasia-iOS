@@ -1,6 +1,6 @@
-# Avasia: Sword of Courage — Design Docs
+# Avasia: Blade of Courage — Design Docs
 
-Design documentation for **Avasia: Sword of Courage** (*Avasia #2*). The Python
+Design documentation for **Avasia: Blade of Courage** (*Avasia #2*). The Python
 prototype lives in [`Avasia-SoC/`](../../Avasia-SoC/) — **original source only**,
 no content invented in this repo beyond docs and iOS wiring.
 
@@ -34,6 +34,6 @@ Saga vision: [`../SAGA.md`](../SAGA.md)
 
 ## App integration
 
-- Saga picker → **King of Nacastrum** or **Sword of Courage**
+- Saga picker → **King of Nacastrum** or **Blade of Courage**
 - Saves: `AvasiaKoN/` vs `AvasiaSoC/` (Application Support)
 - Achievements: KoN only (for now)

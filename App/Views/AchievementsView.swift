@@ -33,13 +33,16 @@ struct AchievementsView: View {
 
     private var header: some View {
         let p = vm.achievements
-        return VStack(spacing: 4) {
+        let progress = p.total > 0 ? Double(p.unlockedCount) / Double(p.total) : 0
+        return VStack(spacing: 8) {
             Text("Achievements")
                 .font(.system(.largeTitle, design: .serif).bold())
                 .foregroundColor(Theme.accent)
                 .accessibilityAddTraits(.isHeader)
             Text("\(p.unlockedCount) / \(p.total) unlocked")
                 .font(.callout).foregroundColor(Theme.parchment.opacity(0.6))
+            ProgressBar(value: progress)
+                .padding(.horizontal, 8)
             if p.totalDeaths > 0 {
                 Text("Lifetime deaths: \(p.totalDeaths)")
                     .font(.caption2).foregroundColor(Theme.parchment.opacity(0.4))
@@ -47,6 +50,7 @@ struct AchievementsView: View {
         }
         .padding(.top, 24)
         .padding(.horizontal, metrics.horizontalPadding)
+        .padding(.bottom, 8)
     }
 
     private func row(_ ach: Achievement, unlocked: Bool) -> some View {
@@ -72,9 +76,9 @@ struct AchievementsView: View {
         }
         .padding(14)
         .background(RoundedRectangle(cornerRadius: 12)
-            .fill(unlocked ? Theme.accent.opacity(0.12) : Color.white.opacity(0.03)))
+            .fill(unlocked ? Theme.accent.opacity(0.12) : Theme.palette.cardFill))
         .overlay(RoundedRectangle(cornerRadius: 12)
-            .stroke(unlocked ? Theme.accent.opacity(0.5) : Color.white.opacity(0.06)))
+            .stroke(unlocked ? Theme.accent.opacity(0.5) : Theme.palette.cardStroke.opacity(0.5)))
         .accessibilityElement(children: .combine)
         .accessibilityLabel(masked ? "Secret achievement, locked" : ach.title)
         .accessibilityValue(unlocked ? "Unlocked" : "Locked")

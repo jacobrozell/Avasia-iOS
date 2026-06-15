@@ -102,6 +102,30 @@ struct RegionIllustration: View {
                 .foregroundColor(p.accent)
                 .padding(.horizontal, 8)
             }
+
+            VStack {
+                Spacer()
+                LinearGradient(
+                    colors: [.clear, p.bottom.opacity(0.85)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(height: 36)
+            }
+
+            VStack {
+                Spacer()
+                HStack {
+                    Text(media.region.title)
+                        .font(.system(.caption, design: .serif).weight(.semibold).smallCaps())
+                        .foregroundColor(Theme.parchment.opacity(0.92))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                    Spacer(minLength: 0)
+                }
+                .padding(.horizontal, 12)
+                .padding(.bottom, 8)
+            }
         }
         .frame(height: height)
         .clipped()

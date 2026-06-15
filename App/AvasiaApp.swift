@@ -3,12 +3,27 @@ import SwiftUI
 @main
 struct AvasiaApp: App {
     @StateObject private var vm = GameViewModel()
+    @State private var showSplash = true
 
     var body: some Scene {
         WindowGroup {
-            RootView()
-                .environmentObject(vm)
-                .preferredColorScheme(vm.preferredColorScheme)
+            ZStack {
+                RootView()
+                    .environmentObject(vm)
+                    .preferredColorScheme(vm.preferredColorScheme)
+
+                if showSplash {
+                    SplashView()
+                        .transition(.opacity)
+                        .zIndex(1)
+                }
+            }
+            .task {
+                try? await Task.sleep(for: .milliseconds(1400))
+                withAnimation(.easeOut(duration: 0.45)) {
+                    showSplash = false
+                }
+            }
         }
     }
 }
@@ -20,7 +35,7 @@ struct RootView: View {
 
     var body: some View {
         LayoutMetricsReader { _ in
-            Group {
+            ZStack {
                 switch vm.screen {
                 case .saga:             SagaTitleView()
                 case .title:            TitleView()
@@ -32,6 +47,7 @@ struct RootView: View {
                 case .trophies:         SoCTrophiesView()
                 }
             }
+            .animation(.easeInOut(duration: 0.22), value: vm.screen)
             .id(vm.themeRevision)
             .onAppear {
                 vm.onLaunch()

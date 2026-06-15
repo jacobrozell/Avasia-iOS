@@ -40,7 +40,7 @@ public struct SoCCombatant: Codable, Sendable, Equatable {
     public var isDead: Bool { hp <= 0 }
 }
 
-/// Serializable state for Sword of Courage. Mirrors Python `config.py` + player stats.
+/// Serializable state for Blade of Courage. Mirrors Python `config.py` + player stats.
 public struct SoCGameState: Codable, Sendable {
     public var currentRoom: SoCRoomID = .cataractaHousing
     public var textDelay: TextDelay = .on
@@ -77,6 +77,12 @@ public struct SoCGameState: Codable, Sendable {
     public var warCampPhase: WarCampPhase = .notStarted
     public var aylovaProvisioned: Bool = false
     public var aylovaMusterComplete: Bool = false
+    public var silvariumEldersPhase: SilvariumEldersPhase = .notStarted
+    public var silvariumEldersComplete: Bool = false
+    public var varatroFallsPhase: VaratroFallsPhase = .notStarted
+    public var varatroFallsCleared: Bool = false
+    public var ofelosPhase: OfelosPhase = .notStarted
+    public var ofelosAllianceComplete: Bool = false
     public var northernMarchPhase: NorthernMarchPhase = .notStarted
     public var northernMarchCleared: Bool = false
     public var oceandaleFrontPhase: OceandaleFrontPhase = .notStarted

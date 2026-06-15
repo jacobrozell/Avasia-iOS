@@ -16,7 +16,7 @@
 
 ## Story & purpose
 
-Coalition assault on the ridge overlooking KoN's Oceandale. Mage-fire shows Vashirr's teaching.
+Coalition assault on the ridge overlooking KoN's Oceandale. **Paladin** fire shows Vashirr's teaching.
 Class-colored charge narrative; two authored fights.
 
 ## Combat
@@ -24,7 +24,7 @@ Class-colored charge narrative; two authored fights.
 | Wave | Enemy | ATK | SPD | HP |
 |---|---|---|---|---|
 | 1 | Agromanian Raider | 6 | 6 | 14 |
-| 2 | Agromanian Battle Mage | 9 | 5 | 22 |
+| 2 | Agromanian Paladin | 9 | 5 | 22 |
 
 Full heal between waves. +25 quest XP and `oceandaleVictor` trophy on clear.
 

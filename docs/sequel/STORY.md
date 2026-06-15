@@ -1,4 +1,4 @@
-# Avasia: Sword of Courage — Story Bible
+# Avasia: Blade of Courage — Story Bible
 
 > Narrative reference for the sequel. Canon sources: `Avasia-SoC/Logic/util.py`
 > (intro), room scripts under `Avasia-SoC/Cataracta/` and `Avasia-SoC/Nacastrum/`,
@@ -13,36 +13,46 @@
 
 ## 1. Title & Position in the Saga
 
-| | KoN (Game 1) | Sword of Courage (Game 2) |
+| | KoN (Game 1) | Blade of Courage (Game 2) |
 |---|---|---|
 | **Protagonist** | Amnesiac mage (player's true identity: Nacastrum teacher, Kaefden heir) | Named Druid recruit in Cataracta |
-| **Timeline** | Events leading to Nacastrum's restoration | **Six months after** the Agromanian attack on Oceandale |
+| **Timeline** | Oceandale falls; player crowned at KoN's end | **Seven years later** — no Agromanian invasion since KoN; Paladin threat escalates now |
 | **Perspective** | Mage / Kaefden loyalist | Druid / Cataractan legion volunteer |
-| **Antagonist** | Vashirr (ex-king, Agromanian ally) | Same — now openly teaching Agromanians magic |
+| **Antagonist** | Vashirr (ex-king, Agromanian ally) | Vashirr — Agromanian king's **right hand**; forging **Paladins** |
 | **Tone** | Earnest tragedy + meta humor | Similar register; more RPG framing (classes, XP, trophies) |
 
-Working subtitle in the prototype README: *Avasia #2: Untitled*. The in-game title
-is **Avasia: Sword of Courage**.
+In-game title: **Avasia: Blade of Courage** — named for **Kaefden's Blade of
+Courage**, buried with the first king at **Varatro Falls** (Act IV relic quest).
 
 ---
 
-## 2. Opening Situation (from intro)
+## 2. Opening Situation (canonical intro)
 
 Delivered after the player chooses a new game and enters their name:
 
-> *It has been six months since the Agromanian's attack on Oceandale.*
-> *Nacastrum, the city of the Mage, is still being rebuilt under the diligent
-> leadership of its new king.*
-> *Recently, news was brought to King Kaefden IV that Vashirr, the traitor
-> ex-king of Nacastrum, is teaching the Agromanians magic.*
-> *With this knowledge, King Kaefden IV has begun to recruit an army to march on
-> the Agromanians before they have a chance to muster.*
+> *It has been seven years since the fall of Oceandale and the crowning of King Kaefden IV.*
+> *In all that time, no Agromanian army has crossed the border — yet the Kaefdens have not rested.*
+> *Nacastrum rises again while legions train for the war everyone knows is coming.*
+> *Recently, word reached Aylova from Silvarium: Vashirr, the traitor ex-king of Nacastrum, stands at the Agromanian king's right hand — and teaches their warriors magic.*
+> *They call these new soldiers Paladins.*
+> *King Kaefden IV has begun recruiting in earnest before the northwest can muster.*
 
 > *You are a druid living in the peaceful city of Cataracta.*
-> *Cataracta has formed a pact with the people of Aylova to join the fight when
-> the time comes.*
+> *Cataracta has formed a pact with the people of Aylova to join the fight when the time comes.*
 > *The leader of Cataracta is drafting an army and you have decided to volunteer.*
 > *This is where your story begins...*
+
+### Timeline reconciliation (KoN → SoC)
+
+| Event | When |
+|---|---|
+| Oceandale attacked; KoN begins | Game 1 opening (*"last week"*) |
+| KoN ends; Kaefden IV crowned | End of game 1 |
+| **SoC opens** | **7 years** after coronation |
+| Border quiet | No Agromanian invasion in those 7 years |
+| Army buildup | Kaefden legions grow in response to standing threat |
+| Paladin intel | Agromanian defector reaches **Silvarium**; news relayed to Aylova |
+| Cataracta massacre | SoC Act II — first open Agromanian strike in years |
 
 The player starts in their **house** (Southwest Cataracta), pockets **100 gold**
 and a **potion**, and is directed to the **Legion courtyard** to enlist.
@@ -55,9 +65,13 @@ Continuity with KoN — see [`../STORY.md`](../STORY.md) §2 for full faction lo
 
 ### 3.1 Factions at war
 
-- **Kaefden** — King **Kaefden IV** rules from **Aylova**; rebuilding **Nacastrum**
-  after the first game's events. Preparing a preemptive strike on the Agromanians.
-- **Agromanian** — Northwestern aggressors; now receiving **magic from Vashirr**.
+- **Kaefden** — King **Kaefden IV** rules from **Aylova**; **seven years** into
+  rebuilding **Nacastrum** and swelling the legions. Cannot win alone against Paladins.
+- **Agromanian** — Northwestern aggressors; **Vashirr** is the Agromanian king's
+  right hand, training **Paladins** — magic-wrapped warriors stronger than anything
+  Avasia has fielded.
+- **Neutrals / Ofelos** — Neutral city; must be won via the **Silvarium elders**
+  (see Act IV). Require **Kaefden's Blade of Courage** as the symbol of honor.
 - **Cataracta** — Druid city in mountainous terrain; historically relied on hidden
   passages. Pact with Aylova to join the coming war. King **Kimious** leads.
 
@@ -142,19 +156,14 @@ After the massacre, `config.current_room_id` jumps to **`c_portal_room`**
    Delivery of Vashirr's message, mobilization, and the opening moves of the
    **full continental war**.
 
-### Act IV — The war (to be written)
+### Act IV — The war (implemented + planned)
 
-Sword of Courage does not end at the throne room. The game's second half is the
-**full war** against Vashirr and the Agromanians:
+Blade of Courage does not end at the throne room. The second half is the **full war**
+against Vashirr and the Agromanians, plus the **neutral alliance** arc:
 
-- Mobilization at Aylova and across Kaefden / allied territory.
-- Campaign fronts — border skirmishes, sieges, magical warfare (Vashirr teaching
-  Agromanian mages).
-- The Druid PC remains a **soldier on the ground**, not the commander-in-chief.
-  Kaefden IV (KoN protagonist) leads; the player experiences the war through
-  their class lens (hunter assaults, guardian holds, scout recon).
-- **Cataracta revisit (optional):** city is ashes after Act II, but a return
-  visit later — ruins, survivors, emotional reckoning — is on the table.
+**Implemented (iOS):** mobilization at Aylova → **Silvarium elders** → **Varatro Falls**
+(Blade dungeon) → **Ofelos** (neutral alliance) → northern march → Oceandale ridge →
+mage outpost → Vashirr's redoubt → Age-era epilogue.
 
 ### Game 3 — first 2D game (future)
 
@@ -171,15 +180,14 @@ aftermath, not unfinished business.
 
 | Role | Who | Notes |
 |---|---|---|
-| **King Kaefden IV** | KoN protagonist | Crowned at KoN's ending; six months into rebuilding Nacastrum and preparing for war |
+| **King Kaefden IV** | KoN protagonist | Crowned at KoN's ending; **seven years** rebuilding Nacastrum and the legions |
 | **Capital** | Aylova | Seat of Kaefden power; army mustering per intro |
 | **Nacastrum** | Rebuilding under Kaefden IV | Castle/library scenes in SoC take place here |
 | **King Kimious** | Ruler of Cataracta (deceased Act II) | Druid faction ally |
 | **Vashirr** | Ex-king of Nacastrum; antagonist | Openly allied with Agromanians; teaches them magic |
 
-The intro's *"new king"* rebuilding Nacastrum and *"King Kaefden IV"* at Aylova
-are the **same person** — the mage-king from game 1, now ruling the reunited
-Kaefden coalition.
+The intro's *"seven years"* and *"King Kaefden IV"* at Aylova are the **same person**
+— the mage-king from game 1, now a seasoned ruler facing Paladins.
 
 ---
 

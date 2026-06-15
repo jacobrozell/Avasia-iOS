@@ -17,6 +17,7 @@ final class SoCCriticalPathTests: XCTestCase {
         var state = SoCGameState()
         state.applyClass(.scout)
         state.aylovaMusterComplete = true
+        state.ofelosAllianceComplete = true
         state.currentRoom = .northernMarch
         let engine = SoCGameEngine(state: state)
 
@@ -55,6 +56,10 @@ final class SoCCriticalPathTests: XCTestCase {
         _ = engine.submit("continue")
         _ = engine.submit("continue")
         _ = engine.submit("continue")
+        XCTAssertEqual(engine.state.currentRoom, .silvariumElders)
+
+        advanceBladeQuest(engine)
+
         XCTAssertEqual(engine.state.currentRoom, .northernMarch)
 
         _ = engine.submit("continue")
@@ -91,6 +96,8 @@ final class SoCCriticalPathTests: XCTestCase {
         _ = engine.submit("continue")
         XCTAssertTrue(engine.state.gameComplete)
         XCTAssertTrue(engine.state.trophies.contains(.ageComplete))
+        XCTAssertTrue(engine.state.trophies.contains(.bladeBearer))
+        XCTAssertTrue(engine.state.trophies.contains(.ofelosMarches))
     }
 
     func testCourtyardThroughPortal() {
@@ -136,6 +143,30 @@ final class SoCCriticalPathTests: XCTestCase {
         let lines = engine.submit("objectives")
         XCTAssertTrue(lines.contains { $0.text.contains("Objectives") })
         XCTAssertTrue(lines.contains { $0.text.contains("portal") || $0.text.contains("library") })
+    }
+
+    private func advanceBladeQuest(_ engine: SoCGameEngine) {
+        _ = engine.submit("continue")
+        _ = engine.submit("continue")
+        _ = engine.submit("continue")
+        _ = engine.submit("march")
+        XCTAssertEqual(engine.state.currentRoom, .varatroFalls)
+
+        _ = engine.submit("continue")
+        _ = engine.submit("continue")
+        fightToVictory(engine)
+        _ = engine.submit("continue")
+        XCTAssertTrue(engine.state.varatroFallsCleared)
+        XCTAssertTrue(engine.state.trophies.contains(.bladeBearer))
+        _ = engine.submit("march")
+        XCTAssertEqual(engine.state.currentRoom, .ofelos)
+
+        _ = engine.submit("continue")
+        _ = engine.submit("continue")
+        _ = engine.submit("present")
+        _ = engine.submit("continue")
+        XCTAssertTrue(engine.state.ofelosAllianceComplete)
+        _ = engine.submit("march")
     }
 
     private func fightToVictory(_ engine: SoCGameEngine, maxTurns: Int = 60) {

@@ -13,7 +13,8 @@ public enum SoCChapter {
             return "Act II — The Massacre"
         case .portalRoom, .library, .westHallway, .throneRoom:
             return "Act III — Nacastrum"
-        case .aylovaWarCamp, .northernMarch, .oceandaleFront, .mageOutpost, .vashirrStand:
+        case .aylovaWarCamp, .silvariumElders, .varatroFalls, .ofelos,
+             .northernMarch, .oceandaleFront, .mageOutpost, .vashirrStand:
             return "Act IV — The War"
         case .ageEpilogue:
             return "Epilogue — Aylova"

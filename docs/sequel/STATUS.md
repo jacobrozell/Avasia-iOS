@@ -1,4 +1,4 @@
-# Sword of Courage — Project Status
+# Blade of Courage — Project Status
 
 > Living checklist. Last updated: 2026-06-15.
 

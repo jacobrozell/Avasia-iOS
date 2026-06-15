@@ -1,4 +1,4 @@
-# Room Spec Index — Sword of Courage
+# Room Spec Index — Blade of Courage
 
 Standard: [`../ROOM_SPEC_STANDARD.md`](../ROOM_SPEC_STANDARD.md) · Global: [`_global.md`](_global.md) · Future: [`future/README.md`](future/README.md)
 
@@ -20,6 +20,9 @@ Standard: [`../ROOM_SPEC_STANDARD.md`](../ROOM_SPEC_STANDARD.md) · Global: [`_g
 | [West Hallway](west-hallway.md) | `westHallway` | link | III | hub | ✅ |
 | [Throne Room](throne-room.md) | `throneRoom` | logic | III | **critical** | ✅ audience |
 | [Aylova War Camp](aylova-war-camp.md) | `aylovaWarCamp` | logic | IV | **critical** | ✅ |
+| [Silvarium Elders](silvarium-elders.md) | `silvariumElders` | logic | IV | **critical** | ✅ |
+| [Varatro Falls](varatro-falls.md) | `varatroFalls` | logic | IV | **critical** | ✅ |
+| [Ofelos](ofelos.md) | `ofelos` | logic | IV | **critical** | ✅ |
 | [Northern March](northern-march.md) | `northernMarch` | logic | IV | **critical** | ✅ |
 | [Oceandale Ridge](oceandale-front.md) | `oceandaleFront` | logic | IV | **critical** | ✅ |
 | [Mage Outpost](mage-outpost.md) | `mageOutpost` | logic | IV | **critical** | ✅ |
@@ -38,7 +41,7 @@ Shopping ──E──► Ulric (blacksmith) ──► Doran (pier) ──► Fi
 ## Critical path spine
 
 ```
-Housing → … → Oceandale → Mage Outpost → Vashirr's Redoubt → Aylova epilogue ✅
+Housing → … → Aylova camp → Silvarium → Varatro → Ofelos → Oceandale → Mage Outpost → Vashirr's Redoubt → Aylova epilogue ✅
 ```
 
 ## Rooms not in source

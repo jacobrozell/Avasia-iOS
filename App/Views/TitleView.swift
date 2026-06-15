@@ -1,7 +1,7 @@
 import SwiftUI
 import AvasiaEngine
 
-/// Per-game title screen (KoN or Sword of Courage) after saga selection.
+/// Per-game title screen (KoN or Blade of Courage) after saga selection.
 struct TitleView: View {
     @EnvironmentObject var vm: GameViewModel
     @Environment(\.layoutMetrics) private var metrics

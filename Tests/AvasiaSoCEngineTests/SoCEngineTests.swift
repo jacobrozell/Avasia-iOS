@@ -82,7 +82,7 @@ final class SoCEngineTests: XCTestCase {
         XCTAssertEqual(engine.state.currentRoom, .aylovaWarCamp)
     }
 
-    func testAylovaCampReachesNorthernMarch() {
+    func testAylovaCampReachesSilvarium() {
         var state = SoCGameState()
         state.applyClass(.guardian)
         state.warCampBriefed = true
@@ -96,13 +96,14 @@ final class SoCEngineTests: XCTestCase {
 
         XCTAssertTrue(engine.state.aylovaProvisioned)
         XCTAssertTrue(engine.state.aylovaMusterComplete)
-        XCTAssertEqual(engine.state.currentRoom, .northernMarch)
+        XCTAssertEqual(engine.state.currentRoom, .silvariumElders)
     }
 
     func testNorthernMarchPatrolCombat() {
         var state = SoCGameState()
         state.applyClass(.hunter)
         state.aylovaMusterComplete = true
+        state.ofelosAllianceComplete = true
         state.currentRoom = .northernMarch
         let engine = SoCGameEngine(state: state)
 

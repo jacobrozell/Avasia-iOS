@@ -15,7 +15,7 @@ docs, a pure-Swift game engine package, and a SwiftUI app scaffold. All regions
 are implemented — the full critical path from the beach to the ending is playable
 and covered by an end-to-end test.
 
-## Avasia: Sword of Courage (Game 2)
+## Avasia: Blade of Courage (Game 2)
 
 The original Python prototype is in [`Avasia-SoC/`](Avasia-SoC/) (source-faithful,
 stops at the throne-room stub). Select it from the **saga home screen** in the app.
@@ -32,7 +32,7 @@ Swift engine: `Sources/AvasiaSoCEngine/`. Docs: [`docs/sequel/`](docs/sequel/REA
 - **[Wireframes](docs/WIREFRAMES.md)** — UI layouts for every screen.
 - **[Build](docs/BUILD.md)** — how to build, test, and run.
 
-### Sword of Courage (sequel) — see [`docs/sequel/`](docs/sequel/README.md)
+### Blade of Courage (sequel) — see [`docs/sequel/`](docs/sequel/README.md)
 
 - **[Saga bible](docs/SAGA.md)** — Age-era text duology; game 3 is first 2D title.
 - **[Story bible](docs/sequel/STORY.md)** — timeline, Druid protagonist, war arc.
@@ -46,15 +46,15 @@ Swift engine: `Sources/AvasiaSoCEngine/`. Docs: [`docs/sequel/`](docs/sequel/REA
 - `Tests/AvasiaEngineTests/` — engine unit tests (`swift test`).
 - `App/` — SwiftUI app; the Xcode project is generated from `project.yml` via
   XcodeGen.
-- `Sources/AvasiaSoCEngine/` — Sword of Courage engine shell (port in progress).
+- `Sources/AvasiaSoCEngine/` — Blade of Courage engine shell (port in progress).
 - `Avasia-SoC/` — Python reference (original prototype, `python3 game.py`).
 
 Quick start:
 
 ```bash
 swift test            # run engine tests
-xcodegen generate     # create AvasiaKoN.xcodeproj
-open AvasiaKoN.xcodeproj
+xcodegen generate     # create Avasia-iOS.xcodeproj
+open Avasia-iOS.xcodeproj
 ```
 
 ## Goal

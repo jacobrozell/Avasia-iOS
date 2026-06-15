@@ -36,7 +36,7 @@ struct SoCAylovaWarCampRoom: SoCRoomScript {
     func handle(_ input: ParsedInput, _ state: inout SoCGameState) -> SoCTurnResult {
         if state.aylovaMusterComplete {
             if marchTriggers.contains(where: { input.contains($0) }) {
-                return SoCTurnResult(marchLines(), .move(.northernMarch))
+                return SoCTurnResult(marchLines(), .move(bladeQuestDestination(state)))
             }
             return SoCTurnResult([.hint("MARCH north when you are ready.")])
         }
@@ -82,7 +82,7 @@ struct SoCAylovaWarCampRoom: SoCRoomScript {
             state.aylovaMusterComplete = true
             var lines = deploymentLines(state) + marchLines()
             lines.append(.title("War camp muster complete"))
-            return SoCTurnResult(lines, .move(.northernMarch))
+            return SoCTurnResult(lines, .move(.silvariumElders))
 
         case .done:
             return SoCTurnResult(musterCompleteLines())
@@ -147,10 +147,14 @@ struct SoCAylovaWarCampRoom: SoCRoomScript {
             .speech("Coalition Sergeant: Eyes up, Cataractan. King Kaefden isn't here to give pretty speeches — listen."),
             .blank,
             .body("She unrolls a map scarred with charcoal X's along the northern border."),
-            .speech("Vashirr's Agromanians hit three border villages last week. Their mages throw fire now — his teaching, not theirs."),
+            .speech("Vashirr's Paladins hit three border villages last week. Their magic isn't borrowed anymore — it's bred into the rank."),
             .speech("Oceandale ridge is the next push. Hold the high ground and we keep their army out of Aylova's throat."),
             .blank,
-            .speech("Your \(unit) deploys at first light. Until then, get fed and get armed."),
+            .speech("King Kaefden's envoys seek the Blade at Varatro Falls — when it returns, Ofelos may finally march with us."),
+            .blank,
+            .speech("King Kaefden's envoys seek the Blade at Varatro Falls — you ride east to Silvarium first."),
+            .blank,
+            .speech("Your \(unit) deploys at first light once Ofelos marches. Until then, get fed and get armed."),
             .speech("Thekia's tent is east of the cookfires. Don't report to the front empty-handed.")
         ]
     }
@@ -190,7 +194,7 @@ struct SoCAylovaWarCampRoom: SoCRoomScript {
             .blank,
             .body("Horns sound three short blasts — march order."),
             .body("The coalition column turns north, toward smoke on the horizon."),
-            .symbol("Northern march toward Oceandale ridge.")
+            .symbol("Ride east to Silvarium — then Varatro Falls and Ofelos.")
         ]
     }
 
@@ -201,8 +205,15 @@ struct SoCAylovaWarCampRoom: SoCRoomScript {
     private func musterCompleteLines() -> [StyledLine] {
         [
             .title("Aylova War Camp"),
-            .body("The camp bustles behind you. Your unit waits at the road's edge."),
-            .hint("MARCH north toward the border.")
+            .body("The camp bustles behind you. The Blade quest leads east before the northern front."),
+            .hint("MARCH east toward Silvarium.")
         ]
+    }
+
+    private func bladeQuestDestination(_ state: SoCGameState) -> SoCRoomID {
+        if !state.silvariumEldersComplete { return .silvariumElders }
+        if !state.varatroFallsCleared { return .varatroFalls }
+        if !state.ofelosAllianceComplete { return .ofelos }
+        return .northernMarch
     }
 }

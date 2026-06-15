@@ -17,15 +17,29 @@ struct CreditsView: View {
 
     var body: some View {
         ZStack {
-            Theme.night.ignoresSafeArea()
+            TitleScreenBackground()
             ScrollView {
                 VStack(spacing: 14) {
-                    Text("Avasia: King of Nacastrum")
-                        .font(.system(.title2, design: .serif).bold())
-                        .foregroundColor(Theme.accent)
-                        .multilineTextAlignment(.center)
-                        .padding(.top, 24)
-                        .accessibilityAddTraits(.isHeader)
+                    VStack(spacing: 6) {
+                        Text("AVASIA")
+                            .font(.system(.title, design: .serif).weight(.heavy))
+                            .tracking(4)
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [Theme.accent, Theme.accent.opacity(0.75)],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                            .accessibilityAddTraits(.isHeader)
+                        Text("King of Nacastrum  ·  Blade of Courage")
+                            .font(.system(.subheadline, design: .serif).italic())
+                            .foregroundColor(Theme.parchment.opacity(0.85))
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding(.top, 24)
+
+                    TitleOrnament()
 
                     Text("~-CREDITS-~")
                         .font(.system(.headline, design: .serif))

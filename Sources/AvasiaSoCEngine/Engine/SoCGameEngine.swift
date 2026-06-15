@@ -1,7 +1,7 @@
 import Foundation
 import AvasiaEngine
 
-/// Drives *Sword of Courage* — same turn loop as `GameEngine`, separate world.
+/// Drives *Blade of Courage* — same turn loop as `GameEngine`, separate world.
 public final class SoCGameEngine {
     public private(set) var state: SoCGameState
     public private(set) var lastDeath: DeathInfo?

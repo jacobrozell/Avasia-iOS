@@ -24,7 +24,7 @@ each new era justifies a new engine:
 The meta-promise to the player: *you are living through the history of Avasia, and
 the way you play changes as the world modernizes.*
 
-**Age era = two text games only.** KoN and Sword of Courage tell the full
+**Age era = two text games only.** KoN and Blade of Courage tell the full
 text-based chapter. There is no third text adventure.
 
 ---
@@ -40,15 +40,15 @@ text-based chapter. There is no third text adventure.
 | **Ending** | Crowned king; mages return through the portal; *"Let us go, my king."* |
 | **Status** | Original complete; iOS remake in progress (`Sources/AvasiaEngine/`) |
 
-### Game 2 — *Avasia: Sword of Courage*
+### Game 2 — *Avasia: Blade of Courage*
 
 | | |
 |---|---|
 | **Protagonist** | Named Druid recruit in Cataracta |
-| **Timeline** | Six months after Oceandale |
-| **Arc** | Enlist → fall of Cataracta → warn Kaefden IV → **fight and conclude the full war** against Vashirr and the Agromanians |
-| **Antagonist** | Vashirr (now openly teaching Agromanian mages) |
-| **Status** | Python prototype ~30% (`Avasia-SoC/`); stops at throne-room stub |
+| **Timeline** | **Seven years** after KoN (Oceandale's fall and Kaefden IV's coronation); no Agromanian invasion since, until Vashirr's Paladins force the issue |
+| **Arc** | Enlist → fall of Cataracta → warn Kaefden IV → **win the coalition war** and secure neutral allies via **Kaefden's Blade of Courage** |
+| **Antagonist** | Vashirr (Agromanian king's right hand; forging Paladins) |
+| **Status** | Python prototype + iOS Act IV campaign; Silvarium / Varatro Falls arc planned |
 
 **Royal continuity:** **King Kaefden IV is the KoN protagonist.** The SoC Druid
 delivers Vashirr's message to the same king the player crowned in game 1.
@@ -105,21 +105,20 @@ witness and soldier — different face, same war.
 
 ---
 
-## 6. Working title — Game 2
+## 6. Title — Game 2
 
-**Canonical for now:** *Avasia: Sword of Courage*
+**Canonical:** *Avasia: Blade of Courage*
 
-Alternatives if you want something that signals the duology or Druid POV:
+The title names **Kaefden's Blade of Courage** — the first king's sword buried at
+**Varatro Falls**, recovered to win the neutral city (**Ofelos**) through the
+**Silvarium elders**. Personal virtue and the soldier's journey stay central; the
+Blade is the ultimate symbol of honor the coalition needs.
 
-| Title | Angle |
+| Former / alternate | Notes |
 |---|---|
-| *Sword of Courage* **(current)** | Personal virtue; soldier's journey |
-| *Avasia: Legion of Cataracta* | Faction + military framing |
-| *Avasia: The Druid's March* | POV + war movement |
-| *Avasia: Ashes of Cataracta* | Opens on loss; darker tone |
-| *Avasia: Kaefden's War* | Ties directly to game 1's ending |
-
-No rename required — *Sword of Courage* holds up.
+| *Blade of Courage* | Prototype working title; superseded 2026-06-15 |
+| *Legion of Cataracta* | Faction framing — optional subtitle |
+| *Kaefden's War* | Emphasizes duology tie-in |
 
 ---
 
@@ -131,6 +130,8 @@ No rename required — *Sword of Courage* holds up.
 | 2026-06-15 | SoC scope = **full war**, not just messenger Act III |
 | 2026-06-15 | Cataracta **may be revisitable** later in SoC |
 | 2026-06-15 | Combat must vary by encounter — not a grind chore |
-| 2026-06-15 | Title: *Sword of Courage* unless a better fit emerges |
+| 2026-06-15 | Title: *Blade of Courage* (working; superseded) |
+| 2026-06-15 | **Title: *Blade of Courage*** — matches Varatro Falls relic quest |
+| 2026-06-15 | **Timeline: 7 years since KoN** — Oceandale fell in game 1; long peace, then Paladin escalation |
 | 2026-06-15 | **Revised:** Age era = **2 text games only** (KoN + SoC) |
 | 2026-06-15 | **Revised:** Game 3 = **first 2D game** (post–Age era), not text |

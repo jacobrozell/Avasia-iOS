@@ -32,7 +32,8 @@ struct GameView: View {
             return ["March", "Continue", "Inventory"]
         case .ageEpilogue where vm.socState.gameComplete && !vm.socState.ruinsVisited:
             return ["Visit Ruins", "Continue", "Inventory"]
-        case .aylovaWarCamp, .northernMarch, .mageOutpost, .vashirrStand, .ageEpilogue:
+        case .aylovaWarCamp, .silvariumElders, .varatroFalls, .ofelos,
+             .northernMarch, .mageOutpost, .vashirrStand, .ageEpilogue:
             return ["March", "Continue", "Inventory", "Look"]
         case .cataractaHousing, .cataractaNorth, .cataractaShopping, .cataractaGarden,
              .cataractaBarracks, .cataractaHunterPath:
@@ -143,6 +144,10 @@ struct GameView: View {
                 Image(systemName: "trophy").foregroundColor(Theme.accent)
             }
             .accessibilityLabel(vm.product == .kon ? "Achievements" : "Trophies")
+
+            if vm.product == .soc, vm.socState.inCombat {
+                StatusBadge(title: "Combat", systemImage: "bolt.fill", tint: .red)
+            }
         }
     }
 
@@ -198,13 +203,14 @@ struct GameView: View {
         case .smallFish, .bigFish: return "fish.fill"
         case .crab: return "leaf.fill"
         case .oldShoe: return "shoe.fill"
+        case .bladeOfCourage: return "shield.lefthalf.filled"
         }
     }
 
     // MARK: - Transcript & actions
 
-    private var transcriptBackground: Color {
-        Theme.isLight ? Theme.background.opacity(0.88) : Color.clear
+    private var transcriptBackground: some View {
+        ParchmentBackground()
     }
 
     private var transcript: some View {
@@ -220,11 +226,16 @@ struct GameView: View {
                         .id(entry.id)
                     }
                     if vm.isPacingWaiting {
-                        Text("Tap to continue")
-                            .font(.caption)
-                            .foregroundColor(Theme.parchment.opacity(0.45))
-                            .italic()
-                            .id("pacing-hint")
+                        HStack(spacing: 6) {
+                            Image(systemName: "hand.tap.fill")
+                                .font(.caption2)
+                                .foregroundColor(Theme.accent.opacity(0.7))
+                            Text("Tap to continue")
+                                .font(.caption)
+                                .foregroundColor(Theme.parchment.opacity(0.45))
+                                .italic()
+                        }
+                        .id("pacing-hint")
                     }
                 }
                 .padding()
@@ -303,7 +314,9 @@ struct GameView: View {
             .frame(maxWidth: .infinity, minHeight: 44)
             .background(Theme.accent.opacity(0.12))
             .clipShape(Capsule())
+            .overlay(Capsule().stroke(Theme.accent.opacity(0.22), lineWidth: 1))
             .foregroundColor(Theme.parchment)
+            .buttonStyle(PressScaleButtonStyle())
             .accessibilityLabel(verb)
             .accessibilityHint("Submit \(verb.lowercased()) command")
     }
@@ -318,8 +331,11 @@ struct GameView: View {
                 .onSubmit { vm.submit() }
                 .padding(10)
                 .frame(minHeight: 44)
-                .background(Theme.parchment.opacity(0.08))
-                .cornerRadius(8)
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Theme.accent.opacity(0.2), lineWidth: 1)
+                )
                 .foregroundColor(Theme.parchment)
                 .accessibilityLabel("Command input")
 
@@ -329,10 +345,12 @@ struct GameView: View {
                     .foregroundColor(Theme.accent)
                     .frame(width: 44, height: 44)
             }
+            .buttonStyle(PressScaleButtonStyle())
             .accessibilityLabel("Send command")
         }
         .padding(metrics.horizontalPadding)
-        .padding(.bottom, 4)
+        .padding(.vertical, 8)
+        .background(Theme.background.opacity(0.35))
     }
 
     // MARK: - Death overlay

@@ -1,7 +1,7 @@
 # Avasia — Design Docs
 
 This folder documents **Avasia: King of Nacastrum** (Game 1, iOS remake). The
-unfinished sequel **Avasia: Sword of Courage** has its own doc set in
+unfinished sequel **Avasia: Blade of Courage** has its own doc set in
 [`sequel/`](sequel/README.md).
 
 ---
@@ -26,6 +26,7 @@ data-driven, testable engine suitable for iOS.
 | [`ENGINE_SPEC.md`](ENGINE_SPEC.md) | Engine spec — Part A documents how the original works (state flags, parser, combat, puzzles, death); Part B defines the target Swift/SwiftUI architecture and a fidelity checklist. |
 | [`WORLD_MAP.md`](WORLD_MAP.md) | Room graph — every area, its exits, gates, items, and the critical-path walkthrough. |
 | [`WIREFRAMES.md`](WIREFRAMES.md) | Low-fidelity UI layouts for every screen, mapped to the SwiftUI views. |
+| [`UI_POLISH.md`](UI_POLISH.md) | Motion, haptics, and region-art rollout spec — next polish after wireframes. |
 | [`ASSETS.md`](ASSETS.md) | Art & audio manifest — exact asset names per region and how the hooks/fallbacks work. |
 | [`ACHIEVEMENTS.md`](ACHIEVEMENTS.md) | Achievement system + the flavored death screen: architecture, full catalog, and how to add more. |
 | [`BUILD.md`](BUILD.md) | How to build/test the engine package and generate + run the iOS app. |

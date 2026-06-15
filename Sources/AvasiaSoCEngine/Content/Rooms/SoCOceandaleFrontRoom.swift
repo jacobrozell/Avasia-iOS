@@ -139,8 +139,8 @@ struct SoCOceandaleFrontRoom: SoCRoomScript {
 
     private func beginWave2(state: inout SoCGameState) -> [StyledLine] {
         SoCCombat.begin(
-            enemy: SoCCombatant(name: "Agromanian Battle Mage", atk: 9, speed: 5, hp: 22, luck: 0),
-            deathText: "Mage-fire consumes your shield line.",
+            enemy: SoCCombatant(name: "Agromanian Paladin", atk: 9, speed: 5, hp: 22, luck: 0),
+            deathText: "Paladin-fire consumes your shield line.",
             state: &state,
             allowsFlee: false
         )
@@ -179,8 +179,8 @@ struct SoCOceandaleFrontRoom: SoCRoomScript {
         [
             .blank,
             .body("The first wave breaks. For a breath, the slope is yours."),
-            .body("Then blue-white fire erupts from the ridgeline — a battle mage channeling Vashirr's craft."),
-            .speech("Coalition Sergeant: Mage on the crest! Push through!")
+            .body("Then blue-white fire erupts from the ridgeline — a Paladin channeling Vashirr's craft."),
+            .speech("Coalition Sergeant: Paladin on the crest! Push through!")
         ]
     }
 
@@ -189,7 +189,7 @@ struct SoCOceandaleFrontRoom: SoCRoomScript {
     private func waveTwoVictoryLines() -> [StyledLine] {
         [
             .blank,
-            .body("The battle mage crumples. Mage-fire gutters out along the ridge."),
+            .body("The Paladin crumples. Mage-fire gutters out along the ridge."),
             .body("Agromanian survivors flee downhill toward the treeline.")
         ]
     }

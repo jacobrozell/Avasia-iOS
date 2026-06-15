@@ -1,4 +1,4 @@
-# Avasia: Sword of Courage — World Map
+# Avasia: Blade of Courage — World Map
 
 > Room graph from the **original Python prototype** (`Avasia-SoC/`). No rooms
 > beyond what existed in source. **Bold** = logic room (`on_enter`).
@@ -20,6 +20,18 @@
                                MARCH (audience done)
                                     ▼
                             aylova_war_camp ★
+                                    │
+                                  MARCH
+                                    ▼
+                            silvarium_elders ★
+                                    │
+                                  MARCH
+                                    ▼
+                            varatro_falls ★
+                                    │
+                                  MARCH
+                                    ▼
+                                 ofelos ★
                                     │
                                   MARCH
                                     ▼
@@ -90,7 +102,7 @@ N → Garden (iOS) · E → Courtyard · S → Housing · W → Barracks
 
 ## iOS-authored Act IV (complete)
 
-`aylova_war_camp` → `northern_march` → `oceandale_front` → `mage_outpost` → `vashirr_stand` → `soc_epilogue`
+`aylova_war_camp` → `silvarium_elders` → `varatro_falls` → `ofelos` → `northern_march` → `oceandale_front` → `mage_outpost` → `vashirr_stand` → `soc_epilogue`
 
 Optional future: `cataracta_ruins` revisit.
 

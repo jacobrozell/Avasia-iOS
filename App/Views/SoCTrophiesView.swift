@@ -1,7 +1,7 @@
 import SwiftUI
 import AvasiaSoCEngine
 
-/// Trophy catalog for *Sword of Courage* — mirrors KoN `AchievementsView`.
+/// Trophy catalog for *Blade of Courage* — mirrors KoN `AchievementsView`.
 struct SoCTrophiesView: View {
     @EnvironmentObject var vm: GameViewModel
     @Environment(\.layoutMetrics) private var metrics
@@ -32,7 +32,8 @@ struct SoCTrophiesView: View {
     private var header: some View {
         let unlocked = vm.socState.trophies.count
         let total = SoCTrophy.allCases.count
-        return VStack(spacing: 4) {
+        let progress = total > 0 ? Double(unlocked) / Double(total) : 0
+        return VStack(spacing: 8) {
             Text("Trophies")
                 .font(.system(.largeTitle, design: .serif).bold())
                 .foregroundColor(Theme.accent)
@@ -40,6 +41,8 @@ struct SoCTrophiesView: View {
             Text("\(unlocked) / \(total) unlocked")
                 .font(.callout)
                 .foregroundColor(Theme.parchment.opacity(0.6))
+            ProgressBar(value: progress)
+                .padding(.horizontal, 8)
             if vm.socState.questExp > 0 {
                 Text(SoCQuestProgress.levelSummary(vm.socState))
                     .font(.caption2)
@@ -48,6 +51,7 @@ struct SoCTrophiesView: View {
         }
         .padding(.top, 24)
         .padding(.horizontal, metrics.horizontalPadding)
+        .padding(.bottom, 8)
     }
 
     private func row(_ trophy: SoCTrophy, unlocked: Bool) -> some View {
@@ -71,9 +75,9 @@ struct SoCTrophiesView: View {
         }
         .padding(14)
         .background(RoundedRectangle(cornerRadius: 12)
-            .fill(unlocked ? Theme.accent.opacity(0.12) : Color.white.opacity(0.03)))
+            .fill(unlocked ? Theme.accent.opacity(0.12) : Theme.palette.cardFill))
         .overlay(RoundedRectangle(cornerRadius: 12)
-            .stroke(unlocked ? Theme.accent.opacity(0.5) : Color.white.opacity(0.06)))
+            .stroke(unlocked ? Theme.accent.opacity(0.5) : Theme.palette.cardStroke.opacity(0.5)))
         .accessibilityElement(children: .combine)
         .accessibilityLabel(trophy.title)
         .accessibilityValue(unlocked ? "Unlocked" : "Locked")

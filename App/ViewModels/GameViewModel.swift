@@ -6,7 +6,7 @@ import AvasiaSoCEngine
 import UIKit
 #endif
 
-/// Bridges engine(s) to SwiftUI. KoN and Sword of Courage are separate products
+/// Bridges engine(s) to SwiftUI. KoN and Blade of Courage are separate products
 /// with separate saves, selected from `SagaTitleView`.
 @MainActor
 final class GameViewModel: ObservableObject {
@@ -279,6 +279,27 @@ final class GameViewModel: ObservableObject {
         switch product {
         case .kon: return konStore.load() != nil
         case .soc: return socStore.load() != nil
+        }
+    }
+
+    func hasSave(for product: AvasiaProduct) -> Bool {
+        switch product {
+        case .kon: return konStore.load() != nil
+        case .soc: return socStore.load() != nil
+        }
+    }
+
+    func sagaSaveHint(for product: AvasiaProduct) -> String? {
+        switch product {
+        case .kon:
+            guard let saved = konStore.load() else { return nil }
+            let place = saved.currentRoom.region.title
+            return saved.gameComplete ? "Complete · \(place)" : "Continue · \(place)"
+        case .soc:
+            guard let saved = socStore.load() else { return nil }
+            let name = saved.playerName.isEmpty ? "Druid" : saved.playerName
+            let progress = saved.gameComplete ? "Complete" : SoCChapter.title(for: saved.currentRoom)
+            return "\(name) · Lv \(saved.playerLevel) · \(progress)"
         }
     }
 
@@ -645,13 +666,16 @@ final class GameViewModel: ObservableObject {
     }
 
     /// Opening narration from `Avasia-SoC/Logic/util.py` (verbatim where noted).
+    /// Opening narration — canonical 7-year timeline (`docs/sequel/STORY.md` §2).
     private func appendSocIntroPrologue() {
         append([
-            .title("Avasia: Sword of Courage"),
-            .body("It has been six months since the Agromanian's, a viscious people of the northwest, attack on Oceandale."),
-            .body("Nacastrum, the city of the Mage, is still being rebuilt under the diligent leadership of its new king."),
-            .body("Recently, news was brought to King Kaefden IV that Vashirr, the traitor ex-king of Nacastrum, is teaching the Agromanians magic."),
-            .body("With this knowledge, King Kaefden IV has begun to recruit an army to march on the Agromanians before they have a chance to muster."),
+            .title("Avasia: Blade of Courage"),
+            .body("It has been seven years since the fall of Oceandale and the crowning of King Kaefden IV."),
+            .body("In all that time, no Agromanian army has crossed the border — yet the Kaefdens have not rested."),
+            .body("Nacastrum rises again while legions train for the war everyone knows is coming."),
+            .body("Recently, word reached Aylova from Silvarium: Vashirr, the traitor ex-king of Nacastrum, stands at the Agromanian king's right hand — and teaches their warriors magic."),
+            .body("They call these new soldiers Paladins."),
+            .body("King Kaefden IV has begun recruiting in earnest before the northwest can muster."),
             .blank,
             .body("You are a druid living in the peaceful city of Cataracta."),
             .body("Cataracta has formed a pact with the people of Aylova to join the fight when the time comes."),

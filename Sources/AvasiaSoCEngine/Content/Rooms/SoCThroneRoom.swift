@@ -106,7 +106,7 @@ struct SoCThroneRoom: SoCRoomScript {
             .title("Nascastrum Throne Room"),
             .body("Blue crystal light washes the hall — the same hue as Anula's fountain, far away in Cataracta."),
             .body("Upon the dais sits King Kaefden IV."),
-            .body("His pointed ears mark him as mage-blood; the crown he wears is still new, but the grief in his eyes is not."),
+            .body("His pointed ears mark him as mage-blood; seven years of wearing the crown have not dulled the grief in his eyes."),
             .body("He studies you in silence. Thekia bows and withdraws to the council benches.")
         ]
     }
@@ -173,9 +173,14 @@ struct SoCThroneRoom: SoCRoomScript {
             .blank,
             .body("The throne room is utterly still."),
             .speech("Kaefden IV: ...Vashirr always did love his speeches."),
-            .speech("I wore this crown at Oceandale's ashes once. I will not let him salt another kingdom."),
+            .speech("I wore this crown at Oceandale's ashes seven years ago. I will not let him salt another kingdom."),
             .speech("He mistakes rebuilding for weakness. He mistakes mercy for ignorance."),
             .speech("Kimious is dead. Cataracta is ash. And still the traitor thinks he can frighten a crown I bled to earn."),
+            .blank,
+            .speech("The legions we raised in peace are not enough against Paladins alone."),
+            .speech("We must win Ofelos — the neutral city — and the Sylvian elders will not bend without a symbol."),
+            .speech("Kaefden's Blade of Courage, buried at Varatro Falls with the first king of our bloodline."),
+            .speech("Envoys ride for Silvarium even as we speak. You will march north with the army — this war has two fronts."),
             .blank,
             .speech("The coalition marches. Aylova will not wait for another city to burn."),
             .speech("I will not let Nacastrum fall twice.")

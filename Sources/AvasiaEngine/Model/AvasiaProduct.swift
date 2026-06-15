@@ -8,14 +8,14 @@ public enum AvasiaProduct: String, Codable, Sendable, CaseIterable {
     public var menuTitle: String {
         switch self {
         case .kon: return "King of Nacastrum"
-        case .soc: return "Sword of Courage"
+        case .soc: return "Blade of Courage"
         }
     }
 
     public var subtitle: String {
         switch self {
         case .kon: return "The amnesiac mage. Restore Nacastrum."
-        case .soc: return "A druid's war. You crowned Kaefden in game one."
+        case .soc: return "A druid's war. Win the Blade, win the coalition."
         }
     }
 

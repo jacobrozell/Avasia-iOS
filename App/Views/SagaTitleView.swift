@@ -1,7 +1,7 @@
 import SwiftUI
 import AvasiaEngine
 
-/// Saga hub — pick King of Nacastrum or Sword of Courage. Each game has its own
+/// Saga hub — pick King of Nacastrum or Blade of Courage. Each game has its own
 /// title screen, save slot, and engine.
 struct SagaTitleView: View {
     @EnvironmentObject var vm: GameViewModel
@@ -54,14 +54,14 @@ struct SagaTitleView: View {
     private var gamePicker: some View {
         VStack(spacing: 14) {
             ForEach(AvasiaProduct.allCases, id: \.self) { game in
-                MenuButton(title: game.menuTitle, systemImage: icon(for: game), style: .primary, accessibilityIdentifier: game == .kon ? "saga-kon" : "saga-soc") {
+                ChapterCard(
+                    product: game,
+                    systemImage: icon(for: game),
+                    hasSave: vm.hasSave(for: game),
+                    saveHint: vm.sagaSaveHint(for: game)
+                ) {
                     vm.openProduct(game)
                 }
-                Text(game.subtitle)
-                    .font(.footnote)
-                    .foregroundColor(Theme.parchment.opacity(0.62))
-                    .multilineTextAlignment(.center)
-                    .padding(.bottom, 4)
             }
             MenuButton(title: "Settings", systemImage: "gearshape", accessibilityIdentifier: "saga-settings") {
                 vm.openSettings(from: .saga)

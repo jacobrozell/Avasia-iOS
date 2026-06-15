@@ -1,4 +1,4 @@
-# Future Room Specs — Sword of Courage
+# Future Room Specs — Blade of Courage
 
 > **Design intent only** — not in `Avasia-SoC/` Python source. Use the same schema
 > as [`../ROOM_SPEC_STANDARD.md`](../ROOM_SPEC_STANDARD.md) when authoring.

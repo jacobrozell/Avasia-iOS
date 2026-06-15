@@ -48,7 +48,19 @@ public enum SoCJournal {
         case .throneRoom:
             goals.append("MARCH to Aylova war camp.")
         case .aylovaWarCamp where !state.aylovaMusterComplete:
-            goals.append("Briefing → quartermaster (BUY supplies) → march north.")
+            goals.append("Briefing → quartermaster (BUY supplies) → march east to Silvarium.")
+        case .silvariumElders where !state.silvariumEldersComplete:
+            goals.append("Audience with Sylvian elders — earn the Varatro quest.")
+        case .silvariumElders:
+            goals.append("MARCH to Varatro Falls for Kaefden's Blade.")
+        case .varatroFalls where !state.varatroFallsCleared:
+            goals.append("Reach the tomb and recover the Blade of Courage.")
+        case .varatroFalls:
+            goals.append("MARCH to Ofelos with the Blade.")
+        case .ofelos where !state.ofelosAllianceComplete:
+            goals.append("PRESENT the Blade before Ofelos council.")
+        case .ofelos:
+            goals.append("MARCH north to join the war front.")
         case .northernMarch where !state.northernMarchCleared:
             goals.append("Reach Oceandale ridge (fight or SCOUT past the patrol).")
         case .oceandaleFront where !state.oceandaleFrontCleared:

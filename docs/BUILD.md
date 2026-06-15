@@ -5,9 +5,9 @@ This repo is split into two pieces:
 - **`AvasiaEngine`** — a pure-Swift, UI-free Swift Package (`Package.swift`) with
   the game logic, content, and unit tests. Builds and tests on any platform with
   a Swift toolchain.
-- **`AvasiaKoN`** — the SwiftUI iOS app (`App/`), generated into an Xcode project
+- **`Avasia-iOS`** — the SwiftUI iOS app (`App/`), generated into an Xcode project
   from `project.yml` via [XcodeGen](https://github.com/yonaskolb/XcodeGen). The
-  app depends on `AvasiaEngine`.
+  app depends on `AvasiaEngine`. Bundle ID: `com.jacobrozell.avasia-ios`.
 
 ## Prerequisites
 
@@ -28,19 +28,45 @@ these tests before wiring UI.
 ## Generate and run the iOS app
 
 ```bash
-xcodegen generate     # creates AvasiaKoN.xcodeproj from project.yml
-open AvasiaKoN.xcodeproj
-# select the AvasiaKoN scheme + an iOS Simulator, then Run (Cmd-R)
+xcodegen generate     # creates Avasia-iOS.xcodeproj from project.yml
+open Avasia-iOS.xcodeproj
+# select the Avasia-iOS scheme + an iOS Simulator or device, then Run (Cmd-R)
 ```
 
-`AvasiaKoN.xcodeproj` is git-ignored — it is always regenerated from
+`Avasia-iOS.xcodeproj` is git-ignored — it is always regenerated from
 `project.yml`, so edit the spec, not the project.
+
+### Code signing (real device)
+
+1. Open **Xcode → Settings → Accounts** and sign in with the Apple ID that owns
+   team `QMQUNRJSLH` (or your own team).
+2. Copy `Config/Signing.xcconfig.example` → `Config/Signing.xcconfig` if needed
+   and set `DEVELOPMENT_TEAM` to your team ID.
+3. Regenerate: `xcodegen generate`, then build from Xcode or CLI.
+
+CLI device builds need `-allowProvisioningUpdates` so Xcode can create the
+development provisioning profile for `com.jacobrozell.avasia-ios`:
+
+```bash
+xcodebuild -project Avasia-iOS.xcodeproj -scheme Avasia-iOS \
+  -destination 'id=YOUR_DEVICE_ID' -configuration Debug \
+  -allowProvisioningUpdates build
+```
+
+Simulator (no signing):
+
+```bash
+xcodegen generate
+xcodebuild -project Avasia-iOS.xcodeproj -scheme Avasia-iOS \
+  -destination 'platform=iOS Simulator,name=iPhone 17' build
+```
 
 ## Project layout
 
 ```
 Package.swift              # AvasiaEngine package manifest
 project.yml                # XcodeGen spec for the iOS app
+Config/Signing.xcconfig    # DEVELOPMENT_TEAM for device signing
 Sources/AvasiaEngine/      # engine + content (pure Swift)
   Model/                   # GameState, Flag, RoomID, RuneSymbol, StyledText, Room
   Engine/                  # GameEngine, Parser
