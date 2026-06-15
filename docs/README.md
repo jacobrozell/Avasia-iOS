@@ -1,8 +1,12 @@
 # Avasia — Design Docs
 
 This folder documents **Avasia: King of Nacastrum** (Game 1, iOS remake). The
-unfinished sequel **Avasia: Blade of Courage** has its own doc set in
+sequel **Avasia: Blade of Courage** has its own doc set in
 [`sequel/`](sequel/README.md).
+
+**New to the codebase?** Start with the **[Developer Guide](DEVELOPERS.md)** —
+setup, architecture, and common workflows. Build instructions are in
+[`BUILD.md`](BUILD.md).
 
 ---
 
@@ -21,6 +25,7 @@ data-driven, testable engine suitable for iOS.
 
 | Doc | Purpose |
 |---|---|
+| [`DEVELOPERS.md`](DEVELOPERS.md) | **Onboarding** — setup, repo layout, workflows, doc map. |
 | [`SAGA.md`](SAGA.md) | Series bible — Age-era duology (text), game 3 (2D), engine evolution. |
 | [`STORY.md`](STORY.md) | Story bible — lore, factions, plot arc, locations, NPCs, key scenes, tone, and motifs. The narrative source of truth. |
 | [`ENGINE_SPEC.md`](ENGINE_SPEC.md) | Engine spec — Part A documents how the original works (state flags, parser, combat, puzzles, death); Part B defines the target Swift/SwiftUI architecture and a fidelity checklist. |
