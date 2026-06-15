@@ -32,7 +32,7 @@ public enum AchievementTracker {
             case .enteredRegion(let region):
                 progress.regionsVisited.insert(region)
                 if progress.regionsVisited.count >= 8 { unlock(.wanderer) }
-                if progress.regionsVisited.count >= Region.allCases.count { unlock(.worldsEnd) }
+                if progress.regionsVisited.isSuperset(of: Region.konPlayable) { unlock(.worldsEnd) }
 
             case .died(let cause):
                 progress.totalDeaths += 1

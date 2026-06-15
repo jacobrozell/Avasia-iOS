@@ -2,6 +2,7 @@ import SwiftUI
 
 struct CreditsView: View {
     @EnvironmentObject var vm: GameViewModel
+    @Environment(\.layoutMetrics) private var metrics
 
     private let developers = [
         "CO-LEAD DEV: Jacob Rozell",
@@ -22,7 +23,10 @@ struct CreditsView: View {
                     Text("Avasia: King of Nacastrum")
                         .font(.system(.title2, design: .serif).bold())
                         .foregroundColor(Theme.accent)
+                        .multilineTextAlignment(.center)
                         .padding(.top, 24)
+                        .accessibilityAddTraits(.isHeader)
+
                     Text("~-CREDITS-~")
                         .font(.system(.headline, design: .serif))
                         .foregroundColor(Theme.parchment)
@@ -34,16 +38,18 @@ struct CreditsView: View {
                         .font(.callout)
                         .foregroundColor(Theme.parchment.opacity(0.7))
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal)
 
                     Text("iOS remake")
                         .font(.caption)
                         .foregroundColor(Theme.parchment.opacity(0.5))
 
-                    MenuButton(title: "Back") { vm.screen = .title }
+                    MenuButton(title: "Back") { vm.screen = vm.menuReturn }
                         .padding(.top, 12)
                 }
-                .padding()
+                .frame(maxWidth: metrics.contentMaxWidth)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, metrics.horizontalPadding)
+                .padding(.bottom, 16)
             }
         }
     }
@@ -57,6 +63,7 @@ struct CreditsView: View {
                 Text(line)
                     .font(.callout)
                     .foregroundColor(Theme.parchment)
+                    .multilineTextAlignment(.center)
             }
         }
         .padding(.top, 8)

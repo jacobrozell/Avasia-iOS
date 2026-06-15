@@ -10,13 +10,13 @@ public final class SaveStore {
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
 
-    public init(directory: URL? = nil) {
+    public init(product: AvasiaProduct = .kon, directory: URL? = nil) {
         if let directory {
             self.directory = directory
         } else {
             let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
                 ?? FileManager.default.temporaryDirectory
-            self.directory = base.appendingPathComponent("AvasiaKoN", isDirectory: true)
+            self.directory = base.appendingPathComponent(product.saveDirectoryName, isDirectory: true)
         }
         try? FileManager.default.createDirectory(at: self.directory, withIntermediateDirectories: true)
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]

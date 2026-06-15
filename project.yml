@@ -21,6 +21,8 @@ targets:
     dependencies:
       - package: AvasiaEngine
         product: AvasiaEngine
+      - package: AvasiaEngine
+        product: AvasiaSoCEngine
     settings:
       base:
         GENERATE_INFOPLIST_FILE: YES
@@ -40,5 +42,4 @@ schemes:
     run:
       config: Debug
     test:
-      targets:
-        - AvasiaEngineTests   # engine unit tests run from the package
+      config: Debug

@@ -38,5 +38,57 @@ struct LineView: View {
             .font(Theme.font(for: line.style))
             .foregroundColor(Theme.color(for: line.style))
             .frame(maxWidth: .infinity, alignment: .leading)
+            .fixedSize(horizontal: false, vertical: true)
+            .accessibilityLabel(line.text)
+    }
+}
+
+struct MenuButton: View {
+    enum Style { case standard, primary }
+
+    let title: String
+    var systemImage: String?
+    var style: Style
+    let action: () -> Void
+
+    init(
+        title: String,
+        systemImage: String? = nil,
+        style: Style = .standard,
+        action: @escaping () -> Void
+    ) {
+        self.title = title
+        self.systemImage = systemImage
+        self.style = style
+        self.action = action
+    }
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                if let systemImage {
+                    Image(systemName: systemImage)
+                        .font(.body.weight(.semibold))
+                }
+                Text(title)
+                    .font(.system(.body, design: .serif).weight(style == .primary ? .semibold : .regular))
+                Spacer(minLength: 0)
+            }
+            .foregroundColor(style == .primary ? Theme.night : Theme.parchment)
+            .padding(.horizontal, 18)
+            .padding(.vertical, 14)
+            .frame(maxWidth: .infinity)
+            .background(buttonBackground, in: RoundedRectangle(cornerRadius: 12))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Theme.accent.opacity(style == .primary ? 0 : 0.35), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(title)
+    }
+
+    private var buttonBackground: Color {
+        style == .primary ? Theme.accent : Theme.accent.opacity(0.12)
     }
 }

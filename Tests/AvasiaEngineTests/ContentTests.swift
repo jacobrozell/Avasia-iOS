@@ -8,8 +8,7 @@ final class ContentTests: XCTestCase {
 
     func testFireballPuzzleSolveAndFail() {
         let engine = GameEngine()
-        engine.state.currentRoom = .fireballRoom
-        engine.state.gain(.northCaveGateOpen)
+        engine.load(room: .fireballRoom) { $0.gain(.northCaveGateOpen) }
 
         // Wrong answer burns a guess but does not grant the spell.
         let wrong = engine.state.symbolAnswer == "0000" ? "1111" : "0000"
@@ -25,7 +24,7 @@ final class ContentTests: XCTestCase {
 
     func testFireballOutOfGuessesIsLethal() {
         let engine = GameEngine()
-        engine.state.currentRoom = .fireballRoom
+        engine.load(room: .fireballRoom)
         let wrong = "9999"
         _ = engine.submit(wrong)  // 2
         _ = engine.submit(wrong)  // 1
@@ -35,8 +34,7 @@ final class ContentTests: XCTestCase {
 
     func testAmbushUnwinnableWithoutInflame() {
         let engine = GameEngine()
-        engine.state.currentRoom = .roadToNacastrum
-        engine.state.gain(.sword)
+        engine.load(room: .roadToNacastrum) { $0.gain(.sword) }
         _ = engine.submit("sword")   // roadProgress 0 -> 1 (cornered)
         XCTAssertEqual(engine.state.roadProgress, 1)
         _ = engine.submit("sword")   // cornered -> death

@@ -1,51 +1,196 @@
 import SwiftUI
 import AvasiaEngine
+import AvasiaSoCEngine
 
 /// The main play screen: scrolling transcript, an input bar, quick-action chips,
 /// and a status strip showing spells/items and the death counter. Mirrors the
 /// wireframe in docs/WIREFRAMES.md.
 struct GameView: View {
     @EnvironmentObject var vm: GameViewModel
+    @Environment(\.layoutMetrics) private var metrics
     @FocusState private var inputFocused: Bool
+
+    private let defaultQuickVerbs = [
+        "North", "East", "South", "West", "Up", "Down",
+        "Left", "Right", "Look", "Talk", "Take", "Continue"
+    ]
+
+    private var quickVerbs: [String] {
+        guard vm.product == .soc else { return defaultQuickVerbs }
+        if vm.socState.inCombat {
+            return ["Attack", "Eat Potion", "Inventory"]
+        }
+        switch vm.socState.currentRoom {
+        case .oceandaleFront where vm.socState.oceandaleFrontCleared:
+            return ["Advance", "Continue", "Inventory"]
+        case .mageOutpost where vm.socState.mageOutpostCleared,
+             .vashirrStand where vm.socState.vashirrDefeated:
+            return ["March", "Continue", "Inventory"]
+        case .throneRoom where vm.socState.throneAudience:
+            return ["March", "Continue", "Inventory"]
+        case .aylovaWarCamp, .northernMarch, .mageOutpost, .vashirrStand, .ageEpilogue:
+            return ["March", "Continue", "Inventory", "Look"]
+        default:
+            return ["North", "East", "South", "West", "Look", "Continue", "Inventory"]
+        }
+    }
 
     var body: some View {
         ZStack {
             RegionBackground(media: vm.media)
-            VStack(spacing: 0) {
-                RegionIllustration(media: vm.media)
-                statusStrip
-                Divider().background(Theme.accent.opacity(0.4))
-                transcript
-                quickActions
-                inputBar
+            if metrics.usesSplitGameLayout {
+                splitLayout(metrics)
+            } else {
+                stackedLayout(metrics)
             }
         }
-        .overlay(alignment: .top) { achievementToasts }
-        .overlay { if vm.pendingDeath { deathOverlay } }
+        .overlay(alignment: .top) { toastOverlay(metrics) }
+        .overlay { if vm.pendingDeath { deathOverlay(metrics) } }
     }
 
-    private var statusStrip: some View {
+    // MARK: - Layouts
+
+    private func stackedLayout(_ metrics: LayoutMetrics) -> some View {
+        VStack(spacing: 0) {
+            RegionIllustration(media: vm.media, height: metrics.illustrationHeight)
+            statusStrip(metrics)
+            Divider().background(Theme.accent.opacity(0.4))
+            transcript
+                .layoutPriority(1)
+            quickActions(metrics)
+            inputBar(metrics)
+        }
+    }
+
+    private func splitLayout(_ metrics: LayoutMetrics) -> some View {
+        HStack(spacing: 0) {
+            VStack(spacing: 0) {
+                RegionIllustration(media: vm.media, height: metrics.illustrationHeight)
+                statusStrip(metrics, vertical: true)
+                Spacer(minLength: 0)
+            }
+            .frame(width: metrics.gameSidebarWidth)
+
+            Divider().background(Theme.accent.opacity(0.4))
+
+            VStack(spacing: 0) {
+                transcript
+                    .layoutPriority(1)
+                quickActions(metrics)
+                inputBar(metrics)
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .frame(maxWidth: metrics.gameContentMaxWidth)
+        .frame(maxWidth: .infinity)
+    }
+
+    // MARK: - Status strip
+
+    private func statusStrip(_ metrics: LayoutMetrics, vertical: Bool = false) -> some View {
+        Group {
+            if vertical {
+                VStack(alignment: .leading, spacing: 10) {
+                    statusControls
+                    statusInventory
+                    Text("☠ \(vm.displayDeathCount)")
+                        .font(.caption2)
+                        .foregroundColor(Theme.parchment.opacity(0.6))
+                        .accessibilityLabel("Death count \(vm.displayDeathCount)")
+                }
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 14) {
+                        statusControls
+                        statusInventory
+                        Text("☠ \(vm.displayDeathCount)")
+                            .font(.caption2)
+                            .foregroundColor(Theme.parchment.opacity(0.6))
+                            .accessibilityLabel("Death count \(vm.displayDeathCount)")
+                    }
+                    .padding(.horizontal, metrics.horizontalPadding)
+                }
+            }
+        }
+        .padding(.vertical, 8)
+        .padding(.horizontal, vertical ? metrics.horizontalPadding : 0)
+    }
+
+    private var statusControls: some View {
         HStack(spacing: 14) {
             Button { vm.screen = .title } label: {
                 Image(systemName: "list.bullet").foregroundColor(Theme.accent)
             }
-            Button { vm.openAchievements(from: .game) } label: {
+            .accessibilityLabel("Main menu")
+
+            Button {
+                if vm.product == .kon {
+                    vm.openAchievements(from: .game)
+                } else {
+                    vm.openTrophies(from: .game)
+                }
+            } label: {
                 Image(systemName: "trophy").foregroundColor(Theme.accent)
             }
-            Spacer()
-            ForEach(vm.state.spells, id: \.self) { spell in
-                Label(spell.displayName, systemImage: "sparkles")
-                    .font(.caption2).foregroundColor(Theme.accent)
-            }
-            ForEach(vm.state.items, id: \.self) { item in
-                Image(systemName: icon(for: item)).foregroundColor(Theme.parchment)
-            }
-            Spacer()
-            Text("☠ \(vm.state.deathCount)")
-                .font(.caption2).foregroundColor(Theme.parchment.opacity(0.6))
+            .accessibilityLabel(vm.product == .kon ? "Achievements" : "Trophies")
         }
-        .padding(.horizontal).padding(.vertical, 8)
     }
+
+    private var statusInventory: some View {
+        Group {
+            if vm.product == .kon {
+                HStack(spacing: 14) {
+                    ForEach(vm.konState.spells, id: \.self) { spell in
+                        Label(spell.displayName, systemImage: "sparkles")
+                            .font(.caption2)
+                            .foregroundColor(Theme.accent)
+                            .accessibilityLabel("Spell \(spell.displayName)")
+                    }
+                    ForEach(vm.konState.items, id: \.self) { item in
+                        Image(systemName: icon(for: item))
+                            .foregroundColor(Theme.parchment)
+                            .accessibilityLabel(itemAccessibilityLabel(item))
+                    }
+                }
+            } else {
+                HStack(spacing: 14) {
+                    if vm.socState.playerClass != .none {
+                        Label("Lv \(vm.socState.playerLevel)", systemImage: "star.fill")
+                            .font(.caption2)
+                            .foregroundColor(Theme.accent)
+                            .accessibilityLabel("Level \(vm.socState.playerLevel)")
+                        Label("\(vm.socState.playerHp)/\(vm.socState.playerMaxHp)", systemImage: "heart.fill")
+                            .font(.caption2)
+                            .foregroundColor(Theme.parchment)
+                    }
+                    Label("\(vm.socState.gold)", systemImage: "circle.fill")
+                        .font(.caption2)
+                        .foregroundColor(Theme.accent)
+                        .accessibilityLabel("Gold \(vm.socState.gold)")
+                    ForEach(socItems, id: \.self) { item in
+                        Image(systemName: socIcon(for: item))
+                            .foregroundColor(Theme.parchment)
+                            .accessibilityLabel(item.displayName)
+                    }
+                }
+            }
+        }
+    }
+
+    private var socItems: [SoCItem] {
+        SoCItem.allCases.filter { vm.socState.inventory[$0, default: 0] > 0 }
+    }
+
+    private func socIcon(for item: SoCItem) -> String {
+        switch item {
+        case .potion: return "cross.vial.fill"
+        case .smallFish, .bigFish: return "fish.fill"
+        case .crab: return "leaf.fill"
+        case .oldShoe: return "shoe.fill"
+        }
+    }
+
+    // MARK: - Transcript & actions
 
     private var transcript: some View {
         ScrollViewReader { proxy in
@@ -57,6 +202,8 @@ struct GameView: View {
                 }
                 .padding()
             }
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel("Game transcript")
             .onChange(of: vm.transcript.count) { _ in
                 if let last = vm.transcript.indices.last {
                     withAnimation { proxy.scrollTo(last, anchor: .bottom) }
@@ -65,25 +212,63 @@ struct GameView: View {
         }
     }
 
-    private var quickActions: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                ForEach(["North", "East", "South", "West", "Up", "Down", "Left", "Right", "Look", "Talk", "Take", "Continue"], id: \.self) { verb in
-                    Button(verb) { vm.quickAction(verb) }
-                        .font(.caption)
-                        .padding(.horizontal, 12).padding(.vertical, 6)
-                        .background(Theme.accent.opacity(0.12))
-                        .clipShape(Capsule())
-                        .foregroundColor(Theme.parchment)
+    private func quickActions(_ metrics: LayoutMetrics) -> some View {
+        Group {
+            if metrics.usesWrappedQuickActions {
+                if metrics.isAccessibilityText {
+                    ScrollView {
+                        quickActionsGrid(metrics)
+                    }
+                    .frame(maxHeight: 180)
+                } else {
+                    quickActionsGrid(metrics)
+                }
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(quickVerbs, id: \.self) { verb in
+                            quickActionButton(verb, metrics: metrics)
+                        }
+                    }
+                    .padding(.horizontal, metrics.horizontalPadding)
                 }
             }
-            .padding(.horizontal)
         }
         .padding(.vertical, 6)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Quick actions")
     }
 
-    private var inputBar: some View {
-        HStack {
+    private func quickActionsGrid(_ metrics: LayoutMetrics) -> some View {
+        let columns = metrics.isAccessibilityText
+            ? [GridItem(.flexible()), GridItem(.flexible())]
+            : [GridItem(.adaptive(minimum: 88, maximum: 130), spacing: 8)]
+        return LazyVGrid(columns: columns, spacing: 8) {
+            ForEach(quickVerbs, id: \.self) { verb in
+                quickActionButton(verb, metrics: metrics)
+            }
+        }
+        .padding(.horizontal, metrics.horizontalPadding)
+    }
+
+    private func quickActionButton(_ verb: String, metrics: LayoutMetrics) -> some View {
+        Button(verb) { vm.quickAction(verb) }
+            .font(metrics.isAccessibilityText ? .body : .caption)
+            .lineLimit(2)
+            .minimumScaleFactor(0.85)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .frame(maxWidth: .infinity, minHeight: 44)
+            .background(Theme.accent.opacity(0.12))
+            .clipShape(Capsule())
+            .foregroundColor(Theme.parchment)
+            .accessibilityLabel(verb)
+            .accessibilityHint("Submit \(verb.lowercased()) command")
+    }
+
+    private func inputBar(_ metrics: LayoutMetrics) -> some View {
+        HStack(spacing: 10) {
             TextField("What do you do?", text: $vm.input)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
@@ -91,56 +276,116 @@ struct GameView: View {
                 .submitLabel(.send)
                 .onSubmit { vm.submit() }
                 .padding(10)
+                .frame(minHeight: 44)
                 .background(Theme.parchment.opacity(0.08))
                 .cornerRadius(8)
                 .foregroundColor(Theme.parchment)
+                .accessibilityLabel("Command input")
+
             Button { vm.submit() } label: {
-                Image(systemName: "arrow.up.circle.fill").font(.title2).foregroundColor(Theme.accent)
+                Image(systemName: "arrow.up.circle.fill")
+                    .font(.title2)
+                    .foregroundColor(Theme.accent)
+                    .frame(width: 44, height: 44)
             }
+            .accessibilityLabel("Send command")
         }
-        .padding()
+        .padding(metrics.horizontalPadding)
+        .padding(.bottom, 4)
     }
 
     // MARK: - Death overlay
 
-    private var deathOverlay: some View {
+    private func deathOverlay(_ metrics: LayoutMetrics) -> some View {
         let death = vm.lastDeath
         return ZStack {
-            RadialGradient(colors: [Color(red: 0.2, green: 0, blue: 0).opacity(0.85), .black.opacity(0.95)],
-                           center: .center, startRadius: 40, endRadius: 600)
-                .ignoresSafeArea()
-            VStack(spacing: 16) {
-                Image(systemName: "skull")
-                    .font(.system(size: 44))
-                    .foregroundColor(.red.opacity(0.9))
-                Text(death?.cause.title ?? "You Have Died")
-                    .font(.system(.largeTitle, design: .serif).bold())
-                    .foregroundColor(.red)
-                    .multilineTextAlignment(.center)
-                if let epitaph = death?.cause.epitaph {
-                    Text(epitaph)
-                        .font(.system(.body, design: .serif).italic())
-                        .foregroundColor(Theme.parchment.opacity(0.85))
+            RadialGradient(
+                colors: [
+                    Color(red: 0.2, green: 0, blue: 0).opacity(0.85),
+                    .black.opacity(0.95)
+                ],
+                center: .center,
+                startRadius: 40,
+                endRadius: 600
+            )
+            .ignoresSafeArea()
+
+            ScrollView {
+                VStack(spacing: 16) {
+                    Image(systemName: "skull")
+                        .font(.system(size: 44))
+                        .foregroundColor(.red.opacity(0.9))
+                        .accessibilityHidden(true)
+
+                    Text(death?.cause.title ?? (vm.product == .kon ? "You Have Died" : "Defeated in Battle"))
+                        .font(.system(.largeTitle, design: .serif).bold())
+                        .foregroundColor(.red)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, 32)
+
+                    if let epitaph = death?.cause.epitaph {
+                        Text(epitaph)
+                            .font(.system(.body, design: .serif).italic())
+                            .foregroundColor(Theme.parchment.opacity(0.85))
+                            .multilineTextAlignment(.center)
+                    }
+
+                    Text("You have died.  ·  Death #\(death?.number ?? vm.displayDeathCount)")
+                        .font(.caption)
+                        .foregroundColor(Theme.parchment.opacity(0.5))
+
+                    VStack(spacing: 12) {
+                        MenuButton(title: "Restart from checkpoint") { vm.restartFromCheckpoint() }
+                        MenuButton(title: "New game") { vm.restartFromBeginning() }
+                    }
+                    .padding(.top, 8)
                 }
-                Text("You have died.  ·  Death #\(death?.number ?? vm.state.deathCount)")
-                    .font(.caption)
-                    .foregroundColor(Theme.parchment.opacity(0.5))
-                VStack(spacing: 12) {
-                    MenuButton(title: "Restart from checkpoint") { vm.restartFromCheckpoint() }
-                    MenuButton(title: "New game") { vm.restartFromBeginning() }
-                }
-                .padding(.top, 8)
+                .padding(28)
+                .frame(maxWidth: metrics.contentMaxWidth)
+                .frame(maxWidth: .infinity)
             }
-            .padding(28)
         }
         .transition(.opacity)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Death screen")
+    }
+
+    // MARK: - Toasts
+
+    private func toastOverlay(_ metrics: LayoutMetrics) -> some View {
+        VStack(spacing: 8) {
+            achievementToasts(metrics)
+            trophyToasts(metrics)
+        }
+    }
+
+    private func trophyToasts(_ metrics: LayoutMetrics) -> some View {
+        VStack(spacing: 8) {
+            ForEach(vm.recentlyUnlockedTrophies, id: \.self) { trophy in
+                HStack(spacing: 10) {
+                    Image(systemName: "trophy.fill").foregroundColor(.yellow)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Trophy Unlocked")
+                            .font(.caption2).foregroundColor(Theme.parchment.opacity(0.6))
+                        Text(trophy.title)
+                            .font(.system(.subheadline, design: .serif).bold())
+                            .foregroundColor(Theme.parchment)
+                    }
+                    Spacer(minLength: 0)
+                }
+                .padding(.horizontal, 14).padding(.vertical, 10)
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Theme.accent.opacity(0.4)))
+                .padding(.horizontal, metrics.horizontalPadding)
+                .transition(.move(edge: .top).combined(with: .opacity))
+                .accessibilityLabel("Trophy unlocked: \(trophy.title)")
+            }
+        }
+        .animation(.spring(response: 0.4), value: vm.recentlyUnlockedTrophies)
     }
 
     // MARK: - Achievement toasts
 
-    private var achievementToasts: some View {
+    private func achievementToasts(_ metrics: LayoutMetrics) -> some View {
         VStack(spacing: 8) {
             ForEach(vm.recentlyUnlocked, id: \.self) { ach in
                 HStack(spacing: 10) {
@@ -157,8 +402,9 @@ struct GameView: View {
                 .padding(.horizontal, 14).padding(.vertical, 10)
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
                 .overlay(RoundedRectangle(cornerRadius: 12).stroke(Theme.accent.opacity(0.4)))
-                .padding(.horizontal)
+                .padding(.horizontal, metrics.horizontalPadding)
                 .transition(.move(edge: .top).combined(with: .opacity))
+                .accessibilityLabel("Achievement unlocked: \(ach.title)")
             }
         }
         .padding(.top, 6)
@@ -172,6 +418,16 @@ struct GameView: View {
         case .dagger: return "scissors"
         case .rod: return "figure.fishing"
         default: return "bag"
+        }
+    }
+
+    private func itemAccessibilityLabel(_ item: Flag) -> String {
+        switch item {
+        case .sword: return "Sword"
+        case .lantern: return "Lantern"
+        case .dagger: return "Dagger"
+        case .rod: return "Fishing rod"
+        default: return "Item"
         }
     }
 }

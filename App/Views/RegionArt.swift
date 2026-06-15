@@ -22,6 +22,7 @@ enum RegionPalette {
         case .shore:     return (c(0.10, 0.15, 0.18), c(0.04, 0.07, 0.10), c(0.45, 0.75, 0.95))
         case .nacastrum: return (c(0.12, 0.14, 0.20), c(0.05, 0.06, 0.12), Theme.accent)
         case .aylova:    return (c(0.14, 0.13, 0.20), c(0.06, 0.05, 0.12), c(0.55, 0.6, 0.95))
+        case .cataracta: return (c(0.08, 0.14, 0.11), c(0.03, 0.07, 0.05), c(0.45, 0.85, 0.55))
         }
     }
     private static func c(_ r: Double, _ g: Double, _ b: Double) -> Color { Color(red: r, green: g, blue: b) }
@@ -56,6 +57,8 @@ struct RegionBackground: View {
 /// placeholder so the layout (and the hook) is visible before art exists.
 struct RegionIllustration: View {
     let media: RoomMedia
+    var height: CGFloat = 96
+
     var body: some View {
         let p = RegionPalette.colors(media.region)
         ZStack {
@@ -70,12 +73,16 @@ struct RegionIllustration: View {
                     Image(systemName: "sparkle")
                     Text(media.region.title)
                         .font(.system(.subheadline, design: .serif).smallCaps())
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
                 }
                 .foregroundColor(p.accent)
+                .padding(.horizontal, 8)
             }
         }
-        .frame(height: 96)
+        .frame(height: height)
         .clipped()
         .overlay(Rectangle().frame(height: 1).foregroundColor(p.accent.opacity(0.5)), alignment: .bottom)
+        .accessibilityLabel("Region: \(media.region.title)")
     }
 }

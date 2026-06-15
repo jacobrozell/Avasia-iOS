@@ -47,17 +47,18 @@ final class AchievementsTests: XCTestCase {
     func testRegionExploration() {
         var p = AchievementState()
         let s = GameState()
-        for region in Region.allCases {
+        for region in Region.konPlayable {
             _ = AchievementTracker.apply([.enteredRegion(region)], state: s, into: &p)
         }
         XCTAssertTrue(p.has(.wanderer))
         XCTAssertTrue(p.has(.worldsEnd))
+        XCTAssertFalse(p.regionsVisited.contains(.cataracta))
     }
 
     /// Death rooms emit the right cause through the engine's event stream.
     func testEngineEmitsDeathCause() {
         let engine = GameEngine()
-        engine.state.currentRoom = .bridge
+        engine.load(room: .bridge)
         _ = engine.submit("jump")
         XCTAssertTrue(engine.lastEvents.contains(.died(.chasm)))
     }

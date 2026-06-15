@@ -42,11 +42,11 @@ public final class GameEngine {
     /// (state mutation, room change, death bookkeeping) are applied here.
     @discardableResult
     public func submit(_ raw: String) -> [StyledLine] {
-        let room = currentRoom
+        let script = currentRoom
         let prevRegion = state.currentRoom.region
         let flagsBefore = state.flags
-        let input = Parser.parse(raw, mode: room.parseMode)
-        let result = room.handle(input, &state)
+        let input = Parser.parse(raw, mode: script.parseMode)
+        let result = script.handle(input, &state)
         lastTransition = result.transition
         var output = result.lines
         var events = result.events
@@ -71,9 +71,12 @@ public final class GameEngine {
             // so a checkpoint can be restored. `restart()` begins a fresh game.
 
         case .win:
-            events.append(.won)
-            output.append(.blank)
-            output.append(.title("Congratulations on completing the game!"))
+            if !state.gameComplete {
+                state.gameComplete = true
+                events.append(.won)
+                output.append(.blank)
+                output.append(.title("Congratulations on completing the game!"))
+            }
         }
 
         // Derive item/spell-gain events from the flag diff.
@@ -97,8 +100,10 @@ public final class GameEngine {
     /// Begin a brand-new game (equivalent to the original `intro()` reset):
     /// wipes state and reshuffles the runes.
     public func restart() {
+        let delay = state.textDelay
         state = GameState()
         state.currentRoom = .oceandale
+        state.textDelay = delay
     }
 
     /// Replace state wholesale (e.g. restoring a save or checkpoint).

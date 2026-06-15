@@ -13,7 +13,10 @@ final class AudioManager {
     static let shared = AudioManager()
 
     var isMuted: Bool = false {
-        didSet { if isMuted { stopAmbient() } }
+        didSet {
+            AppSettings.soundEnabled = !isMuted
+            if isMuted { stopAmbient() }
+        }
     }
 
     #if canImport(AVFoundation)
@@ -23,6 +26,7 @@ final class AudioManager {
     #endif
 
     private init() {
+        isMuted = !AppSettings.soundEnabled
         #if canImport(AVFoundation) && os(iOS)
         try? AVAudioSession.sharedInstance().setCategory(.ambient, options: [.mixWithOthers])
         try? AVAudioSession.sharedInstance().setActive(true)

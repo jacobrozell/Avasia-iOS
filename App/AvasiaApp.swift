@@ -18,15 +18,19 @@ struct RootView: View {
     @EnvironmentObject var vm: GameViewModel
 
     var body: some View {
-        Group {
-            switch vm.screen {
-            case .title:        TitleView()
-            case .settings:     SettingsView()
-            case .game:         GameView()
-            case .credits:      CreditsView()
-            case .achievements: AchievementsView()
+        LayoutMetricsReader { _ in
+            Group {
+                switch vm.screen {
+                case .saga:         SagaTitleView()
+                case .title:        TitleView()
+                case .settings:     SettingsView()
+                case .game:         GameView()
+                case .credits:      CreditsView()
+                case .achievements: AchievementsView()
+                case .trophies:     SoCTrophiesView()
+                }
             }
+            .onAppear { vm.onLaunch() }
         }
-        .onAppear { vm.onLaunch() }
     }
 }

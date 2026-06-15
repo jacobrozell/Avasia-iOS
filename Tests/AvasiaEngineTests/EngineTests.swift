@@ -50,33 +50,33 @@ final class ProgressionTests: XCTestCase {
         let engine = GameEngine()
 
         // Magehouse: faction question gives Levitate.
-        engine.state.currentRoom = .magehouse
+        engine.load(room: .magehouse)
         _ = engine.submit("KAEFDEN")
         XCTAssertTrue(engine.state.has(.levitate))
         XCTAssertTrue(engine.state.magehouseLocked)
 
         // Graveyard: take the sword.
-        engine.state.currentRoom = .graveyard
+        engine.load(room: .graveyard)
         _ = engine.submit("look")
         _ = engine.submit("take sword")
         XCTAssertTrue(engine.state.has(.sword))
 
         // Bridge: jumping is lethal without crossing first.
-        engine.state.currentRoom = .bridge
+        engine.load(room: .bridge)
         _ = engine.submit("levitate")
         XCTAssertEqual(engine.state.currentRoom, .mountain)
     }
 
     func testBridgeJumpKills() {
         let engine = GameEngine()
-        engine.state.currentRoom = .bridge
+        engine.load(room: .bridge)
         _ = engine.submit("jump")
         XCTAssertEqual(engine.state.deathCount, 1)
     }
 
     func testMagehouseWrongFactionDoesNotProgress() {
         let engine = GameEngine()
-        engine.state.currentRoom = .magehouse
+        engine.load(room: .magehouse)
         _ = engine.submit("agroman")
         XCTAssertFalse(engine.state.has(.levitate))
     }

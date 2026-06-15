@@ -14,11 +14,10 @@ final class MediaTests: XCTestCase {
 
     func testEngineExposesCurrentMediaAndTransition() {
         let engine = GameEngine()
-        engine.state.currentRoom = .mainCave
+        engine.load(room: .mainCave)
         XCTAssertEqual(engine.currentMedia().region, .cave)
 
-        engine.state.currentRoom = .magehouse
-        engine.state.gain(.levitate)        // so "kaefden" isn't needed; just move out
+        engine.load(room: .magehouse) { $0.gain(.levitate) }
         _ = engine.submit("back")
         // After leaving the magehouse the last transition should be a move.
         if case .move = engine.lastTransition {} else {

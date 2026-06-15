@@ -1,42 +1,81 @@
 import Foundation
 import SwiftUI
 import AvasiaEngine
+import AvasiaSoCEngine
 
-/// Bridges the pure `GameEngine` to SwiftUI: owns the transcript, applies text
-/// pacing, autosaves, and exposes quick-action verbs. All game logic stays in
-/// the engine; this layer is presentation + timing only.
+/// Bridges engine(s) to SwiftUI. KoN and Sword of Courage are separate products
+/// with separate saves, selected from `SagaTitleView`.
 @MainActor
 final class GameViewModel: ObservableObject {
-    enum Screen { case title, settings, game, credits, achievements }
+    enum Screen { case saga, title, settings, game, credits, achievements, trophies }
 
-    @Published var screen: Screen = .title {
+    @Published var screen: Screen = .saga {
         didSet { screenDidChange() }
     }
+    @Published var product: AvasiaProduct = .kon
     @Published private(set) var transcript: [StyledLine] = []
     @Published private(set) var pendingDeath = false
     @Published private(set) var achievements: AchievementState
-    /// Achievements unlocked in the last turn, surfaced as toasts.
     @Published private(set) var recentlyUnlocked: [Achievement] = []
+    @Published private(set) var recentlyUnlockedTrophies: [SoCTrophy] = []
     @Published var input: String = ""
-    /// Where the Achievements screen returns to (title vs. in-game).
     var achievementsReturn: Screen = .title
+    var trophiesReturn: Screen = .title
+    var menuReturn: Screen = .saga
 
-    private let engine: GameEngine
-    private let store = SaveStore()
+    private let konEngine: GameEngine
+    private let socEngine: SoCGameEngine
+    private let konStore: SaveStore
+    private let socStore: SoCSaveStore
     private let audio = AudioManager.shared
+    private var pendingSocName = false
+    private var pendingSocNameConfirm: String?
 
-    init(engine: GameEngine = GameEngine()) {
-        self.engine = engine
-        self.achievements = store.loadAchievements()
+    init(
+        konEngine: GameEngine = GameEngine(),
+        socEngine: SoCGameEngine = SoCGameEngine(),
+        konStore: SaveStore = SaveStore(product: .kon),
+        socStore: SoCSaveStore = SoCSaveStore()
+    ) {
+        self.konEngine = konEngine
+        self.socEngine = socEngine
+        self.konStore = konStore
+        self.socStore = socStore
+        self.achievements = konStore.loadAchievements()
     }
 
-    var state: GameState { engine.state }
+    var textDelay: TextDelay {
+        get { activeTextDelay }
+        set { setTextDelay(newValue) }
+    }
 
-    /// Details of the most recent death, for the death overlay.
-    var lastDeath: DeathInfo? { engine.lastDeath }
+    private var activeTextDelay: TextDelay {
+        product == .kon ? konEngine.state.textDelay : socEngine.state.textDelay
+    }
 
-    /// Art/audio binding for the current room (drives backgrounds & illustration).
-    var media: RoomMedia { engine.currentMedia() }
+    private func setTextDelay(_ value: TextDelay) {
+        if product == .kon {
+            konEngine.setTextDelay(value)
+        } else {
+            socEngine.setTextDelay(value)
+        }
+    }
+
+    var lastDeath: DeathInfo? { product == .kon ? konEngine.lastDeath : nil }
+
+    var konState: GameState { konEngine.state }
+    var socState: SoCGameState { socEngine.state }
+    var displayDeathCount: Int {
+        product == .kon ? konEngine.state.deathCount : socEngine.state.deathCount
+    }
+
+    var socCampaignComplete: Bool {
+        socStore.load()?.gameComplete == true
+    }
+
+    var media: RoomMedia {
+        product == .kon ? konEngine.currentMedia() : socEngine.currentMedia()
+    }
 
     var soundEnabled: Bool {
         get { !audio.isMuted }
@@ -46,61 +85,88 @@ final class GameViewModel: ObservableObject {
         }
     }
 
-    /// Called once when the app appears, to start title audio (a default value
-    /// assignment doesn't fire `didSet`).
     func onLaunch() {
-        if screen == .title { audio.playAmbient(SoundCue.titleTheme.rawValue) }
+        if screen == .saga || screen == .title { audio.playAmbient(SoundCue.titleTheme.rawValue) }
     }
 
     private func screenDidChange() {
         switch screen {
-        case .title, .credits:
+        case .saga, .title, .credits:
             audio.playAmbient(SoundCue.titleTheme.rawValue)
         case .game:
             refreshAmbient()
-        case .settings, .achievements:
+        case .settings, .achievements, .trophies:
             break
         }
     }
 
-    /// Switch the ambient loop to match the current region (idempotent).
     private func refreshAmbient() {
-        audio.playAmbient(engine.currentMedia().ambientTrack)
+        audio.playAmbient(media.ambientTrack)
     }
-    var textDelay: TextDelay {
-        get { engine.state.textDelay }
-        set { engine.setTextDelay(newValue) }
+
+    // MARK: - Saga navigation
+
+    func openProduct(_ product: AvasiaProduct) {
+        self.product = product
+        screen = .title
+    }
+
+    func backToSaga() {
+        screen = .saga
     }
 
     // MARK: - Lifecycle
 
     func startNewGame() {
-        engine.restart()
         transcript = []
         pendingDeath = false
-        appendIntro()
-        append(engine.describeCurrent())
-        recordStartingRegion()
+        switch product {
+        case .kon:
+            konEngine.restart()
+            appendIntro()
+            append(konEngine.describeCurrent())
+            recordStartingRegion()
+        case .soc:
+            socEngine.restart()
+            var fresh = socEngine.state
+            fresh.unlockTrophy(.startedAdventure)
+            socEngine.load(fresh)
+            pendingSocName = true
+            pendingSocNameConfirm = nil
+            appendSocIntroPrologue()
+            append([.hint("What is your name?")])
+        }
         screen = .game
     }
 
     func continueGame() {
-        guard let saved = store.load() else { startNewGame(); return }
-        engine.load(saved)
         transcript = []
-        append(engine.describeCurrent())
         pendingDeath = false
-        recordStartingRegion()
+        switch product {
+        case .kon:
+            guard let saved = konStore.load() else { startNewGame(); return }
+            konEngine.load(saved)
+            append(konEngine.describeCurrent())
+            recordStartingRegion()
+        case .soc:
+            guard let saved = socStore.load() else { startNewGame(); return }
+            socEngine.load(saved)
+            append(socEngine.describeCurrent())
+        }
         screen = .game
     }
 
-    /// `enteredRegion` events only fire on movement, so seed the current region.
     private func recordStartingRegion() {
-        let unlocked = AchievementTracker.recordRegion(engine.currentMedia().region, into: &achievements)
+        let unlocked = AchievementTracker.recordRegion(konEngine.currentMedia().region, into: &achievements)
         finishAchievements(unlocked)
     }
 
-    var hasSave: Bool { store.load() != nil }
+    var hasSave: Bool {
+        switch product {
+        case .kon: return konStore.load() != nil
+        case .soc: return socStore.load() != nil
+        }
+    }
 
     // MARK: - Turn loop
 
@@ -109,22 +175,29 @@ final class GameViewModel: ObservableObject {
         input = ""
         guard !raw.isEmpty else { return }
         append([.hint("> \(raw)")])
-        let before = engine.state.deathCount
-        let lines = engine.submit(raw)
+
+        switch product {
+        case .kon:
+            submitKon(raw)
+        case .soc:
+            submitSoc(raw)
+        }
+    }
+
+    private func submitKon(_ raw: String) {
+        let before = konEngine.state.deathCount
+        let lines = konEngine.submit(raw)
         append(lines)
 
-        // Achievements fold over the turn's events (runs for every outcome,
-        // including death and win).
-        let unlocked = AchievementTracker.apply(engine.lastEvents, state: engine.state, into: &achievements)
+        let unlocked = AchievementTracker.apply(konEngine.lastEvents, state: konEngine.state, into: &achievements)
         finishAchievements(unlocked)
 
-        // Audio/art hooks keyed off the turn's result.
-        if engine.state.deathCount > before {
+        if konEngine.state.deathCount > before {
             audio.play(.death)
             pendingDeath = true
             return
         }
-        switch engine.lastTransition {
+        switch konEngine.lastTransition {
         case .win:  audio.play(.win)
         case .move: audio.play(.move); refreshAmbient()
         default:    break
@@ -132,14 +205,41 @@ final class GameViewModel: ObservableObject {
         if lines.contains(where: { $0.style == .item }) {
             audio.play(lines.contains { $0.text.lowercased().contains("spell") } ? .spellLearned : .itemGained)
         }
-        try? store.save(engine.state)                      // autosave
-        try? store.save(engine.state, to: .checkpoint)     // room-entry checkpoint
+        try? konStore.save(konEngine.state)
+        try? konStore.save(konEngine.state, to: .checkpoint)
     }
 
-    /// Persist any newly-unlocked achievements and surface them as toasts.
+    private func submitSoc(_ raw: String) {
+        if handleSocNameEntry(raw) { return }
+
+        let audienceBefore = socEngine.state.throneAudience
+        let completeBefore = socEngine.state.gameComplete
+        let trophiesBefore = socEngine.state.trophies
+        let lines = socEngine.submit(raw)
+        append(lines)
+        finishSocTrophies(before: trophiesBefore, after: socEngine.state.trophies)
+        if socEngine.playerDiedOnLastTurn {
+            audio.play(.death)
+            pendingDeath = true
+            return
+        }
+        if !audienceBefore && socEngine.state.throneAudience {
+            audio.play(.win)
+        }
+        if !completeBefore && socEngine.state.gameComplete {
+            audio.play(.win)
+        }
+        if case .move = socEngine.lastTransition {
+            audio.play(.move)
+            refreshAmbient()
+        }
+        try? socStore.save(socEngine.state)
+        try? socStore.save(socEngine.state, to: .checkpoint)
+    }
+
     private func finishAchievements(_ unlocked: [Achievement]) {
         guard !unlocked.isEmpty else { return }
-        store.saveAchievements(achievements)
+        konStore.saveAchievements(achievements)
         recentlyUnlocked.append(contentsOf: unlocked)
         Task { [weak self] in
             try? await Task.sleep(nanoseconds: 4_000_000_000)
@@ -147,9 +247,40 @@ final class GameViewModel: ObservableObject {
         }
     }
 
+    private func finishSocTrophies(before: Set<SoCTrophy>, after: Set<SoCTrophy>) {
+        let unlocked = after.subtracting(before).sorted { $0.rawValue < $1.rawValue }
+        guard !unlocked.isEmpty else { return }
+        recentlyUnlockedTrophies.append(contentsOf: unlocked)
+        Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 4_000_000_000)
+            self?.recentlyUnlockedTrophies.removeAll { unlocked.contains($0) }
+        }
+    }
+
     func quickAction(_ verb: String) {
-        input = verb
+        if product == .soc {
+            switch verb.lowercased() {
+            case "attack": input = "attack"
+            case "eat potion": input = "eat potion"
+            case "advance": input = "advance"
+            case "march": input = "march"
+            case "inventory": input = "inventory"
+            default: input = verb
+            }
+        } else {
+            input = verb
+        }
         submit()
+    }
+
+    func openSettings(from screen: Screen) {
+        menuReturn = screen
+        self.screen = .settings
+    }
+
+    func openCredits(from screen: Screen) {
+        menuReturn = screen
+        self.screen = .credits
     }
 
     func openAchievements(from screen: Screen) {
@@ -157,18 +288,30 @@ final class GameViewModel: ObservableObject {
         self.screen = .achievements
     }
 
-    // MARK: - Death handling (sanctioned improvement: offer checkpoint)
+    func openTrophies(from screen: Screen) {
+        trophiesReturn = screen
+        if screen == .title, let saved = socStore.load() {
+            socEngine.load(saved)
+        }
+        self.screen = .trophies
+    }
 
     func restartFromCheckpoint() {
-        if let cp = store.load(.checkpoint) { engine.load(cp) }
         transcript = []
-        append(engine.describeCurrent())
         pendingDeath = false
+        switch product {
+        case .kon:
+            if let cp = konStore.load(.checkpoint) { konEngine.load(cp) }
+            append(konEngine.describeCurrent())
+        case .soc:
+            if let cp = socStore.load(.checkpoint) { socEngine.load(cp) }
+            append(socEngine.describeCurrent())
+        }
     }
 
     func restartFromBeginning() { startNewGame() }
 
-    // MARK: - Helpers
+    // MARK: - Intro text
 
     private func append(_ lines: [StyledLine]) {
         transcript.append(contentsOf: lines)
@@ -213,5 +356,82 @@ final class GameViewModel: ObservableObject {
             .body("You venture forth until you begin to see the debris of crumbling and post-burnt houses."),
             .blank
         ])
+    }
+
+    /// Opening narration from `Avasia-SoC/Logic/util.py` (verbatim where noted).
+    private func appendSocIntroPrologue() {
+        append([
+            .title("Avasia: Sword of Courage"),
+            .body("It has been six months since the Agromanian's, a viscious people of the northwest, attack on Oceandale."),
+            .body("Nacastrum, the city of the Mage, is still being rebuilt under the diligent leadership of its new king."),
+            .body("Recently, news was brought to King Kaefden IV that Vashirr, the traitor ex-king of Nacastrum, is teaching the Agromanians magic."),
+            .body("With this knowledge, King Kaefden IV has begun to recruit an army to march on the Agromanians before they have a chance to muster."),
+            .blank,
+            .body("You are a druid living in the peaceful city of Cataracta."),
+            .body("Cataracta has formed a pact with the people of Aylova to join the fight when the time comes."),
+            .body("The leader of Cataracta is drafting an army and you have decided to volunteer."),
+            .body("This is where your story begins...")
+        ])
+    }
+
+    private func appendSocHouseIntro() {
+        let name = socEngine.state.playerName
+        append([
+            .blank,
+            .title("\(name)'s House"),
+            .body("Today is the day you join Cataracta's Legion."),
+            .body("To join, you must head to the Legion's courtyard."),
+            .body("You collect your belongings and leave your home with a sense of pride."),
+            .blank
+        ])
+    }
+
+    private func handleSocNameEntry(_ raw: String) -> Bool {
+        let upper = raw.uppercased()
+        let yes = upper.contains("YES") || upper == "Y"
+        let no = upper.contains("NO") || upper == "N"
+
+        if let candidate = pendingSocNameConfirm {
+            if yes {
+                var state = socEngine.state
+                state.playerName = titleCaseName(candidate)
+                socEngine.load(state)
+                pendingSocNameConfirm = nil
+                appendSocHouseIntro()
+                append(socEngine.describeCurrent())
+                try? socStore.save(socEngine.state)
+                try? socStore.save(socEngine.state, to: .checkpoint)
+                return true
+            }
+            if no {
+                pendingSocNameConfirm = nil
+                pendingSocName = true
+                append([.hint("What is your name?")])
+                return true
+            }
+            append([.body("Your name is \(titleCaseName(candidate))? (yes/no)")])
+            return true
+        }
+
+        if pendingSocName {
+            let trimmed = raw.trimmingCharacters(in: .whitespaces)
+            guard !trimmed.isEmpty else { return true }
+            pendingSocName = false
+            pendingSocNameConfirm = trimmed
+            append([
+                .blank,
+                .body("Your name is \(titleCaseName(trimmed))? (yes/no)"),
+                .hint("You can't change it once it's set.")
+            ])
+            return true
+        }
+
+        return false
+    }
+
+    private func titleCaseName(_ raw: String) -> String {
+        raw.split(separator: " ")
+            .map { $0.prefix(1).uppercased() + $0.dropFirst().lowercased() }
+            .joined(separator: " ")
     }
 }

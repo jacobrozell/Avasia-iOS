@@ -11,17 +11,28 @@ let package = Package(
         .macOS(.v13)
     ],
     products: [
-        .library(name: "AvasiaEngine", targets: ["AvasiaEngine"])
+        .library(name: "AvasiaEngine", targets: ["AvasiaEngine"]),
+        .library(name: "AvasiaSoCEngine", targets: ["AvasiaSoCEngine"])
     ],
     targets: [
         .target(
             name: "AvasiaEngine",
             path: "Sources/AvasiaEngine"
         ),
+        .target(
+            name: "AvasiaSoCEngine",
+            dependencies: ["AvasiaEngine"],
+            path: "Sources/AvasiaSoCEngine"
+        ),
         .testTarget(
             name: "AvasiaEngineTests",
             dependencies: ["AvasiaEngine"],
             path: "Tests/AvasiaEngineTests"
+        ),
+        .testTarget(
+            name: "AvasiaSoCEngineTests",
+            dependencies: ["AvasiaSoCEngine", "AvasiaEngine"],
+            path: "Tests/AvasiaSoCEngineTests"
         )
     ]
 )

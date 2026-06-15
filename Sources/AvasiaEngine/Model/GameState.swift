@@ -41,6 +41,7 @@ public struct GameState: Codable, Sendable {
 
     public var currentRoom: RoomID = .oceandale
     public var textDelay: TextDelay = .on
+    public var gameComplete: Bool = false
 
     /// Start a fresh game (equivalent to the original `intro()` re-init),
     /// reshuffling the runes. Pass a seeded generator in tests for determinism.

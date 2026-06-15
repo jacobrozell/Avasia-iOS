@@ -1,4 +1,12 @@
-# Avasia: King of Nacastrum — iOS Design Docs
+# Avasia — Design Docs
+
+This folder documents **Avasia: King of Nacastrum** (Game 1, iOS remake). The
+unfinished sequel **Avasia: Sword of Courage** has its own doc set in
+[`sequel/`](sequel/README.md).
+
+---
+
+## King of Nacastrum
 
 Design documentation for a faithful iOS remake of **Avasia: King of Nacastrum**,
 the original text-based adventure (`Avasia-KoN/GameDriver.py`, by Jacob Rozell &
@@ -13,6 +21,7 @@ data-driven, testable engine suitable for iOS.
 
 | Doc | Purpose |
 |---|---|
+| [`SAGA.md`](SAGA.md) | Series bible — Age-era duology (text), game 3 (2D), engine evolution. |
 | [`STORY.md`](STORY.md) | Story bible — lore, factions, plot arc, locations, NPCs, key scenes, tone, and motifs. The narrative source of truth. |
 | [`ENGINE_SPEC.md`](ENGINE_SPEC.md) | Engine spec — Part A documents how the original works (state flags, parser, combat, puzzles, death); Part B defines the target Swift/SwiftUI architecture and a fidelity checklist. |
 | [`WORLD_MAP.md`](WORLD_MAP.md) | Room graph — every area, its exits, gates, items, and the critical-path walkthrough. |
