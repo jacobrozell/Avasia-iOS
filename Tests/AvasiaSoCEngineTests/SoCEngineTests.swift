@@ -57,6 +57,7 @@ final class SoCEngineTests: XCTestCase {
         _ = engine.submit("continue")
         _ = engine.submit("continue")
         _ = engine.submit("continue")
+        _ = engine.submit("continue")
 
         XCTAssertTrue(engine.state.throneAudience)
         XCTAssertTrue(engine.state.warCampBriefed)

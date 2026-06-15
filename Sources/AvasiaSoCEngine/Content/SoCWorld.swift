@@ -24,6 +24,7 @@ public enum SoCWorld {
         add(SoCMageOutpostRoom())
         add(SoCVashirrStandRoom())
         add(SoCAgeEpilogueRoom())
+        add(SoCCataractaRuinsRoom())
 
         add(SoCCataractaAthalos())
         add(SoCCataractaBlacksmith())

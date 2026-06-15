@@ -13,6 +13,7 @@ struct SoCCataractaHousing: SoCRoomScript {
             .body("To the NORTH, a large, ornate wooden bridge leads across the beautiful Varatho river to the upper part of the town."),
             .body("To the WEST, is the Hunter's Path."),
             .body("To the EAST, is the shopping district of Cataracta."),
+            .hint("OBJECTIVES lists optional errands before the courtyard."),
             .hint("Which way would you like to investigate?")
         ]
     }

@@ -25,7 +25,7 @@ struct SoCAylovaWarCampRoom: SoCRoomScript {
         case .briefing:
             return [.hint("CONTINUE to see the quartermaster.")]
         case .quartermaster:
-            return [.hint("CONTINUE when you are provisioned.")]
+            return [.hint("BUY POTION (25g), BUY RATIONS (15g), or CONTINUE when ready.")]
         case .readyToMarch:
             return [.hint("MARCH north toward the border.")]
         case .done:
@@ -46,6 +46,9 @@ struct SoCAylovaWarCampRoom: SoCRoomScript {
             return advanceScene(&state)
         }
 
+        if input.contains("BUY") || input.contains("PURCHASE") {
+            return handlePurchase(input, &state)
+        }
         if advances(input) {
             return advanceScene(&state)
         }
@@ -84,6 +87,27 @@ struct SoCAylovaWarCampRoom: SoCRoomScript {
         case .done:
             return SoCTurnResult(musterCompleteLines())
         }
+    }
+
+    private func handlePurchase(_ input: ParsedInput, _ state: inout SoCGameState) -> SoCTurnResult {
+        guard state.warCampPhase == .quartermaster || state.warCampPhase == .briefing else {
+            return SoCTurnResult([.body("The quartermaster is not taking orders right now.")])
+        }
+        if input.contains("POTION") {
+            guard state.spendGold(25) else {
+                return SoCTurnResult([.body("You need 25 gold for a potion.")])
+            }
+            state.addItem(.potion)
+            return SoCTurnResult([.body("Thekia sells you an extra potion. Gold: \(state.gold)")])
+        }
+        if input.contains("RATION") {
+            guard state.spendGold(15) else {
+                return SoCTurnResult([.body("You need 15 gold for field rations.")])
+            }
+            state.addItem(.fieldRations)
+            return SoCTurnResult([.body("You tuck coalition rations into your pack. Gold: \(state.gold)")])
+        }
+        return SoCTurnResult([.hint("BUY POTION (25g) or BUY RATIONS (15g).")])
     }
 
     private func provision(_ state: inout SoCGameState) -> [StyledLine] {

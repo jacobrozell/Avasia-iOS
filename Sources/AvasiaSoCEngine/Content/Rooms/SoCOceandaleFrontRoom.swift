@@ -93,12 +93,19 @@ struct SoCOceandaleFrontRoom: SoCRoomScript {
 
     private func handleCombat(_ input: ParsedInput, _ state: inout SoCGameState) -> SoCTurnResult {
         let phase = state.oceandaleFrontPhase
-        let (lines, died) = SoCCombat.handle(input, state: &state)
-        var output = SoCCombat.statLines(state: state) + lines
+        let result = SoCCombat.handle(input, state: &state)
+        var output = SoCCombat.statLines(state: state) + result.lines
 
-        if died {
+        if result.died {
             return SoCTurnResult(output, .stay, playerDied: true)
         }
+
+        if result.fled {
+            state.oceandaleFrontPhase = .betweenWaves
+            output.append(.body("You fall back to regroup — the mage-fire intensifies ahead."))
+            return SoCTurnResult(output)
+        }
+
         guard !state.inCombat else {
             return SoCTurnResult(output)
         }
@@ -124,7 +131,8 @@ struct SoCOceandaleFrontRoom: SoCRoomScript {
         SoCCombat.begin(
             enemy: SoCCombatant(name: "Agromanian Raider", atk: 6, speed: 6, hp: 14, luck: 0),
             deathText: "A raider's axe catches you across the ribs.",
-            state: &state
+            state: &state,
+            allowsFlee: true
         )
         return SoCCombat.statLines(state: state) + [.hint("What do will you do?")]
     }
@@ -133,7 +141,8 @@ struct SoCOceandaleFrontRoom: SoCRoomScript {
         SoCCombat.begin(
             enemy: SoCCombatant(name: "Agromanian Battle Mage", atk: 9, speed: 5, hp: 22, luck: 0),
             deathText: "Mage-fire consumes your shield line.",
-            state: &state
+            state: &state,
+            allowsFlee: false
         )
         return SoCCombat.statLines(state: state) + [.hint("What do will you do?")]
     }

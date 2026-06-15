@@ -23,6 +23,8 @@ struct SoCThroneRoom: SoCRoomScript {
         switch state.thronePhase {
         case .notStarted, .atThrone:
             return throneRoomLines() + [.hint("CONTINUE to speak before the king.")]
+        case .recountChoice:
+            return recountChoiceLines()
         case .deliverVashirr:
             return [.hint("CONTINUE to deliver Vashirr's message.")]
         case .classService:
@@ -42,12 +44,21 @@ struct SoCThroneRoom: SoCRoomScript {
             }
             return SoCTurnResult([.hint("MARCH to Aylova when you are ready.")])
         }
-        guard advances(input) else {
+        guard advances(input) || recountChoice(input) else {
             return SoCTurnResult([.hint("CONTINUE when you are ready.")])
         }
 
         switch state.thronePhase {
         case .notStarted, .atThrone:
+            state.thronePhase = .recountChoice
+            return SoCTurnResult(recountChoiceLines())
+
+        case .recountChoice:
+            if input.contains("DENTROS") || input.contains("HONOR") {
+                state.throneRecountStyle = .honorDentros
+            } else {
+                state.throneRecountStyle = .reportFacts
+            }
             state.thronePhase = .deliverVashirr
             return SoCTurnResult(recountLines(state))
 
@@ -61,7 +72,7 @@ struct SoCThroneRoom: SoCRoomScript {
             state.warCampBriefed = true
             var lines = classServiceLines(state) + mobilizationLines(state)
             lines.append(.title("Act III Complete"))
-            lines.append(.body("The Age-era campaign will continue when the war fronts are written."))
+            lines.append(.body("The coalition marches at dawn."))
             return SoCTurnResult(lines)
 
         case .done:
@@ -100,16 +111,47 @@ struct SoCThroneRoom: SoCRoomScript {
         ]
     }
 
+    private func recountChoice(_ input: ParsedInput) -> Bool {
+        advances(input) || input.contains("DENTROS") || input.contains("HONOR")
+            || input.contains("FACTS") || input.contains("REPORT")
+    }
+
+    private func recountChoiceLines() -> [StyledLine] {
+        [
+            .speech("Kaefden IV: Before Vashirr's message — how do you carry Cataracta?"),
+            .hint("HONOR DENTROS for his sacrifice, or REPORT FACTS for a soldier's account.")
+        ]
+    }
+
     private func recountLines(_ state: SoCGameState) -> [StyledLine] {
         let name = state.playerName.isEmpty ? "You" : state.playerName
-        return [
+        var lines: [StyledLine] = [
             .speech("\(name), survivor of Cataracta. Tell us what happened."),
-            .blank,
+            .blank
+        ]
+        if state.throneRecountStyle == .honorDentros {
+            lines += [
+                .body("You speak of Dentros first — how he shoved you from Vashirr's bolt and died for it."),
+                .speech("Kaefden IV: ...I know that kind of sacrifice. Go on."),
+                .blank
+            ]
+        } else {
+            lines += [
+                .body("You give a soldier's report: timestamps, positions, enemy numbers."),
+                .speech("Kaefden IV: Clear. Continue."),
+                .blank
+            ]
+        }
+        lines += [
             .body("You tell them everything."),
-            .body("Kimious's speech. The portal. Vashirr's army. Dentros's death."),
+            .body("Kimious's speech. The portal. Vashirr's army."),
             .body("The executions. Waking alone in the ashes."),
             .body("Thekia's face has gone pale; Kaefden's jaw tightens with every word.")
         ]
+        if state.throneRecountStyle == .honorDentros {
+            lines.append(.speech("Kaefden IV: Dentros bought you time. I will not waste it."))
+        }
+        return lines
     }
 
     private func vashirrMessageLines() -> [StyledLine] {
@@ -131,6 +173,7 @@ struct SoCThroneRoom: SoCRoomScript {
             .blank,
             .body("The throne room is utterly still."),
             .speech("Kaefden IV: ...Vashirr always did love his speeches."),
+            .speech("I wore this crown at Oceandale's ashes once. I will not let him salt another kingdom."),
             .speech("He mistakes rebuilding for weakness. He mistakes mercy for ignorance."),
             .speech("Kimious is dead. Cataracta is ash. And still the traitor thinks he can frighten a crown I bled to earn."),
             .blank,

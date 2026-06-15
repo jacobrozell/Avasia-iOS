@@ -92,12 +92,20 @@ struct SoCMageOutpostRoom: SoCRoomScript {
     }
 
     private func handleCombat(_ input: ParsedInput, _ state: inout SoCGameState) -> SoCTurnResult {
-        let (lines, died) = SoCCombat.handle(input, state: &state)
-        var output = SoCCombat.statLines(state: state) + lines
+        let result = SoCCombat.handle(input, state: &state)
+        var output = SoCCombat.statLines(state: state) + result.lines
 
-        if died {
+        if result.died {
             return SoCTurnResult(output, .stay, playerDied: true)
         }
+
+        if result.fled {
+            state.mageOutpostPhase = .intel
+            output.append(.body("You slip away with partial maps — enough to find Vashirr's redoubt."))
+            output.append(contentsOf: lieutenantFallsLines())
+            return SoCTurnResult(output)
+        }
+
         guard !state.inCombat else {
             return SoCTurnResult(output)
         }
@@ -122,7 +130,8 @@ struct SoCMageOutpostRoom: SoCRoomScript {
         SoCCombat.begin(
             enemy: SoCCombatant(name: "Mage Lieutenant", atk: 10, speed: 6, hp: 24, luck: 0),
             deathText: "The lieutenant's staff splits your ward and drops you to the mud.",
-            state: &state
+            state: &state,
+            allowsFlee: true
         )
         return SoCCombat.statLines(state: state) + [.hint("What do will you do?")]
     }

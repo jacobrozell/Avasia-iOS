@@ -85,11 +85,18 @@ struct SoCNorthernMarchRoom: SoCRoomScript {
     }
 
     private func handleCombat(_ input: ParsedInput, _ state: inout SoCGameState) -> SoCTurnResult {
-        let (lines, died) = SoCCombat.handle(input, state: &state)
-        var output = SoCCombat.statLines(state: state) + lines
+        let result = SoCCombat.handle(input, state: &state)
+        var output = SoCCombat.statLines(state: state) + result.lines
 
-        if died {
+        if result.died {
             return SoCTurnResult(output, .stay, playerDied: true)
+        }
+
+        if result.fled {
+            state.northernMarchPhase = .aftermath
+            output.append(.body("You regroup with the column — the skirmisher loses your trail."))
+            output.append(contentsOf: patrolVictoryLines())
+            return SoCTurnResult(output)
         }
 
         guard !state.inCombat else {
@@ -105,7 +112,8 @@ struct SoCNorthernMarchRoom: SoCRoomScript {
         SoCCombat.begin(
             enemy: SoCCombatant(name: "Agromanian Skirmisher", atk: 7, speed: 7, hp: 16, luck: 0),
             deathText: "The skirmisher's blade finds the gap in your guard.",
-            state: &state
+            state: &state,
+            allowsFlee: true
         )
         return SoCCombat.statLines(state: state) + [.hint("What do will you do?")]
     }

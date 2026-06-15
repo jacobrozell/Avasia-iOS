@@ -90,10 +90,10 @@ struct SoCVashirrStandRoom: SoCRoomScript {
     }
 
     private func handleCombat(_ input: ParsedInput, _ state: inout SoCGameState) -> SoCTurnResult {
-        let (lines, died) = SoCCombat.handle(input, state: &state)
-        var output = SoCCombat.statLines(state: state) + lines
+        let result = SoCCombat.handle(input, state: &state)
+        var output = SoCCombat.statLines(state: state) + result.lines
 
-        if died {
+        if result.died {
             return SoCTurnResult(output, .stay, playerDied: true)
         }
         guard !state.inCombat else {

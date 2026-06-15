@@ -4,6 +4,8 @@ import AvasiaEngine
 /// Drives *Sword of Courage* — same turn loop as `GameEngine`, separate world.
 public final class SoCGameEngine {
     public private(set) var state: SoCGameState
+    public private(set) var lastDeath: DeathInfo?
+    public private(set) var lastSocDeath: SoCDeathInfo?
     public private(set) var lastTransition: SoCTransition = .stay
     private let world: [SoCRoomID: SoCRoomScript]
 
@@ -39,6 +41,7 @@ public final class SoCGameEngine {
         var output = result.lines
 
         if result.playerDied {
+            lastSocDeath = SoCDeathCatalog.info(for: state, narrative: result.lines)
             return output
         }
 
@@ -66,10 +69,9 @@ public final class SoCGameEngine {
     public var playerDiedOnLastTurn: Bool = false
 
     public func restart() {
+        let delay = state.textDelay
         state = SoCGameState()
-        if !state.playerName.isEmpty {
-            // preserve name across restart within session if set by VM
-        }
+        state.textDelay = delay
         lastTransition = .stay
     }
 

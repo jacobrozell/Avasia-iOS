@@ -69,6 +69,12 @@ struct TitleView: View {
                 MenuButton(title: "Continue", systemImage: "arrow.clockwise", style: .primary) {
                     vm.continueGame()
                 }
+                if let summary = vm.socSaveSummary {
+                    Text(summary)
+                        .font(.footnote)
+                        .foregroundColor(Theme.parchment.opacity(0.65))
+                        .multilineTextAlignment(.center)
+                }
             }
             if vm.product == .kon {
                 MenuButton(title: "Achievements", systemImage: "trophy") {

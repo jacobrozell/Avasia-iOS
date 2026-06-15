@@ -47,6 +47,7 @@ final class SoCCriticalPathTests: XCTestCase {
         _ = engine.submit("continue")
         _ = engine.submit("continue")
         _ = engine.submit("continue")
+        _ = engine.submit("continue")
         XCTAssertTrue(engine.state.throneAudience)
 
         _ = engine.submit("march")
@@ -105,6 +106,36 @@ final class SoCCriticalPathTests: XCTestCase {
 
         XCTAssertTrue(engine.state.courtyardComplete)
         XCTAssertEqual(engine.state.currentRoom, .portalRoom)
+    }
+
+    func testEpilogueRuinsCoda() {
+        var state = SoCGameState()
+        state.playerName = "Hero"
+        state.gameComplete = true
+        state.ageEpiloguePhase = .done
+        state.currentRoom = .ageEpilogue
+        let engine = SoCGameEngine(state: state)
+
+        _ = engine.submit("visit ruins")
+        XCTAssertEqual(engine.state.currentRoom, .cataractaRuins)
+
+        _ = engine.submit("continue")
+        XCTAssertTrue(engine.state.ruinsVisited)
+        XCTAssertTrue(engine.state.trophies.contains(.returnedToAshes))
+
+        _ = engine.submit("return")
+        XCTAssertEqual(engine.state.currentRoom, .ageEpilogue)
+    }
+
+    func testObjectivesCommand() {
+        var state = SoCGameState()
+        state.applyClass(.hunter)
+        state.courtyardComplete = true
+        state.currentRoom = .portalRoom
+        let engine = SoCGameEngine(state: state)
+        let lines = engine.submit("objectives")
+        XCTAssertTrue(lines.contains { $0.text.contains("Objectives") })
+        XCTAssertTrue(lines.contains { $0.text.contains("portal") || $0.text.contains("library") })
     }
 
     private func fightToVictory(_ engine: SoCGameEngine, maxTurns: Int = 60) {

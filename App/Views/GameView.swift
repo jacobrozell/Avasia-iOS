@@ -28,6 +28,8 @@ struct GameView: View {
             return ["March", "Continue", "Inventory"]
         case .throneRoom where vm.socState.throneAudience:
             return ["March", "Continue", "Inventory"]
+        case .ageEpilogue where vm.socState.gameComplete && !vm.socState.ruinsVisited:
+            return ["Visit Ruins", "Continue", "Inventory"]
         case .aylovaWarCamp, .northernMarch, .mageOutpost, .vashirrStand, .ageEpilogue:
             return ["March", "Continue", "Inventory", "Look"]
         default:
@@ -46,6 +48,7 @@ struct GameView: View {
         }
         .overlay(alignment: .top) { toastOverlay(metrics) }
         .overlay { if vm.pendingDeath { deathOverlay(metrics) } }
+        .overlay { if vm.pendingLevelUp != nil { levelUpOverlay(metrics) } }
     }
 
     // MARK: - Layouts
@@ -196,17 +199,33 @@ struct GameView: View {
         ScrollViewReader { proxy in
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 8) {
-                    ForEach(Array(vm.transcript.enumerated()), id: \.offset) { idx, line in
+                    ForEach(Array(vm.visibleTranscript.enumerated()), id: \.offset) { idx, line in
                         LineView(line: line).id(idx)
+                    }
+                    if vm.isPacingWaiting {
+                        Text("Tap to continue")
+                            .font(.caption)
+                            .foregroundColor(Theme.parchment.opacity(0.45))
+                            .italic()
+                            .id("pacing-hint")
                     }
                 }
                 .padding()
+                .contentShape(Rectangle())
+                .onTapGesture { vm.advancePacing() }
             }
             .accessibilityElement(children: .contain)
             .accessibilityLabel("Game transcript")
-            .onChange(of: vm.transcript.count) { _ in
-                if let last = vm.transcript.indices.last {
+            .onChange(of: vm.revealedLineCount) { _ in
+                if let last = vm.visibleTranscript.indices.last {
                     withAnimation { proxy.scrollTo(last, anchor: .bottom) }
+                } else if vm.isPacingWaiting {
+                    withAnimation { proxy.scrollTo("pacing-hint", anchor: .bottom) }
+                }
+            }
+            .onChange(of: vm.isPacingWaiting) { waiting in
+                if waiting {
+                    withAnimation { proxy.scrollTo("pacing-hint", anchor: .bottom) }
                 }
             }
         }
@@ -297,7 +316,11 @@ struct GameView: View {
     // MARK: - Death overlay
 
     private func deathOverlay(_ metrics: LayoutMetrics) -> some View {
-        let death = vm.lastDeath
+        let konDeath = vm.lastDeath
+        let socDeath = vm.lastSocDeath
+        let title = konDeath?.cause.title ?? (vm.product == .soc ? "Defeated in Battle" : "You Have Died")
+        let epitaph = konDeath?.cause.epitaph ?? socDeath?.epitaph
+        let deathNumber = konDeath?.number ?? socDeath?.number ?? vm.displayDeathCount
         return ZStack {
             RadialGradient(
                 colors: [
@@ -317,19 +340,19 @@ struct GameView: View {
                         .foregroundColor(.red.opacity(0.9))
                         .accessibilityHidden(true)
 
-                    Text(death?.cause.title ?? (vm.product == .kon ? "You Have Died" : "Defeated in Battle"))
+                    Text(title)
                         .font(.system(.largeTitle, design: .serif).bold())
                         .foregroundColor(.red)
                         .multilineTextAlignment(.center)
 
-                    if let epitaph = death?.cause.epitaph {
+                    if let epitaph {
                         Text(epitaph)
                             .font(.system(.body, design: .serif).italic())
                             .foregroundColor(Theme.parchment.opacity(0.85))
                             .multilineTextAlignment(.center)
                     }
 
-                    Text("You have died.  ·  Death #\(death?.number ?? vm.displayDeathCount)")
+                    Text("You have died.  ·  Death #\(deathNumber)")
                         .font(.caption)
                         .foregroundColor(Theme.parchment.opacity(0.5))
 
@@ -347,6 +370,33 @@ struct GameView: View {
         .transition(.opacity)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Death screen")
+    }
+
+    private func levelUpOverlay(_ metrics: LayoutMetrics) -> some View {
+        let level = vm.pendingLevelUp ?? vm.socState.playerLevel
+        return ZStack {
+            Color.black.opacity(0.55).ignoresSafeArea()
+            VStack(spacing: 16) {
+                Image(systemName: "arrow.up.circle.fill")
+                    .font(.system(size: 48))
+                    .foregroundColor(Theme.accent)
+                Text("Level Up!")
+                    .font(.system(.title, design: .serif).bold())
+                    .foregroundColor(Theme.parchment)
+                Text("You are now level \(level).")
+                    .font(.body)
+                    .foregroundColor(Theme.parchment.opacity(0.85))
+                Text("Attack, defense, and luck increased.")
+                    .font(.footnote)
+                    .foregroundColor(Theme.parchment.opacity(0.65))
+                MenuButton(title: "Continue") { vm.dismissLevelUp() }
+            }
+            .padding(28)
+            .frame(maxWidth: metrics.contentMaxWidth)
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+            .padding(metrics.horizontalPadding)
+        }
+        .transition(.opacity)
     }
 
     // MARK: - Toasts

@@ -2,6 +2,7 @@ import Foundation
 
 public enum SoCItem: String, Codable, CaseIterable, Sendable {
     case potion
+    case fieldRations
     case smallFish
     case bigFish
     case crab
@@ -10,6 +11,7 @@ public enum SoCItem: String, Codable, CaseIterable, Sendable {
     public var displayName: String {
         switch self {
         case .potion: return "Potion"
+        case .fieldRations: return "Field Rations"
         case .smallFish: return "Small Fish"
         case .bigFish: return "Big Fish"
         case .crab: return "Crab"
@@ -20,6 +22,7 @@ public enum SoCItem: String, Codable, CaseIterable, Sendable {
     public var healAmount: Int? {
         switch self {
         case .potion: return 10
+        case .fieldRations: return 8
         case .smallFish: return 5
         case .bigFish: return 10
         case .crab: return 15
@@ -30,6 +33,7 @@ public enum SoCItem: String, Codable, CaseIterable, Sendable {
     public var goldValue: Int {
         switch self {
         case .potion: return 25
+        case .fieldRations: return 15
         case .smallFish: return 5
         case .bigFish: return 10
         case .crab: return 15
@@ -44,6 +48,7 @@ public enum SoCTrophy: String, Codable, CaseIterable, Sendable {
     case brother
     case oceandaleVictor
     case ageComplete
+    case returnedToAshes
 
     public var title: String {
         switch self {
@@ -52,6 +57,7 @@ public enum SoCTrophy: String, Codable, CaseIterable, Sendable {
         case .brother: return "Brotherly Love"
         case .oceandaleVictor: return "Ridge Held"
         case .ageComplete: return "Age of Courage"
+        case .returnedToAshes: return "Returned to Ashes"
         }
     }
 
@@ -62,6 +68,7 @@ public enum SoCTrophy: String, Codable, CaseIterable, Sendable {
         case .brother: return "Let Ulric send you to fish with Doran."
         case .oceandaleVictor: return "Break the Agromanian line at Oceandale ridge."
         case .ageComplete: return "See the Age-era war to its end."
+        case .returnedToAshes: return "Return to Cataracta's ruins after victory."
         }
     }
 
@@ -72,14 +79,22 @@ public enum SoCTrophy: String, Codable, CaseIterable, Sendable {
         case .brother: return "Visit Ulric, then accept Doran's free rod."
         case .oceandaleVictor: return "Clear the Oceandale war front."
         case .ageComplete: return "Finish Sword of Courage."
+        case .returnedToAshes: return "Visit the ruins from the epilogue."
         }
     }
+}
+
+public enum ThroneRecountStyle: String, Codable, Sendable {
+    case none
+    case honorDentros
+    case reportFacts
 }
 
 public enum ThronePhase: String, Codable, Sendable {
     case notStarted
     case atThrone
     case deliverVashirr
+    case recountChoice
     case classService
     case done
 }

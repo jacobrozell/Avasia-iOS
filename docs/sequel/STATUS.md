@@ -11,11 +11,28 @@ Housing → Courtyard → Portal → Library → Throne → Aylova → Northern 
   → Oceandale → Mage Outpost → Vashirr's Redoubt → Aylova epilogue ✅
 ```
 
-**Age-era text saga complete.**
+**Age-era text saga complete.** Optional **Cataracta ruins coda** after victory.
 
 ---
 
-## Polish (recent)
+## Gameplay flesh-out (`feature/soc-gameplay-flesh-out`)
+
+| Item | Status |
+|---|---|
+| `OBJECTIVES` / `JOURNAL` global commands | ✅ |
+| Act chapter banners on room transitions | ✅ |
+| Class combat identity (Hunter strike, Guardian block, Scout luck/flee) | ✅ |
+| Throne recount choice (Honor Dentros vs Report Facts) | ✅ |
+| War camp shop (potions, field rations) | ✅ |
+| Garden insight bonus XP | ✅ |
+| Cataracta ruins optional coda + trophy | ✅ |
+| Class/location death epitaphs | ✅ |
+| Level-up overlay + continue save summary | ✅ |
+| KoN veteran hook on saga subtitle | ✅ |
+
+---
+
+## Polish (prior)
 
 | Item | Status |
 |---|---|
@@ -35,8 +52,8 @@ Housing → Courtyard → Portal → Library → Throne → Aylova → Northern 
 |---|---|---|
 | `AvasiaEngineTests` | 25 | ✅ |
 | `AvasiaSoCEngineTests` | 17 | ✅ |
-| `SoCCriticalPathTests` | 4 | ✅ |
-| **Total** | **46** | ✅ |
+| `SoCCriticalPathTests` | 6 | ✅ |
+| **Total** | **49** | ✅ |
 
 ---
 
@@ -44,5 +61,5 @@ Housing → Courtyard → Portal → Library → Throne → Aylova → Northern 
 
 | Item | Notes |
 |---|---|
-| Cataracta ruins revisit | needs authoring |
+| More Act I side content (shopping errands) | low priority |
 | Simulator playthrough QA | manual |

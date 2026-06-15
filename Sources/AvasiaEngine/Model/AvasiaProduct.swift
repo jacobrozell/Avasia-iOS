@@ -15,7 +15,7 @@ public enum AvasiaProduct: String, Codable, Sendable, CaseIterable {
     public var subtitle: String {
         switch self {
         case .kon: return "The amnesiac mage. Restore Nacastrum."
-        case .soc: return "A druid's war. Six months later."
+        case .soc: return "A druid's war. You crowned Kaefden in game one."
         }
     }
 

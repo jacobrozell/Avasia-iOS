@@ -351,13 +351,18 @@ struct SoCCataractaGarden: SoCRoomScript {
         }
 
         if input.contains("TALK") || input.contains("APPROACH") || input.contains("SPEAK") || input.contains("PEOPLE") {
-            return SoCTurnResult([
+            var lines: [StyledLine] = [
                 .body("You approach the young boy by the crystal fountain."),
                 .blank,
                 .speech("My parents say that if you toss some gold in the fountain, it brings good luck!"),
                 .speech("I don't know if I believe in stuff like that though..."),
                 .body("The young boy walks off.")
-            ])
+            ]
+            if !state.gardenInsight {
+                state.gardenInsight = true
+                lines.append(contentsOf: SoCQuestProgress.grantQuestExp(10, state: &state))
+            }
+            return SoCTurnResult(lines)
         }
 
         if input.contains("LEAVE") || input.contains("BACK") || input.contains("RETURN") || input.contains("WEST") {

@@ -25,6 +25,7 @@ public enum SoCRoomID: String, Codable, CaseIterable, Sendable {
     case mageOutpost = "mage_outpost"
     case vashirrStand = "vashirr_stand"
     case ageEpilogue = "soc_epilogue"
+    case cataractaRuins = "cataracta_ruins"
 }
 
 public extension SoCRoomID {
@@ -42,6 +43,8 @@ public extension SoCRoomID {
             return .shore
         case .ageEpilogue:
             return .aylova
+        case .cataractaRuins:
+            return .cataracta
         default:
             return .cataracta
         }

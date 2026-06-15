@@ -57,6 +57,7 @@ public struct SoCGameState: Codable, Sendable {
     public var trophies: Set<SoCTrophy> = []
 
     public var fountain: Bool = false
+    public var gardenInsight: Bool = false
     public var ulric: Bool = false
     public var doran: Bool = false
     public var portalRoom: Bool = false
@@ -67,6 +68,8 @@ public struct SoCGameState: Codable, Sendable {
     public var throneAudience: Bool = false
     public var warCampBriefed: Bool = false
     public var thronePhase: ThronePhase = .notStarted
+    public var throneRecountStyle: ThroneRecountStyle = .none
+    public var ruinsVisited: Bool = false
     public var warCampPhase: WarCampPhase = .notStarted
     public var aylovaProvisioned: Bool = false
     public var aylovaMusterComplete: Bool = false
@@ -83,6 +86,10 @@ public struct SoCGameState: Codable, Sendable {
 
     public var courtyardPhase: CourtyardPhase = .notStarted
     public var inCombat: Bool = false
+    public var combatAllowsFlee: Bool = false
+    public var combatHunterStrikeUsed: Bool = false
+    public var combatGuardianBlockAvailable: Bool = false
+    public var combatScoutEdgeUsed: Bool = false
     public var enemy: SoCCombatant?
     public var enemyDeathText: String = ""
     public var neededLuckToHit: Int = 5
