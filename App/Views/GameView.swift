@@ -20,13 +20,17 @@ struct GameView: View {
                 inputBar
             }
         }
+        .overlay(alignment: .top) { achievementToasts }
         .overlay { if vm.pendingDeath { deathOverlay } }
     }
 
     private var statusStrip: some View {
-        HStack {
+        HStack(spacing: 14) {
             Button { vm.screen = .title } label: {
                 Image(systemName: "list.bullet").foregroundColor(Theme.accent)
+            }
+            Button { vm.openAchievements(from: .game) } label: {
+                Image(systemName: "trophy").foregroundColor(Theme.accent)
             }
             Spacer()
             ForEach(vm.state.spells, id: \.self) { spell in
@@ -97,18 +101,68 @@ struct GameView: View {
         .padding()
     }
 
+    // MARK: - Death overlay
+
     private var deathOverlay: some View {
-        ZStack {
-            Color.black.opacity(0.8).ignoresSafeArea()
-            VStack(spacing: 18) {
-                Text("You have died.")
+        let death = vm.lastDeath
+        return ZStack {
+            RadialGradient(colors: [Color(red: 0.2, green: 0, blue: 0).opacity(0.85), .black.opacity(0.95)],
+                           center: .center, startRadius: 40, endRadius: 600)
+                .ignoresSafeArea()
+            VStack(spacing: 16) {
+                Image(systemName: "skull")
+                    .font(.system(size: 44))
+                    .foregroundColor(.red.opacity(0.9))
+                Text(death?.cause.title ?? "You Have Died")
                     .font(.system(.largeTitle, design: .serif).bold())
                     .foregroundColor(.red)
-                MenuButton(title: "Restart from checkpoint") { vm.restartFromCheckpoint() }
-                MenuButton(title: "New game") { vm.restartFromBeginning() }
+                    .multilineTextAlignment(.center)
+                if let epitaph = death?.cause.epitaph {
+                    Text(epitaph)
+                        .font(.system(.body, design: .serif).italic())
+                        .foregroundColor(Theme.parchment.opacity(0.85))
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 32)
+                }
+                Text("You have died.  ·  Death #\(death?.number ?? vm.state.deathCount)")
+                    .font(.caption)
+                    .foregroundColor(Theme.parchment.opacity(0.5))
+                VStack(spacing: 12) {
+                    MenuButton(title: "Restart from checkpoint") { vm.restartFromCheckpoint() }
+                    MenuButton(title: "New game") { vm.restartFromBeginning() }
+                }
+                .padding(.top, 8)
             }
-            .padding()
+            .padding(28)
         }
+        .transition(.opacity)
+    }
+
+    // MARK: - Achievement toasts
+
+    private var achievementToasts: some View {
+        VStack(spacing: 8) {
+            ForEach(vm.recentlyUnlocked, id: \.self) { ach in
+                HStack(spacing: 10) {
+                    Image(systemName: "trophy.fill").foregroundColor(.yellow)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Achievement Unlocked")
+                            .font(.caption2).foregroundColor(Theme.parchment.opacity(0.6))
+                        Text(ach.title)
+                            .font(.system(.subheadline, design: .serif).bold())
+                            .foregroundColor(Theme.parchment)
+                    }
+                    Spacer(minLength: 0)
+                }
+                .padding(.horizontal, 14).padding(.vertical, 10)
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Theme.accent.opacity(0.4)))
+                .padding(.horizontal)
+                .transition(.move(edge: .top).combined(with: .opacity))
+            }
+        }
+        .padding(.top, 6)
+        .animation(.spring(response: 0.4), value: vm.recentlyUnlocked)
     }
 
     private func icon(for item: Flag) -> String {

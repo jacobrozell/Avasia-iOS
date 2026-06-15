@@ -18,6 +18,7 @@ data-driven, testable engine suitable for iOS.
 | [`WORLD_MAP.md`](WORLD_MAP.md) | Room graph — every area, its exits, gates, items, and the critical-path walkthrough. |
 | [`WIREFRAMES.md`](WIREFRAMES.md) | Low-fidelity UI layouts for every screen, mapped to the SwiftUI views. |
 | [`ASSETS.md`](ASSETS.md) | Art & audio manifest — exact asset names per region and how the hooks/fallbacks work. |
+| [`ACHIEVEMENTS.md`](ACHIEVEMENTS.md) | Achievement system + the flavored death screen: architecture, full catalog, and how to add more. |
 | [`BUILD.md`](BUILD.md) | How to build/test the engine package and generate + run the iOS app. |
 
 ## Status
@@ -28,8 +29,9 @@ implemented** — the full critical path from the beach to the ending is playabl
 and covered by a scripted end-to-end test, with verbatim original text and
 optional off-path content folded in. **Per-region art and audio hooks** are
 wired (backgrounds, header illustrations, ambient loops, and SFX cues) and
-no-op gracefully until assets are added — see `ASSETS.md`. See `BUILD.md` for
-status.
+no-op gracefully until assets are added — see `ASSETS.md`. A cross-run
+**achievement system** (22 achievements) and a flavored **death screen** are
+implemented — see `ACHIEVEMENTS.md`. See `BUILD.md` for status.
 
 ## Faithfulness policy
 

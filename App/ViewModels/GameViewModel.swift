@@ -7,14 +7,19 @@ import AvasiaEngine
 /// the engine; this layer is presentation + timing only.
 @MainActor
 final class GameViewModel: ObservableObject {
-    enum Screen { case title, settings, game, credits }
+    enum Screen { case title, settings, game, credits, achievements }
 
     @Published var screen: Screen = .title {
         didSet { screenDidChange() }
     }
     @Published private(set) var transcript: [StyledLine] = []
     @Published private(set) var pendingDeath = false
+    @Published private(set) var achievements: AchievementState
+    /// Achievements unlocked in the last turn, surfaced as toasts.
+    @Published private(set) var recentlyUnlocked: [Achievement] = []
     @Published var input: String = ""
+    /// Where the Achievements screen returns to (title vs. in-game).
+    var achievementsReturn: Screen = .title
 
     private let engine: GameEngine
     private let store = SaveStore()
@@ -22,9 +27,13 @@ final class GameViewModel: ObservableObject {
 
     init(engine: GameEngine = GameEngine()) {
         self.engine = engine
+        self.achievements = store.loadAchievements()
     }
 
     var state: GameState { engine.state }
+
+    /// Details of the most recent death, for the death overlay.
+    var lastDeath: DeathInfo? { engine.lastDeath }
 
     /// Art/audio binding for the current room (drives backgrounds & illustration).
     var media: RoomMedia { engine.currentMedia() }
@@ -49,7 +58,7 @@ final class GameViewModel: ObservableObject {
             audio.playAmbient(SoundCue.titleTheme.rawValue)
         case .game:
             refreshAmbient()
-        case .settings:
+        case .settings, .achievements:
             break
         }
     }
@@ -71,6 +80,7 @@ final class GameViewModel: ObservableObject {
         pendingDeath = false
         appendIntro()
         append(engine.describeCurrent())
+        recordStartingRegion()
         screen = .game
     }
 
@@ -80,7 +90,14 @@ final class GameViewModel: ObservableObject {
         transcript = []
         append(engine.describeCurrent())
         pendingDeath = false
+        recordStartingRegion()
         screen = .game
+    }
+
+    /// `enteredRegion` events only fire on movement, so seed the current region.
+    private func recordStartingRegion() {
+        let unlocked = AchievementTracker.recordRegion(engine.currentMedia().region, into: &achievements)
+        finishAchievements(unlocked)
     }
 
     var hasSave: Bool { store.load() != nil }
@@ -95,6 +112,11 @@ final class GameViewModel: ObservableObject {
         let before = engine.state.deathCount
         let lines = engine.submit(raw)
         append(lines)
+
+        // Achievements fold over the turn's events (runs for every outcome,
+        // including death and win).
+        let unlocked = AchievementTracker.apply(engine.lastEvents, state: engine.state, into: &achievements)
+        finishAchievements(unlocked)
 
         // Audio/art hooks keyed off the turn's result.
         if engine.state.deathCount > before {
@@ -114,9 +136,25 @@ final class GameViewModel: ObservableObject {
         try? store.save(engine.state, to: .checkpoint)     // room-entry checkpoint
     }
 
+    /// Persist any newly-unlocked achievements and surface them as toasts.
+    private func finishAchievements(_ unlocked: [Achievement]) {
+        guard !unlocked.isEmpty else { return }
+        store.saveAchievements(achievements)
+        recentlyUnlocked.append(contentsOf: unlocked)
+        Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 4_000_000_000)
+            self?.recentlyUnlocked.removeAll { unlocked.contains($0) }
+        }
+    }
+
     func quickAction(_ verb: String) {
         input = verb
         submit()
+    }
+
+    func openAchievements(from screen: Screen) {
+        achievementsReturn = screen
+        self.screen = .achievements
     }
 
     // MARK: - Death handling (sanctioned improvement: offer checkpoint)

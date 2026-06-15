@@ -4,11 +4,22 @@ import Foundation
 /// applies transitions. This is the replacement for the original's recursive
 /// function-call control flow — here movement is an explicit state change, so
 /// there is no unbounded call stack (ENGINE_SPEC §A.1, §B.1).
+/// Details of the most recent death, for the death overlay.
+public struct DeathInfo: Sendable, Equatable {
+    public let cause: DeathCause
+    public let narrative: [StyledLine]   // the room's verbatim death lines
+    public let number: Int               // deathCount after this death
+}
+
 public final class GameEngine {
     public private(set) var state: GameState
     /// The transition produced by the most recent `submit` (for UI hooks like
     /// audio cues on move/death/win).
     public private(set) var lastTransition: Transition = .stay
+    /// Semantic events from the most recent `submit` (for the achievement tracker).
+    public private(set) var lastEvents: [GameEvent] = []
+    /// Details of the most recent death (for the death overlay).
+    public private(set) var lastDeath: DeathInfo?
     private let world: [RoomID: RoomScript]
 
     public init(state: GameState = GameState(), world: [RoomID: RoomScript] = World.build()) {
@@ -32,10 +43,13 @@ public final class GameEngine {
     @discardableResult
     public func submit(_ raw: String) -> [StyledLine] {
         let room = currentRoom
+        let prevRegion = state.currentRoom.region
+        let flagsBefore = state.flags
         let input = Parser.parse(raw, mode: room.parseMode)
         let result = room.handle(input, &state)
         lastTransition = result.transition
         var output = result.lines
+        var events = result.events
 
         switch result.transition {
         case .stay:
@@ -43,23 +57,30 @@ public final class GameEngine {
 
         case .move(let dest):
             state.currentRoom = dest
+            if dest.region != prevRegion { events.append(.enteredRegion(dest.region)) }
             output.append(.blank)
             output.append(contentsOf: room(dest).describe(state))
 
-        case .death(let reason):
+        case .death(let cause):
             state.deathCount += 1
+            lastDeath = DeathInfo(cause: cause, narrative: result.lines, number: state.deathCount)
+            events.append(.died(cause))
             output.append(.blank)
             output.append(.death("You have died."))
-            if !reason.isEmpty { output.append(.death(reason)) }
-            output.append(.hint("Restart from the beginning, or load your last checkpoint."))
             // The caller (UI) decides restart vs. checkpoint; state is left as-is
             // so a checkpoint can be restored. `restart()` begins a fresh game.
 
         case .win:
+            events.append(.won)
             output.append(.blank)
             output.append(.title("Congratulations on completing the game!"))
         }
 
+        // Derive item/spell-gain events from the flag diff.
+        for flag in state.flags.subtracting(flagsBefore) {
+            events.append(.gained(flag))
+        }
+        lastEvents = events
         return output
     }
 

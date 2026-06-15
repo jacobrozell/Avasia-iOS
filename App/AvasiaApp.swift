@@ -20,10 +20,11 @@ struct RootView: View {
     var body: some View {
         Group {
             switch vm.screen {
-            case .title:    TitleView()
-            case .settings: SettingsView()
-            case .game:     GameView()
-            case .credits:  CreditsView()
+            case .title:        TitleView()
+            case .settings:     SettingsView()
+            case .game:         GameView()
+            case .credits:      CreditsView()
+            case .achievements: AchievementsView()
             }
         }
         .onAppear { vm.onLaunch() }

@@ -270,7 +270,7 @@ struct TreeChurchRoom: RoomScript {
 
     func handle(_ input: ParsedInput, _ state: inout GameState) -> TurnResult {
         if input.contains(["MEANING", "LIFE"]) {
-            return TurnResult([.speech("42.")])
+            return TurnResult([.speech("42.")], events: [.heard42])
         }
         if input.contains(["SUFORMIN", "GOD", "HUNT"]) {
             return TurnResult([
@@ -362,7 +362,7 @@ struct TreeFloor4Room: RoomScript {
                 .body("You cut your neck open and watch your blood spew onto the ground."),
                 .body("It's too late before you realize that was a horrible idea."),
                 .body("Your vision fades to black and darkness consumes you....")
-            ], .death(reason: ""))
+            ], .death(.neckCut))
         }
         if mentionsCut && input.contains(["SWORD"]) {
             return TurnResult([.hint("You scrape the long sword across your palm. Nothing happens — wrong blade.")])

@@ -185,7 +185,7 @@ struct CaveEntranceRoom: RoomScript {
                 .body("Your voice echos through the dark cave as you fling upwards out of the water."),
                 .body("You overcompensate for the weight of the water and spring upwards; faster than intended."),
                 .body("The roof of the cave is home to several stalactites.")
-            ], .death(reason: ""))
+            ], .death(.stalactite))
         }
         if input.contains(["LIGHT", "LANTERN", "TORCH"]) {
             guard state.has(.lantern) else {
@@ -324,7 +324,7 @@ struct FireballRoom: RoomScript {
                 .body("The ground under you becomes immensely hot."),
                 .body("The cause of the heat is now apparent."),
                 .body("A massive ball of fire hurls towards you.")
-            ], .death(reason: ""))
+            ], .death(.fireball))
         }
         return TurnResult([.hint("The runes flash red. Wrong. (\(state.guesses) attempts left)")])
     }
@@ -400,7 +400,7 @@ struct NorthwestCaveRoom: RoomScript {
                 .body("You feel a sharp pain in the center of your back."),
                 .body("You drop the pickaxe and look down to see the tip of a spear extruding from your chest."),
                 .body("The world around you darkens and you fall to the ground..")
-            ], .death(reason: ""))
+            ], .death(.mining))
         }
         return TurnResult([.body("It probably isn't a good idea to mine the pink crystals considering the miner's fate. You continue on through the cave.")], .move(.mainCave))
     }

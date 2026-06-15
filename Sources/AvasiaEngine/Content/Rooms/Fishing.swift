@@ -18,7 +18,7 @@ enum Fishing {
                 .body("Moments after casting a line, you feel a pull on the fishing rod!"),
                 .item("You pull back the line and discover a huge fish made of pure gold hanging on the hook!"),
                 .body("It must be worth a fortune!")
-            ])
+            ], events: [.caughtGoldFish])
         case 3:
             var lines = open + [
                 .body("Minutes pass and you finally feel a tug on the line!"),
@@ -45,7 +45,7 @@ enum Fishing {
                 .body("Its mighty claws clutch tightly around your waist!"),
                 .body("You're snapped completely in half and the crab-monster drags your body into the ocean.")
             ]
-            return TurnResult(lines, .death(reason: ""))
+            return TurnResult(lines, .death(.crab))
         case 4...6:
             return TurnResult(open + [.body("After minutes of silence you reel in your line.")])
         case 7...9:
@@ -66,7 +66,7 @@ enum Fishing {
                     .body("You wait just a few moments before your fishing line is taken right out of your hands!"),
                     .body("The water begins to ripple and you watch as an enormous blue sea-serpent plunges out of the water!"),
                     .body("You have no time at to react before it dives down and gobbles you up.")
-                ], .death(reason: ""))
+                ], .death(.seaSerpent))
             }
             state.orangeFishThrown += 1
             return TurnResult(open + [
@@ -74,7 +74,7 @@ enum Fishing {
                 .body("You reel in the fishing rod and find a floppy orange colored fish."),
                 .body("It looks absolutely useless, just splashing about."),
                 .body("You toss it back into the ocean.")
-            ])
+            ], events: [.tossedOrangeFish])
         }
     }
 }

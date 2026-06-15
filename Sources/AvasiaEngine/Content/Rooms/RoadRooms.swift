@@ -190,25 +190,25 @@ struct RoadToNacastrumRoom: RoomScript {
                 .body("You're at the mercy of these scum."),
                 .body("Sadly, they don't have a reputation for keeping their captives alive."),
                 .body("Moments later, you are slain.")
-            ], .death(reason: ""))
+            ], .death(.ambush))
         }
         if input.contains(Flag.levitate.castSynonyms) {
             return TurnResult([
                 .body("You cast Levitate, but the Agromanian are far too close for you to escape."),
                 .body("They drag you back down to the ground."),
                 .body("You are beaten and stabbed to death.")
-            ], .death(reason: ""))
+            ], .death(.ambush))
         }
         if input.contains(Flag.stonebend.castSynonyms) {
             return TurnResult([
                 .body("Unfortunately, you don't have time to think of another option before you are surrounded."),
                 .body("Moments later, you are beaten and stabbed to death.")
-            ], .death(reason: ""))
+            ], .death(.ambush))
         }
         if input.contains(["DAGGER"]) {
-            return TurnResult([.body("The Agromanian quickly over run you and you killed.")], .death(reason: ""))
+            return TurnResult([.body("The Agromanian quickly over run you and you killed.")], .death(.ambush))
         }
-        return TurnResult([.body("Whatever you try, it isn't enough. They cut you down.")], .death(reason: ""))
+        return TurnResult([.body("Whatever you try, it isn't enough. They cut you down.")], .death(.ambush))
     }
 }
 

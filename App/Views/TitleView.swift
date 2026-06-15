@@ -22,6 +22,7 @@ struct TitleView: View {
                     if vm.hasSave {
                         MenuButton(title: "Continue") { vm.continueGame() }
                     }
+                    MenuButton(title: "Achievements") { vm.openAchievements(from: .title) }
                     MenuButton(title: "Settings") { vm.screen = .settings }
                     MenuButton(title: "Credits") { vm.screen = .credits }
                 }

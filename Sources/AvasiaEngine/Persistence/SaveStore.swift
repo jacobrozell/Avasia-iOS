@@ -40,4 +40,24 @@ public final class SaveStore {
         try? FileManager.default.removeItem(at: url(for: .autosave))
         try? FileManager.default.removeItem(at: url(for: .checkpoint))
     }
+
+    // MARK: - Achievements (cross-run, persisted separately from GameState)
+
+    private var achievementsURL: URL {
+        directory.appendingPathComponent("achievements.json")
+    }
+
+    public func saveAchievements(_ progress: AchievementState) {
+        if let data = try? encoder.encode(progress) {
+            try? data.write(to: achievementsURL, options: .atomic)
+        }
+    }
+
+    public func loadAchievements() -> AchievementState {
+        guard let data = try? Data(contentsOf: achievementsURL),
+              let progress = try? decoder.decode(AchievementState.self, from: data) else {
+            return AchievementState()
+        }
+        return progress
+    }
 }

@@ -1,13 +1,16 @@
 import Foundation
 
-/// What a turn produces: lines to print and where to go next.
+/// What a turn produces: lines to print, where to go next, and any semantic
+/// events for the achievement tracker.
 public struct TurnResult: Sendable {
     public var lines: [StyledLine]
     public var transition: Transition
+    public var events: [GameEvent]
 
-    public init(_ lines: [StyledLine] = [], _ transition: Transition = .stay) {
+    public init(_ lines: [StyledLine] = [], _ transition: Transition = .stay, events: [GameEvent] = []) {
         self.lines = lines
         self.transition = transition
+        self.events = events
     }
 }
 
@@ -15,7 +18,7 @@ public struct TurnResult: Sendable {
 public enum Transition: Sendable, Equatable {
     case stay                       // remain in the current room
     case move(RoomID)               // go to another room
-    case death(reason: String)      // lethal — increments deathCount, offers restart
+    case death(DeathCause)          // lethal — increments deathCount, offers restart
     case win                        // reached the canonical ending
 }
 
