@@ -133,7 +133,7 @@ struct TitleView: View {
                         .font(.caption)
                         .foregroundColor(Theme.accent.opacity(0.8))
                         .accessibilityHidden(true)
-                    Text("Text pacing On is strongly recommended for first-time players.")
+                    Text("Text pacing On types lines in gradually. Tap the transcript to skip.")
                         .font(.footnote)
                         .foregroundColor(Theme.parchment.opacity(0.62))
                         .multilineTextAlignment(.leading)

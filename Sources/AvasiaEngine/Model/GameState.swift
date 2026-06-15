@@ -1,10 +1,10 @@
 import Foundation
 
-/// Player-facing text pacing for the "delay between sentences" feature.
+/// Player-facing text pacing for the transcript.
 public enum TextDelay: String, Codable, Sendable {
-    case on             // ~8s base delay (original recommended default)
+    case on             // typewriter + short pause between lines
     case off            // instant
-    case tapToAdvance   // mobile-friendly addition: reveal next line on tap
+    case tapToAdvance   // typewriter, then tap between lines
 }
 
 /// The complete, serializable game state. This replaces the original's loose

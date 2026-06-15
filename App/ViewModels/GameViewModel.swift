@@ -2,19 +2,23 @@ import Foundation
 import SwiftUI
 import AvasiaEngine
 import AvasiaSoCEngine
+#if canImport(UIKit)
+import UIKit
+#endif
 
 /// Bridges engine(s) to SwiftUI. KoN and Sword of Courage are separate products
 /// with separate saves, selected from `SagaTitleView`.
 @MainActor
 final class GameViewModel: ObservableObject {
-    enum Screen { case saga, title, settings, game, credits, achievements, trophies }
+    enum Screen { case saga, title, settings, game, credits, achievements, trophies, privacyPolicy }
 
     @Published var screen: Screen = .saga {
         didSet { screenDidChange() }
     }
     @Published var product: AvasiaProduct = .kon
     @Published private(set) var transcript: [StyledLine] = []
-    @Published private(set) var revealedLineCount = 0
+    @Published private(set) var completedLineCount = 0
+    @Published private(set) var typingVisibleCount: Int?
     @Published private(set) var isPacingWaiting = false
     @Published private(set) var pendingDeath = false
     @Published private(set) var achievements: AchievementState
@@ -25,6 +29,22 @@ final class GameViewModel: ObservableObject {
     var achievementsReturn: Screen = .title
     var trophiesReturn: Screen = .title
     var menuReturn: Screen = .saga
+    var privacyReturn: Screen = .settings
+
+    @Published var appearance: AppAppearance = AppSettings.appearance {
+        didSet {
+            AppSettings.appearance = appearance
+            applyThemeRedraw()
+        }
+    }
+    @Published var typewriterSpeed: TypewriterSpeed = AppSettings.typewriterSpeed {
+        didSet { AppSettings.typewriterSpeed = typewriterSpeed }
+    }
+    @Published var cursorStyle: CursorStyle = AppSettings.cursorStyle {
+        didSet { AppSettings.cursorStyle = cursorStyle }
+    }
+    @Published private(set) var systemColorScheme: ColorScheme = GameViewModel.initialSystemColorScheme
+    @Published private(set) var themeRevision = 0
 
     private let konEngine: GameEngine
     private let socEngine: SoCGameEngine
@@ -36,15 +56,26 @@ final class GameViewModel: ObservableObject {
     private var pacingTask: Task<Void, Never>?
     private var pacingContinuation: CheckedContinuation<Void, Never>?
 
-    private static let pacingDelaySeconds: Double = 8
-    private static let blankLineDelaySeconds: Double = 0.5
-
-    var visibleTranscript: [StyledLine] {
-        Array(transcript.prefix(revealedLineCount))
+    var visibleTranscriptLines: [TranscriptDisplayLine] {
+        var lines: [TranscriptDisplayLine] = []
+        for index in 0..<completedLineCount {
+            lines.append(TranscriptDisplayLine(id: index, line: transcript[index], partialLength: nil))
+        }
+        if let partial = typingVisibleCount, completedLineCount < transcript.count {
+            lines.append(
+                TranscriptDisplayLine(
+                    id: completedLineCount,
+                    line: transcript[completedLineCount],
+                    partialLength: partial,
+                    showsCursor: cursorStyle.glyph != nil
+                )
+            )
+        }
+        return lines
     }
 
     var isPacingActive: Bool {
-        revealedLineCount < transcript.count || isPacingWaiting
+        completedLineCount < transcript.count || typingVisibleCount != nil || isPacingWaiting
     }
 
     init(
@@ -59,6 +90,34 @@ final class GameViewModel: ObservableObject {
         self.socStore = socStore
         self.achievements = konStore.loadAchievements()
         applyStoredPreferences()
+        refreshThemePalette()
+    }
+
+    func updateSystemColorScheme(_ scheme: ColorScheme) {
+        guard systemColorScheme != scheme else { return }
+        systemColorScheme = scheme
+        applyThemeRedraw()
+    }
+
+    func refreshThemePalette() {
+        Theme.applyPalette(for: appearance, system: systemColorScheme)
+    }
+
+    private func applyThemeRedraw() {
+        refreshThemePalette()
+        themeRevision += 1
+    }
+
+    private static var initialSystemColorScheme: ColorScheme {
+        #if canImport(UIKit)
+        return UITraitCollection.current.userInterfaceStyle == .dark ? .dark : .light
+        #else
+        return .dark
+        #endif
+    }
+
+    var preferredColorScheme: ColorScheme? {
+        appearance.preferredColorScheme(system: systemColorScheme)
     }
 
     private func applyStoredPreferences() {
@@ -136,7 +195,7 @@ final class GameViewModel: ObservableObject {
             audio.playAmbient(SoundCue.titleTheme.rawValue)
         case .game:
             refreshAmbient()
-        case .settings, .achievements, .trophies:
+        case .settings, .achievements, .trophies, .privacyPolicy:
             break
         }
     }
@@ -356,6 +415,11 @@ final class GameViewModel: ObservableObject {
         submit()
     }
 
+    func openPrivacyPolicy(from screen: Screen) {
+        privacyReturn = screen
+        self.screen = .privacyPolicy
+    }
+
     func openSettings(from screen: Screen) {
         menuReturn = screen
         self.screen = .settings
@@ -399,14 +463,23 @@ final class GameViewModel: ObservableObject {
     func advancePacing() {
         pacingTask?.cancel()
         pacingTask = nil
+
         if isPacingWaiting {
             pacingContinuation?.resume()
             pacingContinuation = nil
             return
         }
-        guard revealedLineCount < transcript.count else { return }
-        revealedLineCount += 1
-        if revealedLineCount < transcript.count {
+
+        if typingVisibleCount != nil {
+            typingVisibleCount = nil
+            if completedLineCount < transcript.count {
+                completedLineCount += 1
+            }
+            startPacing()
+            return
+        }
+
+        if completedLineCount < transcript.count {
             startPacing()
         }
     }
@@ -419,7 +492,8 @@ final class GameViewModel: ObservableObject {
             pacingContinuation = nil
         }
         isPacingWaiting = false
-        revealedLineCount = transcript.count
+        typingVisibleCount = nil
+        completedLineCount = transcript.count
     }
 
     private func resetTranscript() {
@@ -431,7 +505,8 @@ final class GameViewModel: ObservableObject {
         }
         isPacingWaiting = false
         transcript = []
-        revealedLineCount = 0
+        completedLineCount = 0
+        typingVisibleCount = nil
     }
 
     private func append(_ lines: [StyledLine]) {
@@ -444,46 +519,86 @@ final class GameViewModel: ObservableObject {
         pacingTask?.cancel()
         let mode = activeTextDelay
         if mode == .off {
-            revealedLineCount = transcript.count
+            completedLineCount = transcript.count
+            typingVisibleCount = nil
             isPacingWaiting = false
             return
         }
-        guard revealedLineCount < transcript.count else { return }
+        guard completedLineCount < transcript.count else { return }
 
         pacingTask = Task { @MainActor [weak self] in
-            guard let self else { return }
-            var index = self.revealedLineCount
-            while index < self.transcript.count {
+            await self?.runPacingLoop()
+        }
+    }
+
+    private func runPacingLoop() async {
+        while completedLineCount < transcript.count {
+            if Task.isCancelled { return }
+
+            let line = transcript[completedLineCount]
+            let mode = activeTextDelay
+            if mode == .off {
+                completedLineCount = transcript.count
+                typingVisibleCount = nil
+                return
+            }
+
+            await typeLine(line)
+            completedLineCount += 1
+            typingVisibleCount = nil
+
+            guard completedLineCount < transcript.count else {
+                isPacingWaiting = false
+                return
+            }
+
+            if mode == .tapToAdvance {
+                isPacingWaiting = true
+                await withCheckedContinuation { continuation in
+                    pacingContinuation = continuation
+                }
+                isPacingWaiting = false
                 if Task.isCancelled { return }
-                index += 1
-                self.revealedLineCount = index
-                guard index < self.transcript.count else {
-                    self.isPacingWaiting = false
-                    return
-                }
-                let delayMode = self.activeTextDelay
-                if delayMode == .off {
-                    self.revealedLineCount = self.transcript.count
-                    return
-                }
-                if delayMode == .tapToAdvance {
-                    self.isPacingWaiting = true
-                    await withCheckedContinuation { continuation in
-                        self.pacingContinuation = continuation
-                    }
-                    self.isPacingWaiting = false
-                    if Task.isCancelled { return }
-                    continue
-                }
-                let line = self.transcript[index - 1]
-                let seconds = line.text.isEmpty ? Self.blankLineDelaySeconds : Self.pacingDelaySeconds
-                do {
-                    try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
-                } catch {
-                    return
-                }
+                continue
+            }
+
+            let seconds = line.text.isEmpty
+                ? TextPacing.blankLineDelaySeconds
+                : TextPacing.interLineDelaySeconds
+            do {
+                try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+            } catch {
+                return
             }
         }
+    }
+
+    private func typeLine(_ line: StyledLine) async {
+        if line.text.isEmpty {
+            typingVisibleCount = 0
+            do {
+                try await Task.sleep(nanoseconds: UInt64(TextPacing.blankLineDelaySeconds * 1_000_000_000))
+            } catch {
+                return
+            }
+            typingVisibleCount = nil
+            return
+        }
+
+        let total = line.text.count
+        typingVisibleCount = 0
+        for visible in 1...total {
+            if Task.isCancelled { return }
+            typingVisibleCount = visible
+            guard visible < total else { break }
+            let delay = TextPacing.characterDelay(for: line.style)
+            do {
+                try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+            } catch {
+                return
+            }
+        }
+        typingVisibleCount = nil
     }
 
     // MARK: - Intro text

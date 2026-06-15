@@ -8,7 +8,7 @@ struct AvasiaApp: App {
         WindowGroup {
             RootView()
                 .environmentObject(vm)
-                .preferredColorScheme(.dark) // parchment-on-night fantasy feel
+                .preferredColorScheme(vm.preferredColorScheme)
         }
     }
 }
@@ -16,21 +16,28 @@ struct AvasiaApp: App {
 /// Routes between the title, settings, game, and credits screens.
 struct RootView: View {
     @EnvironmentObject var vm: GameViewModel
+    @Environment(\.colorScheme) private var systemColorScheme
 
     var body: some View {
         LayoutMetricsReader { _ in
             Group {
                 switch vm.screen {
-                case .saga:         SagaTitleView()
-                case .title:        TitleView()
-                case .settings:     SettingsView()
-                case .game:         GameView()
-                case .credits:      CreditsView()
-                case .achievements: AchievementsView()
-                case .trophies:     SoCTrophiesView()
+                case .saga:             SagaTitleView()
+                case .title:            TitleView()
+                case .settings:         SettingsView()
+                case .privacyPolicy:    PrivacyPolicyView()
+                case .game:             GameView()
+                case .credits:          CreditsView()
+                case .achievements:     AchievementsView()
+                case .trophies:         SoCTrophiesView()
                 }
             }
-            .onAppear { vm.onLaunch() }
+            .id(vm.themeRevision)
+            .onAppear {
+                vm.onLaunch()
+                vm.updateSystemColorScheme(systemColorScheme)
+            }
+            .onChange(of: systemColorScheme) { vm.updateSystemColorScheme($0) }
         }
     }
 }

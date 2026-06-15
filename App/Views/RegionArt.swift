@@ -9,6 +9,11 @@ import UIKit
 /// blue-crystal motif (STORY.md §8).
 enum RegionPalette {
     static func colors(_ region: Region) -> (top: Color, bottom: Color, accent: Color) {
+        if Theme.isLight { return lightColors(region) }
+        return darkColors(region)
+    }
+
+    private static func darkColors(_ region: Region) -> (top: Color, bottom: Color, accent: Color) {
         switch region {
         case .oceandale: return (c(0.10, 0.12, 0.16), c(0.04, 0.05, 0.08), Theme.accent)
         case .beach:     return (c(0.12, 0.16, 0.20), c(0.05, 0.08, 0.12), c(0.45, 0.75, 0.95))
@@ -23,6 +28,24 @@ enum RegionPalette {
         case .nacastrum: return (c(0.12, 0.14, 0.20), c(0.05, 0.06, 0.12), Theme.accent)
         case .aylova:    return (c(0.14, 0.13, 0.20), c(0.06, 0.05, 0.12), c(0.55, 0.6, 0.95))
         case .cataracta: return (c(0.08, 0.14, 0.11), c(0.03, 0.07, 0.05), c(0.45, 0.85, 0.55))
+        }
+    }
+
+    private static func lightColors(_ region: Region) -> (top: Color, bottom: Color, accent: Color) {
+        switch region {
+        case .oceandale: return (c(0.90, 0.92, 0.95), c(0.82, 0.86, 0.91), Theme.accent)
+        case .beach:     return (c(0.92, 0.94, 0.96), c(0.84, 0.89, 0.93), c(0.20, 0.45, 0.72))
+        case .graveyard: return (c(0.88, 0.88, 0.90), c(0.80, 0.80, 0.84), c(0.35, 0.35, 0.45))
+        case .splitpath: return (c(0.93, 0.91, 0.86), c(0.86, 0.83, 0.76), c(0.55, 0.42, 0.18))
+        case .mountain:  return (c(0.90, 0.92, 0.95), c(0.82, 0.86, 0.90), c(0.25, 0.45, 0.68))
+        case .cave:      return (c(0.91, 0.86, 0.91), c(0.84, 0.78, 0.84), c(0.55, 0.28, 0.52))
+        case .forest:    return (c(0.88, 0.93, 0.89), c(0.80, 0.88, 0.82), c(0.18, 0.48, 0.28))
+        case .tree:      return (c(0.90, 0.92, 0.86), c(0.83, 0.87, 0.80), c(0.28, 0.52, 0.30))
+        case .road:      return (c(0.93, 0.90, 0.88), c(0.86, 0.82, 0.80), c(0.58, 0.38, 0.22))
+        case .shore:     return (c(0.90, 0.93, 0.95), c(0.82, 0.88, 0.92), c(0.20, 0.45, 0.72))
+        case .nacastrum: return (c(0.91, 0.92, 0.96), c(0.83, 0.85, 0.92), Theme.accent)
+        case .aylova:    return (c(0.92, 0.91, 0.96), c(0.84, 0.83, 0.90), c(0.30, 0.35, 0.68))
+        case .cataracta: return (c(0.88, 0.93, 0.90), c(0.80, 0.88, 0.84), c(0.18, 0.48, 0.32))
         }
     }
     private static func c(_ r: Double, _ g: Double, _ b: Double) -> Color { Color(red: r, green: g, blue: b) }

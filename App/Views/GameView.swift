@@ -65,6 +65,7 @@ struct GameView: View {
             Divider().background(Theme.accent.opacity(0.4))
             transcript
                 .layoutPriority(1)
+                .background(transcriptBackground)
             quickActions(metrics)
             inputBar(metrics)
         }
@@ -84,6 +85,7 @@ struct GameView: View {
             VStack(spacing: 0) {
                 transcript
                     .layoutPriority(1)
+                    .background(transcriptBackground)
                 quickActions(metrics)
                 inputBar(metrics)
             }
@@ -201,12 +203,21 @@ struct GameView: View {
 
     // MARK: - Transcript & actions
 
+    private var transcriptBackground: Color {
+        Theme.isLight ? Theme.background.opacity(0.88) : Color.clear
+    }
+
     private var transcript: some View {
         ScrollViewReader { proxy in
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 8) {
-                    ForEach(Array(vm.visibleTranscript.enumerated()), id: \.offset) { idx, line in
-                        LineView(line: line).id(idx)
+                    ForEach(vm.visibleTranscriptLines) { entry in
+                        LineView(
+                            line: entry.line,
+                            partialLength: entry.partialLength,
+                            showsCursor: entry.showsCursor
+                        )
+                        .id(entry.id)
                     }
                     if vm.isPacingWaiting {
                         Text("Tap to continue")
@@ -222,18 +233,21 @@ struct GameView: View {
             }
             .accessibilityElement(children: .contain)
             .accessibilityLabel("Game transcript")
-            .onChange(of: vm.revealedLineCount) { _ in
-                if let last = vm.visibleTranscript.indices.last {
-                    withAnimation { proxy.scrollTo(last, anchor: .bottom) }
-                } else if vm.isPacingWaiting {
-                    withAnimation { proxy.scrollTo("pacing-hint", anchor: .bottom) }
-                }
-            }
+            .onChange(of: vm.completedLineCount) { _ in scrollTranscript(proxy) }
+            .onChange(of: vm.typingVisibleCount) { _ in scrollTranscript(proxy) }
             .onChange(of: vm.isPacingWaiting) { waiting in
                 if waiting {
                     withAnimation { proxy.scrollTo("pacing-hint", anchor: .bottom) }
                 }
             }
+        }
+    }
+
+    private func scrollTranscript(_ proxy: ScrollViewProxy) {
+        if let last = vm.visibleTranscriptLines.last?.id {
+            withAnimation(.easeOut(duration: 0.15)) { proxy.scrollTo(last, anchor: .bottom) }
+        } else if vm.isPacingWaiting {
+            withAnimation { proxy.scrollTo("pacing-hint", anchor: .bottom) }
         }
     }
 

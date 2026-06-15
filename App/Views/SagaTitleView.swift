@@ -54,7 +54,7 @@ struct SagaTitleView: View {
     private var gamePicker: some View {
         VStack(spacing: 14) {
             ForEach(AvasiaProduct.allCases, id: \.self) { game in
-                MenuButton(title: game.menuTitle, systemImage: icon(for: game), style: .primary) {
+                MenuButton(title: game.menuTitle, systemImage: icon(for: game), style: .primary, accessibilityIdentifier: game == .kon ? "saga-kon" : "saga-soc") {
                     vm.openProduct(game)
                 }
                 Text(game.subtitle)
@@ -63,7 +63,7 @@ struct SagaTitleView: View {
                     .multilineTextAlignment(.center)
                     .padding(.bottom, 4)
             }
-            MenuButton(title: "Settings", systemImage: "gearshape") {
+            MenuButton(title: "Settings", systemImage: "gearshape", accessibilityIdentifier: "saga-settings") {
                 vm.openSettings(from: .saga)
             }
             MenuButton(title: "Credits", systemImage: "scroll") {
@@ -93,9 +93,9 @@ struct TitleScreenBackground: View {
         ZStack {
             LinearGradient(
                 colors: [
-                    Color(red: 0.05, green: 0.07, blue: 0.12),
-                    Theme.night,
-                    Color(red: 0.04, green: 0.04, blue: 0.07)
+                    Theme.palette.backgroundGradientTop,
+                    Theme.palette.background,
+                    Theme.palette.backgroundGradientBottom
                 ],
                 startPoint: .top,
                 endPoint: .bottom
