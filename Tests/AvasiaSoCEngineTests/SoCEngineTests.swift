@@ -118,13 +118,57 @@ final class SoCEngineTests: XCTestCase {
         XCTAssertTrue(engine.state.northernMarchCleared)
     }
 
-    func testHunterPathAutoReturns() {
+    func testHunterPathLeaveReturns() {
         let engine = SoCGameEngine()
         engine.load(SoCGameState())
 
         _ = engine.submit("west")
+        XCTAssertEqual(engine.state.currentRoom, .cataractaHunterPath)
 
+        _ = engine.submit("leave")
         XCTAssertEqual(engine.state.currentRoom, .cataractaHousing)
+    }
+
+    func testAthalosShopOnReturnVisit() {
+        var state = SoCGameState()
+        state.currentRoom = .cataractaShopping
+        let engine = SoCGameEngine(state: state)
+
+        _ = engine.submit("south")
+        XCTAssertEqual(engine.state.currentRoom, .cataractaShopping)
+
+        _ = engine.submit("south")
+        XCTAssertEqual(engine.state.currentRoom, .cataractaAthalos)
+
+        let goldBefore = engine.state.gold
+        _ = engine.submit("buy potion")
+        XCTAssertEqual(engine.state.gold, goldBefore - 25)
+        XCTAssertEqual(engine.state.inventory[.potion], 2)
+    }
+
+    func testVarathoBridgeGrantsExpOnce() {
+        let engine = SoCGameEngine()
+        engine.load(SoCGameState())
+
+        _ = engine.submit("north")
+        XCTAssertTrue(engine.state.varathoCrossed)
+        XCTAssertGreaterThan(engine.state.questExp, 0)
+
+        let exp = engine.state.questExp
+        _ = engine.submit("south")
+        _ = engine.submit("north")
+        XCTAssertEqual(engine.state.questExp, exp)
+    }
+
+    func testBarracksGuardGossip() {
+        var state = SoCGameState()
+        state.currentRoom = .cataractaNorth
+        let engine = SoCGameEngine(state: state)
+
+        _ = engine.submit("west")
+        _ = engine.submit("talk")
+        XCTAssertTrue(engine.state.barracksTalked)
+        XCTAssertGreaterThan(engine.state.questExp, 0)
     }
 
     func testAthalosAutoReturns() {

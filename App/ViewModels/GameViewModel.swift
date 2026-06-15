@@ -83,6 +83,9 @@ final class GameViewModel: ObservableObject {
         socEngine.setTextDelay(value)
     }
 
+    var socIsNaming: Bool { product == .soc && pendingSocName }
+    var socIsConfirmingName: Bool { product == .soc && pendingSocNameConfirm != nil }
+
     var lastDeath: DeathInfo? { product == .kon ? konEngine.lastDeath : nil }
     var lastSocDeath: SoCDeathInfo? { product == .soc ? socEngine.lastSocDeath : nil }
 
@@ -327,6 +330,15 @@ final class GameViewModel: ObservableObject {
 
     func quickAction(_ verb: String) {
         flushPacing()
+        if socIsConfirmingName {
+            switch verb.lowercased() {
+            case "yes", "no": input = verb.lowercased()
+            default: return
+            }
+            submit()
+            return
+        }
+        if socIsNaming { return }
         if product == .soc {
             switch verb.lowercased() {
             case "attack": input = "attack"
@@ -334,6 +346,7 @@ final class GameViewModel: ObservableObject {
             case "advance": input = "advance"
             case "march": input = "march"
             case "visit ruins": input = "visit ruins"
+            case "objectives": input = "objectives"
             case "inventory": input = "inventory"
             default: input = verb
             }

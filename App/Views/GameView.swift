@@ -17,6 +17,8 @@ struct GameView: View {
 
     private var quickVerbs: [String] {
         guard vm.product == .soc else { return defaultQuickVerbs }
+        if vm.socIsConfirmingName { return ["Yes", "No"] }
+        if vm.socIsNaming { return [] }
         if vm.socState.inCombat {
             return ["Attack", "Eat Potion", "Inventory"]
         }
@@ -32,6 +34,9 @@ struct GameView: View {
             return ["Visit Ruins", "Continue", "Inventory"]
         case .aylovaWarCamp, .northernMarch, .mageOutpost, .vashirrStand, .ageEpilogue:
             return ["March", "Continue", "Inventory", "Look"]
+        case .cataractaHousing, .cataractaNorth, .cataractaShopping, .cataractaGarden,
+             .cataractaBarracks, .cataractaHunterPath:
+            return ["North", "East", "South", "West", "Look", "Continue", "Inventory", "Objectives"]
         default:
             return ["North", "East", "South", "West", "Look", "Continue", "Inventory"]
         }
@@ -187,6 +192,7 @@ struct GameView: View {
     private func socIcon(for item: SoCItem) -> String {
         switch item {
         case .potion: return "cross.vial.fill"
+        case .fieldRations: return "takeoutbag.and.cup.and.straw.fill"
         case .smallFish, .bigFish: return "fish.fill"
         case .crab: return "leaf.fill"
         case .oldShoe: return "shoe.fill"
@@ -233,7 +239,9 @@ struct GameView: View {
 
     private func quickActions(_ metrics: LayoutMetrics) -> some View {
         Group {
-            if metrics.usesWrappedQuickActions {
+            if quickVerbs.isEmpty {
+                EmptyView()
+            } else if metrics.usesWrappedQuickActions {
                 if metrics.isAccessibilityText {
                     ScrollView {
                         quickActionsGrid(metrics)

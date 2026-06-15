@@ -18,9 +18,61 @@ enum SoCCataractaGate {
 struct SoCCataractaAthalos: SoCRoomScript {
     let id: SoCRoomID = .cataractaAthalos
 
-    func autoReturnAfterEnter(_ state: SoCGameState) -> SoCRoomID? { .cataractaShopping }
+    func onEnter(_ state: inout SoCGameState) -> [StyledLine]? {
+        state.athalosVisitCount += 1
+        return nil
+    }
+
+    func autoReturnAfterEnter(_ state: SoCGameState) -> SoCRoomID? {
+        state.athalosVisitCount <= 1 ? .cataractaShopping : nil
+    }
 
     func describe(_ state: SoCGameState) -> [StyledLine] {
+        if state.athalosVisitCount <= 1 {
+            return introductionLines(state)
+        }
+        return shopLines(state)
+    }
+
+    func handle(_ input: ParsedInput, _ state: inout SoCGameState) -> SoCTurnResult {
+        if let block = SoCCataractaGate.ashesBlock(state) { return block }
+
+        if state.athalosVisitCount <= 1 {
+            return SoCTurnResult([], .move(.cataractaShopping))
+        }
+
+        if input.contains("BUY") && input.contains("POTION") {
+            guard state.spendGold(25) else {
+                return SoCTurnResult([.speech("Can't help you if you can't pay, friend.")])
+            }
+            state.addItem(.potion)
+            return SoCTurnResult([
+                .item("You buy a Health Potion for 25 gold."),
+                .body("Gold: \(state.gold)"),
+                .speech("Athalos: Legion discount — don't spend it all in one battle.")
+            ])
+        }
+
+        if input.contains("BUY") && (input.contains("RATION") || input.contains("FOOD")) {
+            guard state.spendGold(12) else {
+                return SoCTurnResult([.speech("Can't help you if you can't pay, friend.")])
+            }
+            state.addItem(.fieldRations)
+            return SoCTurnResult([
+                .item("You buy Field Rations for 12 gold."),
+                .body("Gold: \(state.gold)"),
+                .speech("Athalos: Dried fish and hard bread. Better than starving on the march.")
+            ])
+        }
+
+        if input.contains("LEAVE") || input.contains("BACK") || input.contains(Verb.south) {
+            return SoCTurnResult([.body("You thank Athalos and leave.")], .move(.cataractaShopping))
+        }
+
+        return SoCTurnResult([.hint("BUY POTION (25g), BUY RATIONS (12g), or LEAVE.")])
+    }
+
+    private func introductionLines(_ state: SoCGameState) -> [StyledLine] {
         let name = state.playerName.isEmpty ? "friend" : state.playerName
         return [
             .title("Althalos' House"),
@@ -34,16 +86,20 @@ struct SoCCataractaAthalos: SoCRoomScript {
             .speech("Most would wait to be drafted, but not you!"),
             .blank,
             .speech("Listen. I wish I had something to give you, but business hasn't been so good lately."),
-            .speech("If you're ever looking to buy anything, I'll be here as always!"),
+            .speech("Come back if you need potions or rations before the courtyard — I'll cut you a fair price."),
             .blank,
             .speech("Take care and good luck!"),
             .body("You thank Althalos and leave.")
         ]
     }
 
-    func handle(_ input: ParsedInput, _ state: inout SoCGameState) -> SoCTurnResult {
-        if let block = SoCCataractaGate.ashesBlock(state) { return block }
-        return SoCTurnResult([], .move(.cataractaShopping))
+    private func shopLines(_ state: SoCGameState) -> [StyledLine] {
+        [
+            .title("Althalos' House"),
+            .body("Athalos waves from behind dusty shelves of unsold wares."),
+            .speech("Back again? Legion rates: potions 25 gold, field rations 12."),
+            .hint("BUY POTION, BUY RATIONS, or LEAVE.")
+        ]
     }
 }
 
@@ -335,9 +391,12 @@ struct SoCCataractaGarden: SoCRoomScript {
                     .body("I guess some things just aren't worth doing.")
                 ])
             }
+            state.fountainLuck = true
+            state.playerLuck += 1
             return SoCTurnResult([
                 .body("You toss a gold piece into the water and it lands on tails."),
-                .body("Nothing happens.")
+                .body("The Anula crystal hums faintly. You feel a whisper of luck."),
+                .body("Maybe the boy was right after all.")
             ])
         }
 

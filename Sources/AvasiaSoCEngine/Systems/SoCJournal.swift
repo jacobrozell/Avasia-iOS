@@ -22,7 +22,10 @@ public enum SoCJournal {
     }
 
     private static func appendPeacefulGoals(_ state: SoCGameState, into goals: inout [String]) {
+        if !state.varathoCrossed { goals.append("Optional: cross the Varatho bridge to northern town.") }
         if !state.fountain { goals.append("Optional: toss a coin at the castle garden fountain (North).") }
+        if !state.barracksTalked { goals.append("Optional: speak with the guards at the barracks (North → West).") }
+        if state.athalosVisitCount < 2 { goals.append("Optional: visit Athalos (Shopping → South) — return to buy supplies.") }
         if !state.ulric { goals.append("Optional: visit Ulric the blacksmith (Shopping → East).") }
         if !state.trophies.contains(.brother), state.ulric {
             goals.append("Optional: accept Doran's fishing rod at the pier.")

@@ -15,6 +15,20 @@ Housing → Courtyard → Portal → Library → Throne → Aylova → Northern 
 
 ---
 
+## Act I flesh-out (this branch)
+
+| Item | Status |
+|---|---|
+| Varatho bridge crossing + quest XP | ✅ |
+| Housing / North / Shopping LOOK flavor | ✅ |
+| Interactive barracks guard gossip | ✅ |
+| Hunter path lore (stay & explore) | ✅ |
+| Athalos revisit shop (potions, rations) | ✅ |
+| Fountain tails → +1 luck (Anula blessing) | ✅ |
+| Hide quick actions during name entry | ✅ (sim QA fix) |
+
+---
+
 ## Gameplay flesh-out (`feature/soc-gameplay-flesh-out`)
 
 | Item | Status |
@@ -53,7 +67,8 @@ Housing → Courtyard → Portal → Library → Throne → Aylova → Northern 
 | `AvasiaEngineTests` | 25 | ✅ |
 | `AvasiaSoCEngineTests` | 17 | ✅ |
 | `SoCCriticalPathTests` | 6 | ✅ |
-| **Total** | **49** | ✅ |
+| `SoCEngineTests` (Act I + core) | 21 | ✅ |
+| **Total** | **52** | ✅ |
 
 ---
 
@@ -61,5 +76,5 @@ Housing → Courtyard → Portal → Library → Throne → Aylova → Northern 
 
 | Item | Notes |
 |---|---|
-| More Act I side content (shopping errands) | low priority |
+| More Act I side content (shopping errands) | ✅ bridge, barracks, Athalos shop |
 | Simulator playthrough QA | manual |

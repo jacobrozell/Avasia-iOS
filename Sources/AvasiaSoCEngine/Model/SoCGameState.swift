@@ -57,7 +57,11 @@ public struct SoCGameState: Codable, Sendable {
     public var trophies: Set<SoCTrophy> = []
 
     public var fountain: Bool = false
+    public var fountainLuck: Bool = false
     public var gardenInsight: Bool = false
+    public var varathoCrossed: Bool = false
+    public var barracksTalked: Bool = false
+    public var athalosVisitCount: Int = 0
     public var ulric: Bool = false
     public var doran: Bool = false
     public var portalRoom: Bool = false
