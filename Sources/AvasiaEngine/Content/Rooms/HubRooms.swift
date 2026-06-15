@@ -45,8 +45,8 @@ struct BridgeRoom: RoomScript {
 
     func handle(_ input: ParsedInput, _ state: inout GameState) -> TurnResult {
         if input.contains(["JUMP", "SWIM", "DIVE", "LEAP"]) {
-            return TurnResult([.body("You leap toward the far side. You do not reach it.")],
-                              .death(reason: "Dashed on the rocks far below. The chasm was deeper than your courage."))
+            return TurnResult([.body("You jump in the water and then realize, halfway into the jump, that the chasm is VERY deep.")],
+                              .death(reason: ""))
         }
         if input.contains(Flag.levitate.castSynonyms) {
             guard state.has(.levitate) else {

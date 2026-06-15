@@ -1,8 +1,7 @@
 import Foundation
 
-// The Mountain & Cave region (east of Splitpath). Reached by crossing the bridge
-// with Levitate. Contains the druid encounters and the cave's fireball symbol
-// puzzle — the central rune mechanic. See WORLD_MAP §4 and STORY §5.
+// The Mountain & Cave region (east of Splitpath). Text reproduced verbatim from
+// GameDriver.py (deliberate typos and jokes preserved). Mechanics unchanged.
 
 /// Mountain hub on the far side of the bridge.
 struct MountainRoom: RoomScript {
@@ -11,7 +10,7 @@ struct MountainRoom: RoomScript {
     func describe(_ state: GameState) -> [StyledLine] {
         [
             .body("You stand on a windswept ridge, the chasm at your back."),
-            .body("To the NORTH gapes the mouth of a cave. To the EAST, a red fox watches you."),
+            .body("To the NORTH gapes the mouth of a cave. To the EAST, paw-prints lead away."),
             .body("To the WEST, a trail winds toward a gate of blue crystal. To the SOUTH, the bridge."),
             .hint("Which way? (NORTH, EAST, WEST, SOUTH)")
         ]
@@ -32,15 +31,19 @@ struct DruidTalkRoom: RoomScript {
 
     func describe(_ state: GameState) -> [StyledLine] {
         if state.has(.lantern) {
-            return [
-                .body("Dentros gives you a knowing nod, his cherry-red hair bright against the grey stone."),
-                .speech("The Old Mages hid their secrets deep in that cave. Mind the dark."),
-                .hint("Head BACK.")
-            ]
+            return [.body("There is nothing of significance here."), .hint("Head BACK.")]
         }
         return [
-            .body("The red fox pads closer, then rises — fur becoming cloak, snout becoming a man's grinning face."),
-            .speech("My name is Dentros. I am a scout from Cataracta. I am a Druid."),
+            .body("You follow the path to the EAST."),
+            .body("As you travel further, you notice tracks on the ground."),
+            .body("The tracks are fairly small and are in the shape of a paw-print."),
+            .blank,
+            .body("You decide to follow the tracks and eventually find yourself behind a red fox."),
+            .body("After a stare-down, the fox relaxes and walks towards you — growing, rising onto its hind legs."),
+            .body("To your surprise, what was a fox transforms into a man with long, cherry-red hair."),
+            .blank,
+            .speech("Ah, greetings mage. My apologies for the reaction. You never know what could be out here."),
+            .speech("My name is Dentros. I am a scout from Cataracta. If you can't tell, I am a Druid."),
             .hint("You could TALK with him, or head BACK.")
         ]
     }
@@ -53,9 +56,15 @@ struct DruidTalkRoom: RoomScript {
             state.gain(.lantern)
             state.gain(.metDentros)
             return TurnResult([
-                .speech("You seek what the Old Mages left behind. The cave to the north — but you'll be blind in there."),
-                .speech("Take this. You'll need it more than I."),
-                .item("Dentros hands you a LANTERN.")
+                .speech("You seek to reopen Nacastrum? Yes, a difficult task indeed."),
+                .speech("Since Vashirr exiled his people, I must admit, my people have been worried."),
+                .speech("Deep within the mountains is a secret of the Old Mages."),
+                .speech("The druid of Cataracta have known of it for ages, but do not posses the means to reach it."),
+                .speech("I suggest you look for this hidden knowledge. It may be of use to you."),
+                .speech("Oh, before you leave. Take this lantern. The caves are dark and you will need to be able to see."),
+                .item("You received a lantern!"),
+                .speech("Good luck, my friend."),
+                .body("Dentros returns to his fox form and leaps away.")
             ], .move(.mountain))
         }
         return TurnResult([.hint("You can TALK or go BACK.")])
@@ -74,8 +83,9 @@ struct WestMountainRoom: RoomScript {
             ]
         }
         return [
-            .body("The trail climbs toward a huge stone gate enriched with blue crystal shards."),
-            .body("To the NORTH stand the gate and its druid hunters."),
+            .body("You continue until the dirt path becomes stone and the chasm's roar becomes the chirps of birds."),
+            .body("Ahead you see a huge stone gate, enriched with blue crystal shards."),
+            .body("You see a group of six men talking under the blue gleaming gate to the NORTH."),
             .hint("Go NORTH to the gate, or BACK.")
         ]
     }
@@ -94,39 +104,62 @@ struct DruidPathRoom: RoomScript {
 
     func describe(_ state: GameState) -> [StyledLine] {
         [
-            .body("Six druid hunters bar the gate. One drops to all fours and becomes a great black wolf, hackles raised."),
-            .speech("Hold! Prove you are no Agromanian spy."),
+            .body("These men seem friendly enough. You approach them to start a converation."),
+            .speech("Who are you!? Stay back!"),
+            .body("Suddenly, one of the men lets out an unhuman roar! He is on all fours,"),
+            .body("thrashing as hairs protrude from his ever-growing body — a big, black, terrifying wolf!"),
+            .body("You know that the druids are allies with the mages. You need to show them who you are."),
             .hint("How do you prove yourself? (show your EARS, or cast a spell)")
         ]
     }
 
     func handle(_ input: ParsedInput, _ state: inout GameState) -> TurnResult {
-        let proven: Bool
-        var how: StyledLine? = nil
+        var lead: [StyledLine] = []
+        var proven = false
         if input.contains(["EAR", "EARS"]) {
-            proven = true; how = .body("You sweep back your hood, baring the long pointed ears of a Kaefden mage.")
+            proven = true
+            lead = [
+                .body("You quickly pull back your hair and flash your ears!"),
+                .body("Almost immediately, the group seems to understand that you mean no harm.")
+            ]
         } else if input.contains(Flag.levitate.castSynonyms) && state.has(.levitate) {
-            proven = true; how = .body("You rise gently off the stone. No spy could fake the old magic.")
+            proven = true
+            lead = [
+                .body("You desperately mumble levitate under your breath."),
+                .body("Suddenly, the druid men are like little stone pebbles as you ascend towards the heavens."),
+                .body("Once you see the wolf transform back into human form, you deicde it is safe to come back down.")
+            ]
         } else if input.contains(Flag.stonebend.castSynonyms) && state.has(.stonebend) {
-            proven = true; how = .body("You bend the rock of the gatepost like clay. The wolf shrinks back.")
+            proven = true
+            lead = [
+                .body("You cast Stonebend!"),
+                .body("Right in front of you, the stone pathway lurches upwards to hide the pack of men."),
+                .body("The men seem surprised but immediately understand you mean no harm.")
+            ]
         } else if input.contains(Flag.fireball.castSynonyms) {
-            return TurnResult([.hint("You raise a flame — and the hunters bristle. Fire among allies? Lower it, fool.")])
-        } else {
-            proven = false
+            return TurnResult([
+                .body("That would certainly start a wildfire, or kill your allies."),
+                .body("Find another way! Quick!")
+            ])
         }
 
         guard proven else {
-            return TurnResult([.hint("The wolf growls. Show them your EARS, or cast a spell only a mage could.")])
+            return TurnResult([.hint("You need to show them you're a mage. You can try talking to them.")])
         }
         state.cataractaGateDone = true
-        var lines: [StyledLine] = []
-        if let how { lines.append(how) }
-        lines.append(contentsOf: [
-            .speech("Dreadfully sorry about that, Mage. I am Cellious."),
-            .speech("But I'm afraid I can't let you into the city. Our king is extremely paranoid of spies."),
-            .body("The gate stays shut. There is nothing more for you here.")
-        ])
-        return TurnResult(lines, .move(.mountain))
+        return TurnResult(lead + [
+            .body("The man that shouted, obviously the leader, begins to apologize."),
+            .speech("Dreadfully sorry about that, Mage."),
+            .speech("You can't be too careful around here, not with those cursed Agromanians lurking around."),
+            .speech("We are a group of hunters. Our duty is to provide food for the people of Cataracta."),
+            .speech("My name is Cellious. I'm the chief of that hunting pack."),
+            .speech("I heard what happened to Nacastrum. Most mages went towards Aylova, the capital. But not you."),
+            .speech("I'm afriad I can't let you into the city."),
+            .speech("Our king is extremely paranoid of spies now that Oceandale has been attacked."),
+            .speech("I wish you safe travels, Mage. And most of all, if you see any Agromanians..."),
+            .body("Cellious roars ferociously showing his hatred."),
+            .body("You make your way all the way back to where you crossed the bridge.")
+        ], .move(.mountain))
     }
 }
 
@@ -148,12 +181,19 @@ struct CaveEntranceRoom: RoomScript {
             return TurnResult([], .move(.mountain))
         }
         if input.contains(Flag.levitate.castSynonyms) && state.has(.levitate) {
-            return TurnResult([.body("You drift upward in the dark — straight onto a ceiling of unseen stalactites.")],
-                              .death(reason: "Impaled in the blind dark. Some places are not meant for flying."))
+            return TurnResult([
+                .body("Your voice echos through the dark cave as you fling upwards out of the water."),
+                .body("You overcompensate for the weight of the water and spring upwards; faster than intended."),
+                .body("The roof of the cave is home to several stalactites.")
+            ], .death(reason: ""))
         }
-        if input.contains(["LIGHT", "LANTERN"]) {
+        if input.contains(["LIGHT", "LANTERN", "TORCH"]) {
             guard state.has(.lantern) else {
-                return TurnResult([.hint("You have no light. Items don't just appear in this game.")])
+                return TurnResult([
+                    .body("What lantern?"),
+                    .body("I must've missed when you obtained that."),
+                    .body("Items don't just appear out of thin air ya'know?")
+                ])
             }
             return TurnResult([
                 .body("Lantern lit, you pick your way down a narrow, flooded passage and swim through a low hole."),
@@ -194,11 +234,12 @@ struct NorthCaveRoom: RoomScript {
 
     func describe(_ state: GameState) -> [StyledLine] {
         if state.has(.northCaveGateOpen) {
-            return [.body("The stone gate stands open. The pedestal chamber lies beyond."), .hint("Go FORWARD, or BACK.")]
+            return [.body("The stone-gate has rolled away, leaving a new entrance to the north."), .hint("Go FORWARD, or BACK.")]
         }
         return [
-            .body("An ancient archway bars the way, set with three rune buttons:"),
-            .symbol("   1: %'      2: )*      3: <~"),
+            .body("You walk under a massive archway that is inscribed with ancient writing."),
+            .body("Ahead you see a massive crumbling stone-gate, its writings penetrating the wall about a quarter inch."),
+            .symbol("Symbols include:  %'   )*   <~"),
             .hint("You could PUSH a button (1, 2, or 3), or go BACK.")
         ]
     }
@@ -207,15 +248,25 @@ struct NorthCaveRoom: RoomScript {
         if input.contains(Verb.back) || input.contains(Verb.south) {
             return TurnResult([], .move(.mainCave))
         }
-        if state.has(.northCaveGateOpen) && (input.contains(["FORWARD", "NORTH", "ENTER"])) {
+        if input.contains(Flag.levitate.castSynonyms) {
+            return TurnResult([.body("Seriously?")])
+        }
+        if state.has(.northCaveGateOpen) && input.contains(["FORWARD", "NORTH", "ENTER"]) {
             return TurnResult([], .move(.fireballRoom))
         }
         if input.contains(["1", "%'"]) {
             state.gain(.northCaveGateOpen)
-            return TurnResult([.body("The button sinks with a grind of stone. The gate yawns open.")], .move(.fireballRoom))
+            return TurnResult([
+                .body("A low rumbling turns to a loud thunderous roar, the northern gate is rolling open!"),
+                .body("After the dust settles, and you clear your eyes..."),
+                .body("The stone-gate has rolled away, leaving a new entrance to the north!")
+            ], .move(.fireballRoom))
         }
         if input.contains(["2", ")*", "3", "<~"]) {
-            return TurnResult([.body("The button clicks, but nothing happens.")])
+            return TurnResult([
+                .body("You reach out and touch the cold inscription."),
+                .body("Absolutely nothing happens.")
+            ])
         }
         return TurnResult([.hint("PUSH button 1, 2, or 3 — or go BACK.")])
     }
@@ -227,9 +278,15 @@ struct FireballRoom: RoomScript {
 
     func describe(_ state: GameState) -> [StyledLine] {
         [
-            .body("A cracked pedestal stands at the center. In the corner, a mage is burnt to ash."),
+            .body("There is a cracked stone pedestal, centered in the room."),
+            .body("The smell of charred ash stings your nostrils."),
+            .body("A dead mage lies in the corner of the room."),
+            .body("His body is now just black ash in the shape of what he once was."),
+            .blank,
             .body("It seems you are not alone on your quest."),
-            .body("Four slots wait on the pedestal. A legend is carved above them:"),
+            .blank,
+            .body("On the pedestal are four symbols, horizontal to each other."),
+            .symbol("The symbols include: (^' ~' >' ;')"),
             .symbol("   ^' = 1     ~' = 2     >' = 3     ;' = 4"),
             .hint("Enter the four-symbol order (as digits), or LEAVE. (\(state.guesses) attempts left)")
         ]
@@ -239,38 +296,53 @@ struct FireballRoom: RoomScript {
         if input.contains(["LEAVE", "BACK", "EXIT", "RETURN"]) {
             return TurnResult([], .move(.northCave))
         }
+        if input.contains(Flag.levitate.castSynonyms) {
+            return TurnResult([.body("You seriously have got to stop.")])
+        }
+        if input.contains(["LANTERN", "LIGHT"]) {
+            return TurnResult([.body("It's already lit fam.")])
+        }
         if input.contains(["NOIDEA"]) {
-            return TurnResult([.hint("Thanks for your honesty.")])
+            return TurnResult([
+                .body("Thanks for your honesty."),
+                .body("I'm not going to give you the answer, however.")
+            ])
         }
         if input.normalized == state.symbolAnswer {
             state.gain(.fireball)
             return TurnResult([
                 .body("The slots blaze. Heat coils up your arm and settles, waiting, behind your eyes."),
-                .item("You have learned the spell INFLAME.")
+                .item("You obtained the spell Inflame!")
             ], .move(.mainCave))
         }
         // Wrong guess.
         state.guesses -= 1
         if state.guesses <= 0 {
-            return TurnResult([.body("The pedestal flares white-hot and the whole chamber erupts in flame.")],
-                              .death(reason: "Burnt to ash, like the mage before you."))
+            return TurnResult([
+                .body("Suddenly the room goes completely black."),
+                .body("The entrance behind you rolls shut once again."),
+                .body("The ground under you becomes immensely hot."),
+                .body("The cause of the heat is now apparent."),
+                .body("A massive ball of fire hurls towards you.")
+            ], .death(reason: ""))
         }
         return TurnResult([.hint("The runes flash red. Wrong. (\(state.guesses) attempts left)")])
     }
 }
 
-/// A symbol-clue room: reveals one rune of the puzzle by slot index.
+/// A symbol-clue room: reveals one rune of the puzzle by slot index. The lead-in
+/// flavor is supplied per room in `World`; this appends the reveal line.
 struct SymbolClueRoom: RoomScript {
     let id: RoomID
     let slot: Int           // index into state.symbols
-    let ordinal: String     // "first" / "second" / ...
+    let ordinal: String     // for the test/comment only
     let flavor: [StyledLine]
 
     func describe(_ state: GameState) -> [StyledLine] {
-        var lines = flavor
-        lines.append(.symbol("Scratched into the stone, the \(ordinal) symbol of four:  \(state.symbols[slot].glyph)"))
-        lines.append(.hint("Head BACK."))
-        return lines
+        flavor + [
+            .symbol("The symbol is \(state.symbols[slot].glyph)"),
+            .hint("Head BACK.")
+        ]
     }
 
     func handle(_ input: ParsedInput, _ state: inout GameState) -> TurnResult {
@@ -294,8 +366,8 @@ struct NortheastCaveRoom: RoomScript {
     func handle(_ input: ParsedInput, _ state: inout GameState) -> TurnResult {
         if input.contains(Flag.levitate.castSynonyms) && state.has(.levitate) {
             return TurnResult([
-                .body("You rise to the cage and pry the parchment from skeletal fingers."),
-                .symbol("The third symbol of four:  \(state.symbols[2].glyph)")
+                .body("You manage to decipher the third symbol."),
+                .symbol("The symbol is \(state.symbols[2].glyph)")
             ], .move(.mainCave))
         }
         return TurnResult([], .move(.mainCave))
@@ -308,17 +380,28 @@ struct NorthwestCaveRoom: RoomScript {
 
     func describe(_ state: GameState) -> [StyledLine] {
         [
-            .body("A miner lies murdered among translucent shards, a pickaxe still within reach."),
-            .symbol("Carved beside him, the second symbol of four:  \(state.symbols[1].glyph)"),
+            .body("You head into the north-western entrance, the pink crystals shrinking and cracking as you go."),
+            .body("The ground is littered in broken shards, colorless despite coming from the pink spires."),
+            .body("You discover a body laying cold on the floor, his satchel busted open and full of translucent shards."),
+            .body("He appears to have been attempting to mine the shards. His pickaxe lies beside him."),
+            .blank,
+            .body("Three of the four symbols are illegible, but you can decipher one of them."),
+            .symbol("The second of the four is \(state.symbols[1].glyph)"),
             .hint("You could TAKE the pickaxe, or go BACK.")
         ]
     }
 
     func handle(_ input: ParsedInput, _ state: inout GameState) -> TurnResult {
         if input.contains(Verb.take) || input.contains(["PICKAXE", "MINE", "PICK"]) {
-            return TurnResult([.body("You heft the pickaxe and swing at the shards. Something in the dark hurls a spear through your chest.")],
-                              .death(reason: "Killed for a miner's greed. The shards were guarded."))
+            return TurnResult([
+                .body("You grab the pickaxe."),
+                .body("You walk towards one of the remaining crystals and set down your lantern."),
+                .body("Just as you're about to slam down the pick into the crystals..."),
+                .body("You feel a sharp pain in the center of your back."),
+                .body("You drop the pickaxe and look down to see the tip of a spear extruding from your chest."),
+                .body("The world around you darkens and you fall to the ground..")
+            ], .death(reason: ""))
         }
-        return TurnResult([], .move(.mainCave))
+        return TurnResult([.body("It probably isn't a good idea to mine the pink crystals considering the miner's fate. You continue on through the cave.")], .move(.mainCave))
     }
 }

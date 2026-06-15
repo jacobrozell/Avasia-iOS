@@ -103,8 +103,13 @@ struct RoadToNacastrumRoom: RoomScript {
             ]
         case 3:
             return [
-                .body("The road ends at a chasm and a broken bridge — exactly like the one in the mountains."),
-                .body("The world here feels thin, dreamlike, the wind unmoving."),
+                .body("As you continue on, trees appear on both sides of you. Things begin to look awfully familiar."),
+                .body("Ahead you notice the beginnings of a bridge that disappears deep into the chasm."),
+                .body("This is the very same bridge that held the entrance to the mountain..."),
+                .body("You gaze far into the chasm and notice something is off. The water, although roaring, is still."),
+                .body("No wind appears to be present either. In fact, the trees are also completely motionless."),
+                .body("As you lock in to your surroundings, things begin to become blurry and not well defined."),
+                .body("Much like a memory."),
                 .hint("What do you do?")
             ]
         default:
@@ -134,9 +139,19 @@ struct RoadToNacastrumRoom: RoomScript {
             if input.contains(["SWIM", "JUMP", "DIVE", "LEAP"]) {
                 state.roadProgress = 4
                 return TurnResult([
-                    .body("Against all sense, you throw yourself into the water — and the dream shatters."),
-                    .body("You look up. Nacastrum hangs in the sky above you, and a Ring of Malkos gleams ahead.")
+                    .body("You take a deep breath and jump into the water."),
+                    .body("To your surprise, you stop and find yourself standing on what feels like solid ground."),
+                    .body("Quickly your vision changes from what was a chasm to the stone pathway you were following before."),
+                    .body("In front of you lies an enormous shadow. You slowly look to the skies and see it."),
+                    .body("Nacastrum, Floating city of the Mage."),
+                    .body("Vague memories return to you of Nacastrum. Without a second to waste, you rush onward to what lies ahead.")
                 ], .move(.teleporter))
+            }
+            if input.contains(Flag.fireball.castSynonyms) {
+                return TurnResult([
+                    .body("Care will prevent 9 out of 10 forest fires."),
+                    .body("In other words... No. Stop. Try something else.")
+                ])
             }
             if input.contains(Flag.levitate.castSynonyms) && state.has(.levitate) {
                 return TurnResult([.hint("You drift across — but arrive back where you started, somehow unfinished.")])
@@ -170,19 +185,30 @@ struct RoadToNacastrumRoom: RoomScript {
         }
         // Cornered: anything but Inflame is fatal.
         if input.contains(["SWORD"]) {
-            return TurnResult([.body("You swing your sword; a raider lops your arm off at the shoulder.")],
-                              .death(reason: "Cut down on the road, a blade for a blade."))
+            return TurnResult([
+                .body("Your sword arm is chopped off, leaving you defenseless."),
+                .body("You're at the mercy of these scum."),
+                .body("Sadly, they don't have a reputation for keeping their captives alive."),
+                .body("Moments later, you are slain.")
+            ], .death(reason: ""))
         }
         if input.contains(Flag.levitate.castSynonyms) {
-            return TurnResult([.body("You rise — and a dozen hands drag you back down into the blades.")],
-                              .death(reason: "Pulled from the air and finished on the ground."))
+            return TurnResult([
+                .body("You cast Levitate, but the Agromanian are far too close for you to escape."),
+                .body("They drag you back down to the ground."),
+                .body("You are beaten and stabbed to death.")
+            ], .death(reason: ""))
         }
         if input.contains(Flag.stonebend.castSynonyms) {
-            return TurnResult([.hint("There's no rock here to pull from. The raiders laugh and close in.")],
-                              .death(reason: "Out of options on the road."))
+            return TurnResult([
+                .body("Unfortunately, you don't have time to think of another option before you are surrounded."),
+                .body("Moments later, you are beaten and stabbed to death.")
+            ], .death(reason: ""))
         }
-        return TurnResult([.body("Whatever you try, it isn't enough. They cut you down.")],
-                          .death(reason: "Overwhelmed by the Agromanian ambush. You needed fire."))
+        if input.contains(["DAGGER"]) {
+            return TurnResult([.body("The Agromanian quickly over run you and you killed.")], .death(reason: ""))
+        }
+        return TurnResult([.body("Whatever you try, it isn't enough. They cut you down.")], .death(reason: ""))
     }
 }
 
@@ -215,11 +241,23 @@ struct TeleporterRoom: RoomScript {
     func handle(_ input: ParsedInput, _ state: inout GameState) -> TurnResult {
         if state.escortActive {
             return TurnResult([
-                .body("You step through the ring — and your whole life floods back at once."),
-                .body("Taken from your parents at eight. Crowned Vashirr at thirteen. The Academy. Your students."),
-                .body("And the last night: the blinding light, the courtyard, the portal taking the women and children."),
-                .body("Your mother, dragged toward it. Your father breaking free to reach her — and Vashirr's magic striking him dead."),
-                .body("Then the scattering. Then the beach."),
+                .body("She walks to the center of the monument and slams the staff into the port in the platform."),
+                .body("Immediately a loud rumbling erupts from the Ring of Malkos and a blinding light shifts into a visage of a huge city."),
+                .body("You take a deep breath before charging into the portal yourself."),
+                .blank,
+                .body("Instantly, hundreds of memories fill your mind. Everything that you didn't understand before suddenly makes sense."),
+                .body("You remember a knock at your door at the age of eight; two men in blue robes; your mother kneeling with tears in her eyes."),
+                .speech("It's time for you to go. You're going to join the Acadamey. Please, son, don't forget us."),
+                .body("You remember Vashirr becoming king when you were thirteen. Your gradation. Your work as a teacher to the new young Mages."),
+                .blank,
+                .body("Then, at thirty-three: a blinding light at your window. Guards dragging citizens to Vashirr's castle. You among hundreds of mages."),
+                .body("Beside Vashirr stands a man in barbaric armor — an Agromanian — and a portal taking women and children."),
+                .body("One of the faces is your mother. Your father breaks free and runs to her — and is blasted with magic by Vashirr."),
+                .body("Vashirr raises his hand and light falls from the sky. This is the last thing you remember before you woke up on the beach."),
+                .blank,
+                .body("You fall to your knees and scream out in anger and pain."),
+                .speech("What did you see?"),
+                .body("You explain how your father was murdered and you mother kidnapped. She kneels to comfort you."),
                 .speech("Take as long as you need. We will move on when you are ready.")
             ], .move(.nacastrum))
         }
