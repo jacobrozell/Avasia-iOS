@@ -56,9 +56,12 @@ docs/                      # STORY, ENGINE_SPEC, WORLD_MAP, WIREFRAMES, BUILD
 
 ## Current status
 
-A playable **vertical slice** is implemented: the Oceandale region (hub, beach,
-trading post, magehouse, graveyard, church), the Splitpath hub, and the bridge
-spell-gate — enough to learn Levitate, take the sword, and cross into the
-mountains. All other areas are present as descriptive `StubRoom`s so the world is
-fully traversable. Build order for the rest follows the critical path in
-`WORLD_MAP.md`: cave → forest/tree → western road → endgame.
+**All regions are implemented** end-to-end: Oceandale, the mountain & cave (with
+the fireball rune puzzle), the forest & great tree (blood seal / Stonebend), the
+western-road gauntlet (ambush → spires → dream bridge), and the endgame
+(teleporter → memory reveal → Nacastrum → Aylova → win). A scripted full
+playthrough runs as a test (`ContentTests.testFullPlaythroughReachesWin`).
+
+`StubRoom` now exists only as a safety fallback. Remaining work is polish:
+restore more verbatim original text, add the optional fishing/flavor content not
+on the critical path, and build out art/audio per `WIREFRAMES.md`.

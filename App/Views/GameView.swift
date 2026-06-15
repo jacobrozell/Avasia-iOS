@@ -63,7 +63,7 @@ struct GameView: View {
     private var quickActions: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                ForEach(["North", "East", "South", "West", "Look", "Talk", "Take"], id: \.self) { verb in
+                ForEach(["North", "East", "South", "West", "Up", "Down", "Left", "Right", "Look", "Talk", "Take", "Continue"], id: \.self) { verb in
                     Button(verb) { vm.quickAction(verb) }
                         .font(.caption)
                         .padding(.horizontal, 12).padding(.vertical, 6)

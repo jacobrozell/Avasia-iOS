@@ -6,8 +6,9 @@ of Nacastrum, and reunite a people scattered by a usurper king.
 
 This is a faithful port of the original game
 ([Avasia-KoN](https://github.com/jacobrozell/avasia-kon)). It contains design
-docs, a pure-Swift game engine package, and a SwiftUI app scaffold with a
-playable vertical slice.
+docs, a pure-Swift game engine package, and a SwiftUI app scaffold. All regions
+are implemented — the full critical path from the beach to the ending is playable
+and covered by an end-to-end test.
 
 ## Documentation
 

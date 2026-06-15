@@ -21,12 +21,12 @@ data-driven, testable engine suitable for iOS.
 
 ## Status
 
-Scaffolding in place. The `AvasiaEngine` Swift package (engine + content + tests)
-and the `AvasiaKoN` SwiftUI app (generated from `project.yml`) exist, with a
-playable **vertical slice** of the Oceandale region implemented and all other
-areas stubbed. See `BUILD.md` for status and `ENGINE_SPEC.md` §B.9 for build
-order. Next: port the cave → forest/tree → western road → endgame against the
-critical path in `WORLD_MAP.md`.
+The `AvasiaEngine` Swift package (engine + content + tests) and the `AvasiaKoN`
+SwiftUI app (generated from `project.yml`) are in place, and **all regions are
+implemented** — the full critical path from the beach to the ending is playable
+and covered by a scripted end-to-end test. See `BUILD.md` for status. Remaining
+work is polish: more verbatim original text, optional off-path content, and
+art/audio per `WIREFRAMES.md`.
 
 ## Faithfulness policy
 
