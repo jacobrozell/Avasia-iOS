@@ -16,12 +16,17 @@ data-driven, testable engine suitable for iOS.
 | [`STORY.md`](STORY.md) | Story bible — lore, factions, plot arc, locations, NPCs, key scenes, tone, and motifs. The narrative source of truth. |
 | [`ENGINE_SPEC.md`](ENGINE_SPEC.md) | Engine spec — Part A documents how the original works (state flags, parser, combat, puzzles, death); Part B defines the target Swift/SwiftUI architecture and a fidelity checklist. |
 | [`WORLD_MAP.md`](WORLD_MAP.md) | Room graph — every area, its exits, gates, items, and the critical-path walkthrough. |
+| [`WIREFRAMES.md`](WIREFRAMES.md) | Low-fidelity UI layouts for every screen, mapped to the SwiftUI views. |
+| [`BUILD.md`](BUILD.md) | How to build/test the engine package and generate + run the iOS app. |
 
 ## Status
 
-Design phase. No game code yet — these docs define what to build. Suggested next
-steps are in `ENGINE_SPEC.md` §B.9 (build the Engine + Content layers first and
-validate against the original with unit tests, then add UI).
+Scaffolding in place. The `AvasiaEngine` Swift package (engine + content + tests)
+and the `AvasiaKoN` SwiftUI app (generated from `project.yml`) exist, with a
+playable **vertical slice** of the Oceandale region implemented and all other
+areas stubbed. See `BUILD.md` for status and `ENGINE_SPEC.md` §B.9 for build
+order. Next: port the cave → forest/tree → western road → endgame against the
+critical path in `WORLD_MAP.md`.
 
 ## Faithfulness policy
 

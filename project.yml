@@ -1,0 +1,44 @@
+# XcodeGen spec — generates AvasiaKoN.xcodeproj from this declarative file so the
+# project doesn't have to be hand-maintained. Install with `brew install
+# xcodegen`, then run `xcodegen generate` (see docs/BUILD.md).
+name: AvasiaKoN
+options:
+  bundleIdPrefix: com.avasia
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+
+packages:
+  AvasiaEngine:
+    path: .            # the local Swift package defined by Package.swift
+
+targets:
+  AvasiaKoN:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+    dependencies:
+      - package: AvasiaEngine
+        product: AvasiaEngine
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Avasia
+        PRODUCT_BUNDLE_IDENTIFIER: com.avasia.kon
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        TARGETED_DEVICE_FAMILY: "1,2"      # iPhone + iPad
+        SWIFT_VERSION: "5.9"
+
+schemes:
+  AvasiaKoN:
+    build:
+      targets:
+        AvasiaKoN: all
+    run:
+      config: Debug
+    test:
+      targets:
+        - AvasiaEngineTests   # engine unit tests run from the package
