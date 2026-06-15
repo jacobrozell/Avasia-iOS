@@ -6,7 +6,7 @@ no content invented in this repo beyond docs and iOS wiring.
 
 **iOS:** separate chapter on the saga home screen; engine in `Sources/AvasiaSoCEngine/`.
 
-Saga vision: [`../SAGA.md`](../SAGA.md)
+Saga vision: [`../SAGA.md`](../SAGA.md) · Developer onboarding: [`../DEVELOPERS.md`](../DEVELOPERS.md)
 
 ## Documents
 
