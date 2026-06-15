@@ -6,6 +6,9 @@ import Foundation
 /// there is no unbounded call stack (ENGINE_SPEC §A.1, §B.1).
 public final class GameEngine {
     public private(set) var state: GameState
+    /// The transition produced by the most recent `submit` (for UI hooks like
+    /// audio cues on move/death/win).
+    public private(set) var lastTransition: Transition = .stay
     private let world: [RoomID: RoomScript]
 
     public init(state: GameState = GameState(), world: [RoomID: RoomScript] = World.build()) {
@@ -31,6 +34,7 @@ public final class GameEngine {
         let room = currentRoom
         let input = Parser.parse(raw, mode: room.parseMode)
         let result = room.handle(input, &state)
+        lastTransition = result.transition
         var output = result.lines
 
         switch result.transition {
@@ -62,6 +66,11 @@ public final class GameEngine {
     /// Update the text-pacing preference (the `state` setter is private).
     public func setTextDelay(_ delay: TextDelay) {
         state.textDelay = delay
+    }
+
+    /// Art/audio binding for the current room.
+    public func currentMedia() -> RoomMedia {
+        Media.media(for: state.currentRoom)
     }
 
     /// Begin a brand-new game (equivalent to the original `intro()` reset):

@@ -30,6 +30,21 @@ struct SettingsView: View {
                 .padding()
                 .overlay(RoundedRectangle(cornerRadius: 10).stroke(Theme.accent.opacity(0.4)))
 
+                VStack(alignment: .leading, spacing: 8) {
+                    Toggle(isOn: Binding(
+                        get: { vm.soundEnabled },
+                        set: { vm.soundEnabled = $0 }
+                    )) {
+                        Text("Sound & music")
+                            .font(.headline).foregroundColor(Theme.parchment)
+                    }
+                    .tint(Theme.accent)
+                    Text("Ambient loops and effects. (Audio assets are optional — see docs/ASSETS.md.)")
+                        .font(.caption).foregroundColor(Theme.parchment.opacity(0.6))
+                }
+                .padding()
+                .overlay(RoundedRectangle(cornerRadius: 10).stroke(Theme.accent.opacity(0.4)))
+
                 Spacer()
                 MenuButton(title: "Back") { vm.screen = .title }
             }

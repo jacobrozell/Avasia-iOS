@@ -10,8 +10,9 @@ struct GameView: View {
 
     var body: some View {
         ZStack {
-            Theme.night.ignoresSafeArea()
+            RegionBackground(media: vm.media)
             VStack(spacing: 0) {
+                RegionIllustration(media: vm.media)
                 statusStrip
                 Divider().background(Theme.accent.opacity(0.4))
                 transcript

@@ -18,11 +18,14 @@ struct RootView: View {
     @EnvironmentObject var vm: GameViewModel
 
     var body: some View {
-        switch vm.screen {
-        case .title:    TitleView()
-        case .settings: SettingsView()
-        case .game:     GameView()
-        case .credits:  CreditsView()
+        Group {
+            switch vm.screen {
+            case .title:    TitleView()
+            case .settings: SettingsView()
+            case .game:     GameView()
+            case .credits:  CreditsView()
+            }
         }
+        .onAppear { vm.onLaunch() }
     }
 }

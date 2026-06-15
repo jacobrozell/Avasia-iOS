@@ -9,19 +9,55 @@ import AvasiaEngine
 final class GameViewModel: ObservableObject {
     enum Screen { case title, settings, game, credits }
 
-    @Published var screen: Screen = .title
+    @Published var screen: Screen = .title {
+        didSet { screenDidChange() }
+    }
     @Published private(set) var transcript: [StyledLine] = []
     @Published private(set) var pendingDeath = false
     @Published var input: String = ""
 
     private let engine: GameEngine
     private let store = SaveStore()
+    private let audio = AudioManager.shared
 
     init(engine: GameEngine = GameEngine()) {
         self.engine = engine
     }
 
     var state: GameState { engine.state }
+
+    /// Art/audio binding for the current room (drives backgrounds & illustration).
+    var media: RoomMedia { engine.currentMedia() }
+
+    var soundEnabled: Bool {
+        get { !audio.isMuted }
+        set {
+            audio.isMuted = !newValue
+            if newValue { refreshAmbient() }
+        }
+    }
+
+    /// Called once when the app appears, to start title audio (a default value
+    /// assignment doesn't fire `didSet`).
+    func onLaunch() {
+        if screen == .title { audio.playAmbient(SoundCue.titleTheme.rawValue) }
+    }
+
+    private func screenDidChange() {
+        switch screen {
+        case .title, .credits:
+            audio.playAmbient(SoundCue.titleTheme.rawValue)
+        case .game:
+            refreshAmbient()
+        case .settings:
+            break
+        }
+    }
+
+    /// Switch the ambient loop to match the current region (idempotent).
+    private func refreshAmbient() {
+        audio.playAmbient(engine.currentMedia().ambientTrack)
+    }
     var textDelay: TextDelay {
         get { engine.state.textDelay }
         set { engine.setTextDelay(newValue) }
@@ -59,12 +95,23 @@ final class GameViewModel: ObservableObject {
         let before = engine.state.deathCount
         let lines = engine.submit(raw)
         append(lines)
+
+        // Audio/art hooks keyed off the turn's result.
         if engine.state.deathCount > before {
+            audio.play(.death)
             pendingDeath = true
-        } else {
-            try? store.save(engine.state)                      // autosave
-            try? store.save(engine.state, to: .checkpoint)     // room-entry checkpoint
+            return
         }
+        switch engine.lastTransition {
+        case .win:  audio.play(.win)
+        case .move: audio.play(.move); refreshAmbient()
+        default:    break
+        }
+        if lines.contains(where: { $0.style == .item }) {
+            audio.play(lines.contains { $0.text.lowercased().contains("spell") } ? .spellLearned : .itemGained)
+        }
+        try? store.save(engine.state)                      // autosave
+        try? store.save(engine.state, to: .checkpoint)     // room-entry checkpoint
     }
 
     func quickAction(_ verb: String) {

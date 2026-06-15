@@ -1,0 +1,81 @@
+import SwiftUI
+import AvasiaEngine
+#if canImport(UIKit)
+import UIKit
+#endif
+
+/// Per-region color palette used both as accent and as the gradient fallback
+/// when a region's art asset hasn't been added yet. Tuned around the game's
+/// blue-crystal motif (STORY.md §8).
+enum RegionPalette {
+    static func colors(_ region: Region) -> (top: Color, bottom: Color, accent: Color) {
+        switch region {
+        case .oceandale: return (c(0.10, 0.12, 0.16), c(0.04, 0.05, 0.08), Theme.accent)
+        case .beach:     return (c(0.12, 0.16, 0.20), c(0.05, 0.08, 0.12), c(0.45, 0.75, 0.95))
+        case .graveyard: return (c(0.10, 0.10, 0.12), c(0.03, 0.03, 0.05), c(0.6, 0.6, 0.7))
+        case .splitpath: return (c(0.12, 0.12, 0.10), c(0.05, 0.05, 0.04), c(0.8, 0.7, 0.4))
+        case .mountain:  return (c(0.10, 0.12, 0.15), c(0.04, 0.05, 0.07), c(0.5, 0.7, 0.9))
+        case .cave:      return (c(0.16, 0.08, 0.16), c(0.06, 0.03, 0.08), c(0.95, 0.5, 0.85))
+        case .forest:    return (c(0.07, 0.13, 0.09), c(0.03, 0.06, 0.04), c(0.4, 0.85, 0.5))
+        case .tree:      return (c(0.10, 0.12, 0.08), c(0.05, 0.06, 0.03), c(0.6, 0.9, 0.5))
+        case .road:      return (c(0.13, 0.11, 0.10), c(0.05, 0.04, 0.04), c(0.9, 0.6, 0.4))
+        case .shore:     return (c(0.10, 0.15, 0.18), c(0.04, 0.07, 0.10), c(0.45, 0.75, 0.95))
+        case .nacastrum: return (c(0.12, 0.14, 0.20), c(0.05, 0.06, 0.12), Theme.accent)
+        case .aylova:    return (c(0.14, 0.13, 0.20), c(0.06, 0.05, 0.12), c(0.55, 0.6, 0.95))
+        }
+    }
+    private static func c(_ r: Double, _ g: Double, _ b: Double) -> Color { Color(red: r, green: g, blue: b) }
+}
+
+#if canImport(UIKit)
+private func assetExists(_ name: String) -> Bool { UIImage(named: name) != nil }
+#else
+private func assetExists(_ name: String) -> Bool { false }
+#endif
+
+/// Full-bleed background: the region's art if present, else a region gradient.
+struct RegionBackground: View {
+    let media: RoomMedia
+    var body: some View {
+        let p = RegionPalette.colors(media.region)
+        ZStack {
+            LinearGradient(colors: [p.top, p.bottom], startPoint: .top, endPoint: .bottom)
+            if assetExists(media.backgroundImage) {
+                Image(media.backgroundImage)
+                    .resizable()
+                    .scaledToFill()
+                    .opacity(0.45)
+                    .blur(radius: 1)
+            }
+        }
+        .ignoresSafeArea()
+    }
+}
+
+/// Header illustration band: the region's art if present, else a labeled
+/// placeholder so the layout (and the hook) is visible before art exists.
+struct RegionIllustration: View {
+    let media: RoomMedia
+    var body: some View {
+        let p = RegionPalette.colors(media.region)
+        ZStack {
+            if assetExists(media.illustration) {
+                Image(media.illustration)
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                LinearGradient(colors: [p.accent.opacity(0.25), p.bottom],
+                               startPoint: .topLeading, endPoint: .bottomTrailing)
+                HStack {
+                    Image(systemName: "sparkle")
+                    Text(media.region.title)
+                        .font(.system(.subheadline, design: .serif).smallCaps())
+                }
+                .foregroundColor(p.accent)
+            }
+        }
+        .frame(height: 96)
+        .clipped()
+        .overlay(Rectangle().frame(height: 1).foregroundColor(p.accent.opacity(0.5)), alignment: .bottom)
+    }
+}
