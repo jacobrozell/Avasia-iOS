@@ -86,11 +86,13 @@ depth and Vashirr's POV.
 
 | Phase | Deliverable |
 |---|---|
-| **A — Docs** | Story 0 spec ✅ · anthology roadmap ✅ · fiction series |
-| **B — Shell** | App menu: KoN / SoC / Stories (stub) |
-| **C — Story 0** | Swift rooms: scout patrol → Vashirr fork |
-| **D — FP economy** | Persist FP, unlock gates, 1 good + 1 bad follow-up |
-| **E — Arena** | Optional combat module |
+| **A — Docs** | Story #0 room specs ✅ · Good/Bad/Elk story specs ✅ · fiction series ✅ |
+| **B — Shell** | App menu: KoN / SoC / **Short Stories** ✅ |
+| **C — Story #0** | `AvasiaAnthologyEngine` — scout patrol → Vashirr fork ✅ |
+| **D — FP economy** | Persist FP, unlock gates, alignment follow-ups ✅ |
+| **E — Arena** | Training arena — 3 waves, gold, first-clear FP ✅ |
+| **F — Shop & tier 3** | Gold shop upgrades ✅ · Good/Bad/Neutral #3 ✅ |
+| **G — Ring passes** | Daily grant + gold purchase · FP bypass ✅ |
 
 ---
 

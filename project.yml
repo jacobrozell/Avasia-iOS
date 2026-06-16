@@ -35,6 +35,8 @@ targets:
         product: AvasiaEngine
       - package: AvasiaEngine
         product: AvasiaSoCEngine
+      - package: AvasiaEngine
+        product: AvasiaAnthologyEngine
     settings:
       base:
         GENERATE_INFOPLIST_FILE: NO
@@ -67,6 +69,22 @@ targets:
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
 
+  AvasiaAnthologyEngineTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests/AvasiaAnthologyEngineTests
+    dependencies:
+      - package: AvasiaEngine
+        product: AvasiaAnthologyEngine
+      - package: AvasiaEngine
+        product: AvasiaEngine
+    settings:
+      base:
+        SWIFT_VERSION: "5.9"
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.jacobrozell.avasia-ios.anthology-tests
+
 schemes:
   Avasia-iOS:
     build:
@@ -77,4 +95,5 @@ schemes:
     test:
       config: Debug
       gatherCoverageData: false
-      targets: []
+      targets:
+        - AvasiaAnthologyEngineTests

@@ -76,6 +76,7 @@ struct SagaTitleView: View {
         switch product {
         case .kon: return "crown.fill"
         case .soc: return "shield.lefthalf.filled"
+        case .stories: return "book.fill"
         }
     }
 

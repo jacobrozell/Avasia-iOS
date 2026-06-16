@@ -69,7 +69,7 @@ struct TitleView: View {
                 MenuButton(title: "Continue", systemImage: "arrow.clockwise", style: .primary) {
                     vm.continueGame()
                 }
-                if let summary = vm.socSaveSummary {
+                if let summary = vm.socSaveSummary ?? vm.storiesSaveSummary {
                     Text(summary)
                         .font(.footnote)
                         .foregroundColor(Theme.parchment.opacity(0.65))
@@ -80,7 +80,7 @@ struct TitleView: View {
                 MenuButton(title: "Achievements", systemImage: "trophy") {
                     vm.openAchievements(from: .title)
                 }
-            } else {
+            } else if vm.product == .soc {
                 MenuButton(title: "Trophies", systemImage: "trophy") {
                     vm.openTrophies(from: .title)
                 }
@@ -127,6 +127,21 @@ struct TitleView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(Theme.accent.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
                 }
+            } else if vm.product == .stories {
+                HStack(alignment: .top, spacing: 8) {
+                    Image(systemName: "book.fill")
+                        .font(.caption)
+                        .foregroundColor(Theme.accent.opacity(0.8))
+                        .accessibilityHidden(true)
+                    Text("Story hub — PLAY SCOUT first, then spend FP on your alignment path.")
+                        .font(.footnote)
+                        .foregroundColor(Theme.parchment.opacity(0.62))
+                        .multilineTextAlignment(.leading)
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Theme.accent.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
             } else {
                 HStack(alignment: .top, spacing: 8) {
                     Image(systemName: "sparkles")

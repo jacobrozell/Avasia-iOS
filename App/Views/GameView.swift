@@ -1,6 +1,7 @@
 import SwiftUI
 import AvasiaEngine
 import AvasiaSoCEngine
+import AvasiaAnthologyEngine
 
 /// The main play screen: scrolling transcript, an input bar, quick-action chips,
 /// and a status strip showing spells/items and the death counter. Mirrors the
@@ -16,6 +17,48 @@ struct GameView: View {
     ]
 
     private var quickVerbs: [String] {
+        if vm.product == .stories {
+            if vm.anthologyState.currentRoom == .storyHub {
+                return ["Choose Story", "Arena", "Shop", "List"]
+            }
+            if vm.anthologyState.currentRoom == .trainingShop {
+                return ["Buy Boots", "Buy Whetstone", "Buy Mail", "Buy Pass", "Leave"]
+            }
+            if vm.anthologyState.currentRoom == .arenaPit, vm.anthologyState.arenaInCombat {
+                return ["Attack", "Continue"]
+            }
+            if vm.anthologyState.currentRoom == .caveRecordArchive, !vm.anthologyState.caveRecordArchiveResolved {
+                return ["Copy", "Leave", "Continue"]
+            }
+            if vm.anthologyState.currentRoom == .scoutRidge {
+                return ["Withdraw", "Continue", "Talk", "Look"]
+            }
+            if vm.anthologyState.currentRoom == .scoutFork, !vm.anthologyState.forkResolved {
+                return ["Report", "Follow", "Refuse", "Look", "Talk"]
+            }
+            if vm.anthologyState.currentRoom == .goodOnePier, !vm.anthologyState.goodOnePierResolved {
+                return ["Evacuate", "Hold", "Continue"]
+            }
+            if vm.anthologyState.currentRoom == .badOneRecon, !vm.anthologyState.badOneReconResolved {
+                return ["Report", "Lie", "Continue"]
+            }
+            if vm.anthologyState.currentRoom == .goodTwoNacastrumGate, !vm.anthologyState.goodTwoGateResolved {
+                return ["Full", "Soften", "Continue"]
+            }
+            if vm.anthologyState.currentRoom == .badTwoBriefing, !vm.anthologyState.badTwoBriefingResolved {
+                return ["Full", "Sanitize", "Continue"]
+            }
+            if vm.anthologyState.currentRoom == .goodThreeVerdict, !vm.anthologyState.goodThreeVerdictResolved {
+                return ["Petition", "Withhold", "Continue"]
+            }
+            if vm.anthologyState.currentRoom == .badThreeOath, !vm.anthologyState.badThreeOathResolved {
+                return ["Swear", "Refuse", "Continue"]
+            }
+            if vm.anthologyState.currentRoom == .neutralThreeSchismStall, !vm.anthologyState.neutralThreeStallResolved {
+                return ["Broker", "Lean", "Continue"]
+            }
+            return ["Continue", "Look", "Talk"]
+        }
         guard vm.product == .soc else { return defaultQuickVerbs }
         if vm.socIsConfirmingName { return ["Yes", "No"] }
         if vm.socIsNaming { return [] }
@@ -55,6 +98,10 @@ struct GameView: View {
         .overlay(alignment: .top) { toastOverlay(metrics) }
         .overlay { if vm.pendingDeath { deathOverlay(metrics) } }
         .overlay { if vm.pendingLevelUp != nil { levelUpOverlay(metrics) } }
+        .sheet(isPresented: $vm.showStoryPicker) {
+            StoryPickerView()
+                .environmentObject(vm)
+        }
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
@@ -148,15 +195,40 @@ struct GameView: View {
             .accessibilityLabel("Main menu")
 
             Button {
-                if vm.product == .kon {
-                    vm.openAchievements(from: .game)
-                } else {
-                    vm.openTrophies(from: .game)
+                switch vm.product {
+                case .kon: vm.openAchievements(from: .game)
+                case .soc: vm.openTrophies(from: .game)
+                case .stories: break
                 }
             } label: {
                 Image(systemName: "trophy").foregroundColor(Theme.accent)
             }
             .accessibilityLabel(vm.product == .kon ? "Achievements" : "Trophies")
+            .opacity(vm.product == .stories ? 0.35 : 1)
+            .disabled(vm.product == .stories)
+
+            if vm.product == .stories, vm.anthologyState.currentRoom == .storyHub {
+                Button { vm.openStoryPicker() } label: {
+                    Label("Stories", systemImage: "book.fill")
+                        .font(.caption.weight(.semibold))
+                        .foregroundColor(Theme.accent)
+                }
+                .accessibilityIdentifier("anthology-choose-story")
+                Button { vm.launchArena() } label: {
+                    Label("Arena", systemImage: "figure.fencing")
+                        .font(.caption.weight(.semibold))
+                        .foregroundColor(Theme.accent)
+                }
+                .accessibilityIdentifier("anthology-arena")
+                .disabled(!vm.anthologyState.storyZeroComplete)
+                Button { vm.openTrainingShop() } label: {
+                    Label("Shop", systemImage: "bag.fill")
+                        .font(.caption.weight(.semibold))
+                        .foregroundColor(Theme.accent)
+                }
+                .accessibilityIdentifier("anthology-shop")
+                .disabled(!vm.anthologyState.storyZeroComplete)
+            }
 
             if vm.product == .soc, vm.socState.inCombat {
                 StatusBadge(title: "Combat", systemImage: "bolt.fill", tint: .red)
@@ -180,7 +252,7 @@ struct GameView: View {
                             .accessibilityLabel(itemAccessibilityLabel(item))
                     }
                 }
-            } else {
+            } else if vm.product == .soc {
                 HStack(spacing: 14) {
                     if vm.socState.playerClass != .none {
                         Label("Lv \(vm.socState.playerLevel)", systemImage: "star.fill")
@@ -201,6 +273,10 @@ struct GameView: View {
                             .accessibilityLabel(item.displayName)
                     }
                 }
+            } else if vm.product == .stories, vm.anthologyState.alignment != .none {
+                Label(vm.anthologyState.alignment.rawValue, systemImage: "flag.fill")
+                    .font(.caption2)
+                    .foregroundColor(Theme.accent)
             }
         }
     }

@@ -10,8 +10,8 @@
 
 | | KoN / SoC (shipped) | Story 0 (this spec) |
 |---|---|---|
-| **When** | Age era, canonical | **Before or beside** — pre-Oceandale strike, or anthology branch |
-| **PC** | Mage (KoN) / Druid (SoC) | **Scout** — Kaefden, Agromanian, or neutral border patrol |
+| **When** | Age era, canonical | **Days before Oceandale naval landing** — land column musters in parallel |
+| **PC** | Mage (KoN) / Druid (SoC) | **Silvarium scout** — border patrol with partner Mira |
 | **Vashirr** | Off-screen → on-stage villain | **First meeting** — fork: report or follow |
 | **Format** | Full games | Short intro adventure (30–45 min text) |
 
@@ -22,13 +22,24 @@ Story #1 unlocks). It must **not** retcon Kaefden IV's arc.
 
 ## Premise
 
-You are a **scout** on routine border patrol — Sylvian, Cataractan, or Kaefden
-legion (author picks one; Sylvian fits Silvarium 20% stayers). You crest a ridge
+You are a **Silvarium scout** on routine border patrol with partner **Mira**. You crest a ridge
 and see an **Agromanian column** larger than any report admitted, led by a hooded
 mage with a gray staff.
 
 You recognize the sigil of **Nacastrum** mixed with Agromanian banners. Word on
 the wind says his name is **Vashirr**.
+
+---
+
+## Locked design decisions (2026-06)
+
+| Topic | Rule |
+|---|---|
+| **Timeline** | Valley land muster ≠ Oceandale naval strike; Good #1 is a race to the coast |
+| **REPORT** | PC warns **Silvarium**; Vashirr may **want** an honest count (psyop/dread) and releases reporters on purpose |
+| **REFUSE** | Vashirr orders pickets to stand down; PC is not hunted **in Story #0** — Elk Feast is truce-week breather |
+| **Ridge agency** | `WITHDRAW` path skips capture; fork offers REPORT / REFUSE only (no FOLLOW without parley) |
+| **Identity** | Vashirr reads **Sylvian kit + bark-strip cipher** — not omniscience |
 
 ---
 
@@ -40,12 +51,12 @@ the wind says his name is **Vashirr**.
 
 ### II — The sighting
 - Army in valley — **Paladin prototypes** among them (early, fewer than SoC).
-- Vashirr speaks to officers; player overhears **Many Hands** rhetoric:
-  *"Magic for every gauntlet, not towers."*
+- Many Hands banners mixed with **Nacastrum blue**.
+- Player may **WITHDRAW** and signal elders, or **CONTINUE** down into capture.
 
 ### III — The approach
-- Vashirr's scouts detect the player (or player stumbles into picket).
-- Brought to him unharmed — he **wants** a messenger, not a corpse.
+- If captured: Vashirr's pickets escort both scouts — he **wants** a messenger, not a corpse.
+- If withdrew: splitpath signal optional; fork without full sermon.
 
 ### IV — The sermon (religious beat)
 Vashirr does not threaten first. He **converts**:
@@ -65,12 +76,15 @@ Vashirr does not threaten first. He **converts**:
 
 | Choice | Path | Outcome |
 |---|---|---|
-| **REPORT** | White hat / Kaefden | Escape or send signal; warn Oceandale garrison; Story unlocks **Good #1** |
-| **FOLLOW** | Black hat / Agroman | Walk down into camp; Vashirr marks you; Story unlocks **Bad #1** (*Walking with Vashirr*) |
-| **REFUSE both** (optional third) | Neutral | Flee alone; hunted by both sides; neutral story track |
+| **REPORT** | Loyalist | Warn Silvarium; camp exit beat; unlocks **Good #1** |
+| **FOLLOW** | Agroman | Only if captured; Mira breaks away; unlocks **Bad #1** |
+| **REFUSE both** | Neutral | Vashirr releases by order (captured) or ridge choice alone; unlocks **Elk Feast** |
 
 No choice is "game over" in Story 0 — each routes to a **different Story #1**
 in the anthology economy ([`../ANTHOLOGY_ROADMAP.md`](../ANTHOLOGY_ROADMAP.md)).
+
+### VI — Camp exit
+After the fork, alignment-specific release beat (`scoutCampExit`) before epilogue.
 
 ---
 
@@ -107,14 +121,16 @@ in the anthology economy ([`../ANTHOLOGY_ROADMAP.md`](../ANTHOLOGY_ROADMAP.md)).
 - Separate **`AvasiaAnthology`** module or menu entry: *Stories* beside KoN / SoC.
 - State: `alignment` (loyalist / agroman / neutral), `factionPoints`, `storiesUnlocked`.
 - Story 0 sets flags only — no shared save with KoN protagonist stats.
-- Estimated rooms: 8–12 (patrol camp, ridge, valley overlook, picket, Vashirr tent,
-  fork epilogue).
+- Estimated rooms: patrol camp, ridge, withdraw, signal, picket, Vashirr parley,
+  fork, camp exit, epilogue.
 
 ---
 
 ## Acceptance criteria
 
-- [ ] Player understands Vashirr's motive before choosing
-- [ ] REPORT and FOLLOW both feel valid, not good/bad labels in prose
+- [x] Player understands Vashirr's motive before choosing
+- [x] REPORT and FOLLOW both feel valid, not good/bad labels in prose
+- [x] Ridge withdraw path respects "observe, do not engage"
+- [x] Camp exit beat for each alignment
 - [ ] No contradiction with KoN opening (amnesiac mage) or SoC (Druid volunteer)
-- [ ] Unlocks documented in anthology manifest
+- [x] Unlocks documented in anthology manifest

@@ -19,9 +19,10 @@ This repo is split into three main pieces:
 ## Test the engine (no Xcode project needed)
 
 ```bash
-swift test                              # all engine tests (KoN + SoC)
+swift test                              # all engine tests (KoN + SoC + anthology)
 swift test --filter AvasiaEngineTests   # King of Nacastrum only
 swift test --filter AvasiaSoCEngineTests
+swift test --filter AvasiaAnthologyEngineTests
 swift build                             # builds both engine libraries
 ```
 
@@ -40,6 +41,19 @@ open Avasia-iOS.xcodeproj
 
 `Avasia-iOS.xcodeproj` is git-ignored — it is always regenerated from
 `project.yml`, so edit the spec, not the project.
+
+### Run anthology tests from Xcode
+
+The `Avasia-iOS` scheme includes **`AvasiaAnthologyEngineTests`** (Story #0 paths,
+FP economy, tier-two unlocks). Cmd-U in Xcode, or:
+
+```bash
+xcodegen generate
+xcodebuild -project Avasia-iOS.xcodeproj -scheme Avasia-iOS \
+  -destination 'platform=iOS Simulator,name=iPhone 17' test
+```
+
+SwiftPM remains the fastest loop for engine-only work (`swift test --filter AvasiaAnthologyEngineTests`).
 
 ### Code signing (real device)
 

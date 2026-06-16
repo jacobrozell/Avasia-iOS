@@ -296,7 +296,9 @@ struct ChapterCard: View {
         .accessibilityLabel(product.menuTitle)
         .accessibilityHint(product.subtitle)
         .accessibilityValue(hasSave ? "Save in progress" : "No save")
-        .accessibilityIdentifier(product == .kon ? "saga-kon" : "saga-soc")
+        .accessibilityIdentifier(
+            product == .kon ? "saga-kon" : (product == .soc ? "saga-soc" : "saga-stories")
+        )
     }
 }
 

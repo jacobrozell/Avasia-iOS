@@ -12,7 +12,8 @@ let package = Package(
     ],
     products: [
         .library(name: "AvasiaEngine", targets: ["AvasiaEngine"]),
-        .library(name: "AvasiaSoCEngine", targets: ["AvasiaSoCEngine"])
+        .library(name: "AvasiaSoCEngine", targets: ["AvasiaSoCEngine"]),
+        .library(name: "AvasiaAnthologyEngine", targets: ["AvasiaAnthologyEngine"])
     ],
     targets: [
         .target(
@@ -24,6 +25,11 @@ let package = Package(
             dependencies: ["AvasiaEngine"],
             path: "Sources/AvasiaSoCEngine"
         ),
+        .target(
+            name: "AvasiaAnthologyEngine",
+            dependencies: ["AvasiaEngine"],
+            path: "Sources/AvasiaAnthologyEngine"
+        ),
         .testTarget(
             name: "AvasiaEngineTests",
             dependencies: ["AvasiaEngine"],
@@ -33,6 +39,11 @@ let package = Package(
             name: "AvasiaSoCEngineTests",
             dependencies: ["AvasiaSoCEngine", "AvasiaEngine"],
             path: "Tests/AvasiaSoCEngineTests"
+        ),
+        .testTarget(
+            name: "AvasiaAnthologyEngineTests",
+            dependencies: ["AvasiaAnthologyEngine", "AvasiaEngine"],
+            path: "Tests/AvasiaAnthologyEngineTests"
         )
     ]
 )

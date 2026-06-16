@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 import AvasiaEngine
 import AvasiaSoCEngine
+import AvasiaAnthologyEngine
 #if canImport(UIKit)
 import UIKit
 #endif
@@ -26,6 +27,7 @@ final class GameViewModel: ObservableObject {
     @Published private(set) var recentlyUnlockedTrophies: [SoCTrophy] = []
     @Published private(set) var pendingLevelUp: Int?
     @Published var input: String = ""
+    @Published var showStoryPicker = false
     var achievementsReturn: Screen = .title
     var trophiesReturn: Screen = .title
     var menuReturn: Screen = .saga
@@ -48,8 +50,10 @@ final class GameViewModel: ObservableObject {
 
     private let konEngine: GameEngine
     private let socEngine: SoCGameEngine
+    private let anthologyEngine: AnthologyGameEngine
     private let konStore: SaveStore
     private let socStore: SoCSaveStore
+    private let anthologyStore: AnthologySaveStore
     private let audio = AudioManager.shared
     private var pendingSocName = false
     private var pendingSocNameConfirm: String?
@@ -81,13 +85,17 @@ final class GameViewModel: ObservableObject {
     init(
         konEngine: GameEngine = GameEngine(),
         socEngine: SoCGameEngine = SoCGameEngine(),
+        anthologyEngine: AnthologyGameEngine = AnthologyGameEngine(),
         konStore: SaveStore = SaveStore(product: .kon),
-        socStore: SoCSaveStore = SoCSaveStore()
+        socStore: SoCSaveStore = SoCSaveStore(),
+        anthologyStore: AnthologySaveStore = AnthologySaveStore()
     ) {
         self.konEngine = konEngine
         self.socEngine = socEngine
+        self.anthologyEngine = anthologyEngine
         self.konStore = konStore
         self.socStore = socStore
+        self.anthologyStore = anthologyStore
         self.achievements = konStore.loadAchievements()
         applyStoredPreferences()
         refreshThemePalette()
@@ -133,13 +141,18 @@ final class GameViewModel: ObservableObject {
     }
 
     private var activeTextDelay: TextDelay {
-        product == .kon ? konEngine.state.textDelay : socEngine.state.textDelay
+        switch product {
+        case .kon: return konEngine.state.textDelay
+        case .soc: return socEngine.state.textDelay
+        case .stories: return anthologyEngine.state.textDelay
+        }
     }
 
     private func setTextDelay(_ value: TextDelay) {
         AppSettings.textDelay = value
         konEngine.setTextDelay(value)
         socEngine.setTextDelay(value)
+        anthologyEngine.setTextDelay(value)
     }
 
     var socIsNaming: Bool { product == .soc && pendingSocName }
@@ -164,8 +177,22 @@ final class GameViewModel: ObservableObject {
 
     var konState: GameState { konEngine.state }
     var socState: SoCGameState { socEngine.state }
+    var anthologyState: AnthologyGameState { anthologyEngine.state }
     var displayDeathCount: Int {
-        product == .kon ? konEngine.state.deathCount : socEngine.state.deathCount
+        switch product {
+        case .kon: return konEngine.state.deathCount
+        case .soc: return socEngine.state.deathCount
+        case .stories: return 0
+        }
+    }
+
+    var storiesSaveSummary: String? {
+        guard product == .stories, let saved = anthologyStore.load() else { return nil }
+        let fp = saved.factionPoints
+        if saved.storyZeroComplete {
+            return "\(fp) FP · alignment: \(saved.alignment.rawValue)"
+        }
+        return "Scout Patrol · in progress"
     }
 
     var socCampaignComplete: Bool {
@@ -173,7 +200,11 @@ final class GameViewModel: ObservableObject {
     }
 
     var media: RoomMedia {
-        product == .kon ? konEngine.currentMedia() : socEngine.currentMedia()
+        switch product {
+        case .kon: return konEngine.currentMedia()
+        case .soc: return socEngine.currentMedia()
+        case .stories: return anthologyEngine.currentMedia()
+        }
     }
 
     var soundEnabled: Bool {
@@ -243,6 +274,15 @@ final class GameViewModel: ObservableObject {
             pendingSocNameConfirm = nil
             appendSocIntroPrologue()
             append([.hint("What is your name?")])
+        case .stories:
+            anthologyEngine.restart()
+            anthologyEngine.setTextDelay(AppSettings.textDelay)
+            if loadError {
+                append([.hint("Your saved game could not be loaded. Starting fresh.")])
+            }
+            appendStoriesIntro()
+            append(anthologyEngine.describeCurrent())
+            showStoryPicker = true
         }
         screen = .game
     }
@@ -266,6 +306,13 @@ final class GameViewModel: ObservableObject {
             }
             socEngine.load(saved)
             append(socEngine.describeCurrent())
+        case .stories:
+            guard let saved = anthologyStore.load() else {
+                startNewGame(loadError: true)
+                return
+            }
+            anthologyEngine.load(saved)
+            append(anthologyEngine.describeCurrent())
         }
         screen = .game
     }
@@ -279,6 +326,7 @@ final class GameViewModel: ObservableObject {
         switch product {
         case .kon: return konStore.load() != nil
         case .soc: return socStore.load() != nil
+        case .stories: return anthologyStore.load() != nil
         }
     }
 
@@ -286,6 +334,7 @@ final class GameViewModel: ObservableObject {
         switch product {
         case .kon: return konStore.load() != nil
         case .soc: return socStore.load() != nil
+        case .stories: return anthologyStore.load() != nil
         }
     }
 
@@ -300,6 +349,16 @@ final class GameViewModel: ObservableObject {
             let name = saved.playerName.isEmpty ? "Druid" : saved.playerName
             let progress = saved.gameComplete ? "Complete" : SoCChapter.title(for: saved.currentRoom)
             return "\(name) · Lv \(saved.playerLevel) · \(progress)"
+        case .stories:
+            guard let saved = anthologyStore.load() else { return nil }
+            let fp = saved.factionPoints
+            if saved.currentRoom == .storyHub, saved.storyZeroComplete {
+                return "\(fp) FP · Story hub"
+            }
+            if saved.storyZeroComplete {
+                return "\(fp) FP · \(saved.alignment.rawValue)"
+            }
+            return "Scout Patrol"
         }
     }
 
@@ -317,6 +376,8 @@ final class GameViewModel: ObservableObject {
             submitKon(raw)
         case .soc:
             submitSoc(raw)
+        case .stories:
+            submitStories(raw)
         }
     }
 
@@ -384,6 +445,71 @@ final class GameViewModel: ObservableObject {
         try? socStore.save(socEngine.state, to: .checkpoint)
     }
 
+    private func submitStories(_ raw: String) {
+        let completeBefore = anthologyCompletedCount
+        let lines = anthologyEngine.submit(raw)
+        append(lines)
+        if anthologyCompletedCount > completeBefore {
+            audio.play(.win)
+        }
+        if case .move = anthologyEngine.lastTransition {
+            audio.play(.move)
+            refreshAmbient()
+            if anthologyEngine.state.currentRoom == .storyHub {
+                showStoryPicker = true
+            }
+        }
+        try? anthologyStore.save(anthologyEngine.state)
+        try? anthologyStore.save(anthologyEngine.state, to: .checkpoint)
+    }
+
+    private var anthologyCompletedCount: Int {
+        anthologyEngine.state.completedStories.count
+    }
+
+    func openStoryPicker() {
+        showStoryPicker = true
+    }
+
+    func launchAnthologyStory(_ story: AnthologyStoryID) {
+        flushPacing()
+        showStoryPicker = false
+        let lines = anthologyEngine.launchStory(story)
+        append(lines)
+        if case .move = anthologyEngine.lastTransition {
+            audio.play(.move)
+            refreshAmbient()
+        }
+        try? anthologyStore.save(anthologyEngine.state)
+        try? anthologyStore.save(anthologyEngine.state, to: .checkpoint)
+    }
+
+    func launchArena() {
+        flushPacing()
+        showStoryPicker = false
+        let lines = anthologyEngine.launchArena()
+        append(lines)
+        if case .move = anthologyEngine.lastTransition {
+            audio.play(.move)
+            refreshAmbient()
+        }
+        try? anthologyStore.save(anthologyEngine.state)
+        try? anthologyStore.save(anthologyEngine.state, to: .checkpoint)
+    }
+
+    func openTrainingShop() {
+        flushPacing()
+        showStoryPicker = false
+        let lines = anthologyEngine.openTrainingShop()
+        append(lines)
+        if case .move = anthologyEngine.lastTransition {
+            audio.play(.move)
+            refreshAmbient()
+        }
+        try? anthologyStore.save(anthologyEngine.state)
+        try? anthologyStore.save(anthologyEngine.state, to: .checkpoint)
+    }
+
     private func finishAchievements(_ unlocked: [Achievement]) {
         guard !unlocked.isEmpty else { return }
         konStore.saveAchievements(achievements)
@@ -419,6 +545,10 @@ final class GameViewModel: ObservableObject {
             return
         }
         if socIsNaming { return }
+        if product == .stories, verb.lowercased() == "choose story" {
+            openStoryPicker()
+            return
+        }
         if product == .soc {
             switch verb.lowercased() {
             case "attack": input = "attack"
@@ -474,6 +604,9 @@ final class GameViewModel: ObservableObject {
         case .soc:
             if let cp = socStore.load(.checkpoint) { socEngine.load(cp) }
             append(socEngine.describeCurrent())
+        case .stories:
+            if let cp = anthologyStore.load(.checkpoint) { anthologyEngine.load(cp) }
+            append(anthologyEngine.describeCurrent())
         }
     }
 
@@ -661,6 +794,16 @@ final class GameViewModel: ObservableObject {
             .speech("Go into the city. There isn't much left to see."),
             .blank,
             .body("You venture forth until you begin to see the debris of crumbling and post-burnt houses."),
+            .blank
+        ])
+    }
+
+    /// Scout Patrol (#0) — parallel anthology, not KoN or SoC protagonist.
+    private func appendStoriesIntro() {
+        append([
+            .title("Short Stories"),
+            .body("Parallel tales beside the Age-era duology. Earn faction points, unlock paths."),
+            .body("Start with Scout Patrol — then spend FP on stories matching your alignment."),
             .blank
         ])
     }

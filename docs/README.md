@@ -29,6 +29,7 @@ data-driven, testable engine suitable for iOS.
 | [`SAGA.md`](SAGA.md) | Series bible — Age-era duology (text), game 3 (2D), engine evolution. |
 | [`LORE_ARCHIVE.md`](LORE_ARCHIVE.md) | **Found lore** — schism fable, Silvarium/Oceandale history, archived future systems. |
 | [`ANTHOLOGY_ROADMAP.md`](ANTHOLOGY_ROADMAP.md) | **Future stories** — Story #0, faction points, arena, post-duology content. |
+| [`anthology/`](anthology/README.md) | **Anthology room specs** — Story #0 rooms, follow-up story outlines, content manifest. |
 | [`VASHIRR.md`](VASHIRR.md) | **Villain motivation** — Many Hands doctrine, beliefs, counter-reads, quote bank. |
 | [`fiction/`](fiction/README.md) | **Author fiction specs** — character bible + short story anthology outline for the full saga. |
 | [`STORY.md`](STORY.md) | Story bible — lore, factions, plot arc, locations, NPCs, key scenes, tone, and motifs. The narrative source of truth. |
