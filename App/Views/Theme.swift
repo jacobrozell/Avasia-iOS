@@ -78,8 +78,12 @@ struct LineView: View {
     let line: StyledLine
     var partialLength: Int?
     var showsCursor: Bool = false
+    var emphasis: CombatLineEmphasis?
+    var playReveal: Bool = false
 
     @State private var cursorVisible = true
+    @State private var emphasisPulse = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var displayText: String {
         if line.text.isEmpty { return " " }
@@ -96,7 +100,8 @@ struct LineView: View {
         HStack(alignment: .lastTextBaseline, spacing: 0) {
             Text(displayText)
                 .font(Theme.font(for: line.style))
-                .foregroundColor(Theme.color(for: line.style))
+                .foregroundColor(displayColor)
+                .scaleEffect(emphasisScale)
             if let glyph = cursorGlyph {
                 Text(glyph)
                     .font(Theme.font(for: line.style))
@@ -107,12 +112,54 @@ struct LineView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .fixedSize(horizontal: false, vertical: true)
+        .transcriptLineReveal(
+            playReveal: playReveal && partialLength == nil,
+            isHint: line.style == .hint
+        )
         .accessibilityLabel(line.text)
         .task(id: showsCursor) {
             guard showsCursor, cursorGlyph != nil else { return }
             while !Task.isCancelled {
                 try? await Task.sleep(nanoseconds: 480_000_000)
                 cursorVisible.toggle()
+            }
+        }
+        .onAppear { triggerEmphasisPulse() }
+        .onChange(of: emphasis) { _ in triggerEmphasisPulse() }
+    }
+
+    private var displayColor: Color {
+        guard emphasisPulse, let emphasis else {
+            return Theme.color(for: line.style)
+        }
+        switch emphasis {
+        case .playerHit: return Theme.accent
+        case .playerDamaged, .kill, .lowHp: return .red
+        case .miss: return Theme.parchment.opacity(0.65)
+        case .block: return Theme.accent
+        case .heal: return .green
+        }
+    }
+
+    private var emphasisScale: CGFloat {
+        guard emphasisPulse, emphasis == .kill else { return 1 }
+        return 1.03
+    }
+
+    private func triggerEmphasisPulse() {
+        guard emphasis != nil else {
+            emphasisPulse = false
+            return
+        }
+        if reduceMotion {
+            emphasisPulse = true
+            return
+        }
+        emphasisPulse = true
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 320_000_000)
+            withAnimation(.easeOut(duration: 0.2)) {
+                emphasisPulse = false
             }
         }
     }
@@ -142,7 +189,10 @@ struct MenuButton: View {
     }
 
     var body: some View {
-        Button(action: action) {
+        Button {
+            HapticManager.shared.play(style == .primary ? .confirm : .tap)
+            action()
+        } label: {
             HStack(spacing: 10) {
                 if let systemImage {
                     Image(systemName: systemImage)
@@ -244,10 +294,14 @@ struct ChapterCard: View {
     let systemImage: String
     var hasSave: Bool
     var saveHint: String?
+    var completionCount: Int = 0
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
+        Button {
+            HapticManager.shared.play(.tap)
+            action()
+        } label: {
             HStack(alignment: .top, spacing: 14) {
                 Image(systemName: systemImage)
                     .font(.title2.weight(.semibold))
@@ -276,6 +330,11 @@ struct ChapterCard: View {
                         Text(saveHint)
                             .font(.caption)
                             .foregroundColor(Theme.parchment.opacity(0.55))
+                    }
+                    if completionCount > 0 {
+                        Text("Completed \(completionCount)×")
+                            .font(.caption2.weight(.semibold))
+                            .foregroundColor(Theme.accent.opacity(0.85))
                     }
                 }
 
