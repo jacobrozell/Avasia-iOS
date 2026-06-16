@@ -139,10 +139,12 @@ struct ElkEpilogueRoom: AnthologyRoomScript {
             return AnthologyTurnResult([.body("Use the menu to return to Story Adventures.")])
         }
         AnthologyCatalog.complete(.elkFeast, state: &state)
-        return AnthologyTurnResult([
+        var lines: [StyledLine] = [
             .title("The Elk Feast — complete"),
             .body("+\(AnthologyCatalog.meta(for: .elkFeast).fpReward) faction points."),
             .hint("Story hub unlocked — continue from the menu.")
-        ], .move(.storyHub))
+        ]
+        lines.append(contentsOf: AnthologyCatalog.launchSliceCompletionLines(state: state))
+        return AnthologyTurnResult(lines, .move(.storyHub))
     }
 }

@@ -11,6 +11,9 @@ final class RingPassTests: XCTestCase {
     }
 
     func testRingPassBypassesFPOnLaunch() {
+        AnthologyRelease.shipsFullAnthology = true
+        defer { AnthologyRelease.shipsFullAnthology = false }
+
         let engine = AnthologyGameEngine()
         AnthologyTestPaths.finishStoryZero(engine, alignment: "REPORT")
         AnthologyTestPaths.finishGoodOne(engine)

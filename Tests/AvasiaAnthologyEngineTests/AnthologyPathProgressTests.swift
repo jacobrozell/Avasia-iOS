@@ -6,15 +6,17 @@ final class AnthologyPathProgressTests: XCTestCase {
         XCTAssertEqual(AnthologyPathProgress.totalCount(for: .loyalist), 6)
     }
 
-    func testProgressLabelWhenIncomplete() {
+    func testProgressLabelHiddenForLeanRelease() {
         var state = AnthologyGameState()
         state.storyZeroComplete = true
         state.alignment = .loyalist
         state.completedStories = [.goodOne, .goodTwo]
-        XCTAssertEqual(
-            AnthologyPathProgress.progressLabel(state: state),
-            "Loyalist path — 2/6 stories"
-        )
+        XCTAssertNil(AnthologyPathProgress.progressLabel(state: state))
+    }
+
+    func testLaunchStoriesInLeanRelease() {
+        XCTAssertEqual(AnthologyPathProgress.launchStories(for: .loyalist), [.goodOne])
+        XCTAssertEqual(AnthologyPathProgress.launchStories(for: .neutral), [.elkFeast])
     }
 
     func testPathCompleteLabel() {
@@ -23,9 +25,5 @@ final class AnthologyPathProgressTests: XCTestCase {
         state.alignment = .agroman
         state.completedStories = Set(AnthologyPathProgress.stories(for: .agroman))
         XCTAssertTrue(AnthologyPathProgress.isPathComplete(.agroman, state: state))
-        XCTAssertEqual(
-            AnthologyPathProgress.progressLabel(state: state),
-            "Agroman path — complete (6/6)"
-        )
     }
 }

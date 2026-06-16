@@ -173,10 +173,12 @@ struct BadOneEpilogueRoom: AnthologyRoomScript {
             return AnthologyTurnResult([.body("Use the menu to return to Story Adventures.")])
         }
         AnthologyCatalog.complete(.badOne, state: &state)
-        return AnthologyTurnResult([
+        var lines: [StyledLine] = [
             .title("Walking with Vashirr — complete"),
             .body("+\(AnthologyCatalog.meta(for: .badOne).fpReward) faction points."),
             .hint("Story hub unlocked — continue from the menu.")
-        ], .move(.storyHub))
+        ]
+        lines.append(contentsOf: AnthologyCatalog.launchSliceCompletionLines(state: state))
+        return AnthologyTurnResult(lines, .move(.storyHub))
     }
 }

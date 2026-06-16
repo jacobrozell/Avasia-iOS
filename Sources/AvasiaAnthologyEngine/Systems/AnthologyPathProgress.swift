@@ -33,13 +33,19 @@ public enum AnthologyPathProgress {
         return isPathComplete(state.alignment, state: state)
     }
 
+    /// Stories on an alignment path that ship in the current release (1.0.0 slice).
+    public static func launchStories(for alignment: AnthologyAlignment) -> [AnthologyStoryID] {
+        stories(for: alignment).filter { AnthologyRelease.isStoryAvailable(AnthologyCatalog.meta(for: $0)) }
+    }
+
+    public static func isLaunchSliceComplete(state: AnthologyGameState) -> Bool {
+        guard state.alignment != .none else { return false }
+        let launch = launchStories(for: state.alignment)
+        guard !launch.isEmpty else { return false }
+        return launch.allSatisfy { state.completedStories.contains($0) }
+    }
+
     public static func progressLabel(state: AnthologyGameState) -> String? {
-        guard state.alignment != .none, state.storyZeroComplete else { return nil }
-        let done = completedCount(state: state)
-        let total = totalCount(for: state.alignment)
-        if isActivePathComplete(state: state) {
-            return "\(state.alignment.rawValue.capitalized) path — complete (\(total)/\(total))"
-        }
-        return "\(state.alignment.rawValue.capitalized) path — \(done)/\(total) stories"
+        nil
     }
 }
