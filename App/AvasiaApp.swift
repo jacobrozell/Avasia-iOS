@@ -38,6 +38,7 @@ struct RootView: View {
         LayoutMetricsReader { _ in
             ZStack {
                 switch vm.screen {
+                case .onboarding:       OnboardingView()
                 case .saga:             SagaTitleView()
                 case .title:            TitleView()
                 case .settings:         SettingsView()

@@ -214,6 +214,13 @@ struct SettingsView: View {
                 Text("Support & legal")
                     .font(.headline)
                     .foregroundColor(Theme.parchment)
+                MenuButton(
+                    title: "Replay welcome tour",
+                    systemImage: "sparkles",
+                    accessibilityIdentifier: "settings-onboarding"
+                ) {
+                    vm.openOnboarding(from: .settings)
+                }
                 SettingsLinkRow(
                     title: "Buy Me a Coffee",
                     systemImage: "cup.and.saucer.fill",
