@@ -46,6 +46,7 @@ data-driven, testable engine suitable for iOS.
 | [`ACHIEVEMENTS.md`](ACHIEVEMENTS.md) | Achievement system + the flavored death screen: architecture, full catalog, and how to add more. |
 | [`META_PROGRESSION.md`](META_PROGRESSION.md) | **Chronicler** saga meta rank — 1.0.0 MVP scope, ledger, achievement claims, post-1.0 unlock roadmap (Paladin, lives, anthology gates). |
 | [`BUILD.md`](BUILD.md) | How to build/test the engine package and generate + run the iOS app. |
+| [`FIREBASE_ANALYTICS_SPEC.md`](FIREBASE_ANALYTICS_SPEC.md) | **Firebase Analytics & Crashlytics** — no-PII telemetry plan, event catalog, phased rollout. |
 
 ## Status
 
