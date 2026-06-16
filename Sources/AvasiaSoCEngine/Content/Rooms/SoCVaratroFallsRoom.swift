@@ -30,7 +30,11 @@ struct SoCVaratroFallsRoom: SoCRoomScript {
         case .notStarted, .approach:
             return [.hint("CONTINUE toward the falls.")]
         case .tomb:
-            return [.hint("SEARCH the tomb chamber.")]
+            var hints: [StyledLine] = [.hint("SEARCH the tomb chamber.")]
+            if let bypass = SoCClassIngenuity.bypassHint(for: state) {
+                hints.append(bypass)
+            }
+            return hints
         case .combat:
             return SoCCombat.statLines(state: state) + [.hint("ATTACK.")]
         case .recovered:
@@ -54,6 +58,11 @@ struct SoCVaratroFallsRoom: SoCRoomScript {
 
         if departs(input), state.varatroFallsPhase == .done {
             return SoCTurnResult(ofelosBoundLines(), .move(.ofelos))
+        }
+
+        if state.varatroFallsPhase == .tomb,
+           SoCClassIngenuity.matches(input, playerClass: state.playerClass) {
+            return bypassWarden(&state)
         }
 
         if advances(input) {
@@ -113,9 +122,40 @@ struct SoCVaratroFallsRoom: SoCRoomScript {
         return SoCTurnResult(output)
     }
 
+    private func bypassWarden(_ state: inout SoCGameState) -> SoCTurnResult {
+        state.varatroFallsPhase = .recovered
+        state.addItem(.bladeOfCourage)
+        state.unlockTrophy(.bladeBearer)
+        let approach: [StyledLine]
+        switch state.playerClass {
+        case .scout:
+            approach = [
+                .body("You creep along the spray-slick ledge behind the warden's blind spot."),
+                .body("His chant loops on the empty air where you stood a breath ago — you are already at the tomb.")
+            ]
+        case .hunter:
+            approach = [
+                .body("You chip a ward-crystal with a thrown stone. The warden stumbles mid-chant."),
+                .body("You cross the chamber in three strides and lift the Blade before spell-light recovers.")
+            ]
+        case .guardian:
+            approach = [
+                .body("You plant shield and bear-form between the warden and the tomb."),
+                .body("Every ward-bolt finds your line; on the back-swing you seize Kaefden's Blade from the stone.")
+            ]
+        case .none:
+            approach = [.body("You reach the Blade before the warden reacts.")]
+        }
+        var lines = approach
+        lines.append(contentsOf: bladeTakenLines())
+        lines.append(contentsOf: SoCQuestProgress.grantQuestExp(20, state: &state))
+        lines.append(.hint("CONTINUE — then MARCH to Ofelos."))
+        return SoCTurnResult(lines)
+    }
+
     private func beginWarden(state: inout SoCGameState) -> [StyledLine] {
         SoCCombat.begin(
-            enemy: SoCCombatant(name: "Paladin Tomb Warden", atk: 8, speed: 4, hp: 20, luck: 1),
+            enemy: SoCCombatant(name: "Paladin Tomb Warden", atk: 8, speed: 4, hp: 20, luck: 4),
             deathText: "The warden's spell-blade finds the gap in your guard.",
             state: &state,
             allowsFlee: false
@@ -137,6 +177,7 @@ struct SoCVaratroFallsRoom: SoCRoomScript {
             .blank,
             .body("The first King Kaefden lies under a stone lid chased with the bloodline sigil."),
             .body("Embedded in his hands: a sword whose edge still catches light after centuries."),
+            .body("An inscription: Courage bound to law, not blood alone — the first Kaefden's answer to crown and schism."),
             .speech("A voice from the shadows: That blade belongs to the northwest now.")
         ]
     }
@@ -144,7 +185,8 @@ struct SoCVaratroFallsRoom: SoCRoomScript {
     private func wardenAmbushLines() -> [StyledLine] {
         [
             .blank,
-            .body("A Paladin in corroded plate steps between you and the tomb — Vashirr's craft written in the glow along his gauntlets.")
+            .body("A Paladin in corroded plate steps between you and the tomb — Vashirr's craft written in the glow along his gauntlets."),
+            .body("He chants through a fixed grin. The words loop. He does not blink.")
         ]
     }
 
@@ -158,7 +200,7 @@ struct SoCVaratroFallsRoom: SoCRoomScript {
     private func bladeTakenLines() -> [StyledLine] {
         [
             .body("You lift Kaefden's Blade of Courage from the first king's resting hands."),
-            .body("The metal is cold, impossibly balanced — an oath made steel."),
+            .body("The metal is cold, impossibly balanced — an oath made steel, not a market good."),
             .symbol("Ofelos awaits the Blade."),
             .title("Blade recovered")
         ]
