@@ -11,7 +11,7 @@ import UIKit
 /// with separate saves, selected from `SagaTitleView`.
 @MainActor
 final class GameViewModel: ObservableObject {
-    enum Screen { case saga, title, settings, game, credits, achievements, trophies, privacyPolicy }
+    enum Screen { case saga, title, settings, game, credits, achievements, trophies, codex, timeline, privacyPolicy, chroniclerLedger }
 
     @Published var screen: Screen = .saga {
         didSet { screenDidChange() }
@@ -23,13 +23,32 @@ final class GameViewModel: ObservableObject {
     @Published private(set) var isPacingWaiting = false
     @Published private(set) var pendingDeath = false
     @Published private(set) var achievements: AchievementState
+    @Published private(set) var sagaProfile: SagaProfile
+    @Published private(set) var recentChroniclerXP: [SagaXPEntry] = []
     @Published private(set) var recentlyUnlocked: [Achievement] = []
     @Published private(set) var recentlyUnlockedTrophies: [SoCTrophy] = []
     @Published private(set) var pendingLevelUp: Int?
+    @Published private(set) var healthBarFlash: HealthBarFlash?
+    @Published private(set) var combatPresentationEvents: [CombatPresentationEvent] = []
+    @Published private(set) var displayedPlayerHp: Int = 0
+    @Published private(set) var displayedEnemyHp: Int = 0
+    @Published private(set) var displayedEnemyMaxHp: Int = 0
+    @Published private(set) var displayedEnemyName: String = ""
+    @Published private(set) var displayedGold: Int = 0
+    @Published private(set) var goldFloatDelta: Int?
+    @Published private(set) var combatStripVisible = false
+    @Published private(set) var isCombatBusy = false
+    @Published private(set) var bouncingSocItems: Set<SoCItem> = []
+    @Published private(set) var lineEmphases: [Int: CombatLineEmphasis] = [:]
+    @Published private(set) var lowHpVignette = false
+    @Published private(set) var revealLineIndex: Int?
     @Published var input: String = ""
     @Published var showStoryPicker = false
     var achievementsReturn: Screen = .title
     var trophiesReturn: Screen = .title
+    var codexReturn: Screen = .title
+    var timelineReturn: Screen = .saga
+    var chroniclerReturn: Screen = .saga
     var menuReturn: Screen = .saga
     var privacyReturn: Screen = .settings
 
@@ -54,16 +73,33 @@ final class GameViewModel: ObservableObject {
     private let konStore: SaveStore
     private let socStore: SoCSaveStore
     private let anthologyStore: AnthologySaveStore
+    private let sagaStore: SagaProfileStore
     private let audio = AudioManager.shared
     private var pendingSocName = false
     private var pendingSocNameConfirm: String?
     private var pacingTask: Task<Void, Never>?
     private var pacingContinuation: CheckedContinuation<Void, Never>?
+    private var healthBarFlashTask: Task<Void, Never>?
+    private var combatLineTriggers: [Int: [CombatTriggerAction]] = [:]
+    private var combatBusyTask: Task<Void, Never>?
+    private var goldFloatTask: Task<Void, Never>?
+    private var lowHpVignetteTask: Task<Void, Never>?
+    private var itemBounceTask: Task<Void, Never>?
+    private var revealLineTask: Task<Void, Never>?
+    private let haptics = HapticManager.shared
 
     var visibleTranscriptLines: [TranscriptDisplayLine] {
         var lines: [TranscriptDisplayLine] = []
         for index in 0..<completedLineCount {
-            lines.append(TranscriptDisplayLine(id: index, line: transcript[index], partialLength: nil))
+            lines.append(
+                TranscriptDisplayLine(
+                    id: index,
+                    line: transcript[index],
+                    partialLength: nil,
+                    emphasis: lineEmphases[index],
+                    playReveal: index == revealLineIndex
+                )
+            )
         }
         if let partial = typingVisibleCount, completedLineCount < transcript.count {
             lines.append(
@@ -71,7 +107,8 @@ final class GameViewModel: ObservableObject {
                     id: completedLineCount,
                     line: transcript[completedLineCount],
                     partialLength: partial,
-                    showsCursor: cursorStyle.glyph != nil
+                    showsCursor: cursorStyle.glyph != nil,
+                    emphasis: lineEmphases[completedLineCount]
                 )
             )
         }
@@ -88,7 +125,8 @@ final class GameViewModel: ObservableObject {
         anthologyEngine: AnthologyGameEngine = AnthologyGameEngine(),
         konStore: SaveStore = SaveStore(product: .kon),
         socStore: SoCSaveStore = SoCSaveStore(),
-        anthologyStore: AnthologySaveStore = AnthologySaveStore()
+        anthologyStore: AnthologySaveStore = AnthologySaveStore(),
+        sagaStore: SagaProfileStore = SagaProfileStore()
     ) {
         self.konEngine = konEngine
         self.socEngine = socEngine
@@ -96,7 +134,9 @@ final class GameViewModel: ObservableObject {
         self.konStore = konStore
         self.socStore = socStore
         self.anthologyStore = anthologyStore
+        self.sagaStore = sagaStore
         self.achievements = konStore.loadAchievements()
+        self.sagaProfile = sagaStore.load()
         applyStoredPreferences()
         refreshThemePalette()
     }
@@ -177,6 +217,23 @@ final class GameViewModel: ObservableObject {
 
     var konState: GameState { konEngine.state }
     var socState: SoCGameState { socEngine.state }
+
+    /// Save or live state for journal unlock checks (title uses save; in-game uses live).
+    var konCodexState: GameState? {
+        guard product == .kon else { return nil }
+        if screen == .game { return konEngine.state }
+        return konStore.load()
+    }
+
+    var socCodexState: SoCGameState? {
+        guard product == .soc else { return nil }
+        if screen == .game { return socEngine.state }
+        return socStore.load()
+    }
+
+    var sagaKonSave: GameState? { konStore.load() }
+    var sagaSocSave: SoCGameState? { socStore.load() }
+    var sagaAnthologySave: AnthologyGameState? { anthologyStore.load() }
     var anthologyState: AnthologyGameState { anthologyEngine.state }
     var displayDeathCount: Int {
         switch product {
@@ -226,7 +283,7 @@ final class GameViewModel: ObservableObject {
             audio.playAmbient(SoundCue.titleTheme.rawValue)
         case .game:
             refreshAmbient()
-        case .settings, .achievements, .trophies, .privacyPolicy:
+        case .settings, .achievements, .trophies, .codex, .timeline, .privacyPolicy, .chroniclerLedger:
             break
         }
     }
@@ -246,11 +303,39 @@ final class GameViewModel: ObservableObject {
         screen = .saga
     }
 
+    func openTimeline(from screen: Screen) {
+        timelineReturn = screen
+        self.screen = .timeline
+    }
+
+    func openChroniclerLedger(from screen: Screen) {
+        chroniclerReturn = screen
+        self.screen = .chroniclerLedger
+    }
+
+    func claimChroniclerAchievement(_ achievement: Achievement) {
+        guard achievements.has(achievement) else { return }
+        if let entry = SagaXPTracker.claimAchievement(achievement, profile: &sagaProfile) {
+            finishChroniclerGrants([entry])
+        }
+    }
+
+    func resetChroniclerProgress() {
+        sagaProfile = SagaProfile()
+        sagaStore.reset()
+    }
+
+    var chroniclerPendingClaims: [Achievement] {
+        Achievement.allCases.filter { achievements.has($0) && sagaProfile.canClaimAchievement($0) }
+    }
+
     // MARK: - Lifecycle
 
-    func startNewGame(loadError: Bool = false) {
+    func startNewGame(loadError: Bool = false, playHaptic: Bool = true) {
+        if playHaptic { haptics.play(.confirm) }
         resetTranscript()
         pendingDeath = false
+        SagaXPTracker.beginRun(product: product, profile: &sagaProfile)
         switch product {
         case .kon:
             konEngine.restart()
@@ -258,7 +343,9 @@ final class GameViewModel: ObservableObject {
             if loadError {
                 append([.hint("Your saved game could not be loaded. Starting fresh.")])
             }
-            appendIntro()
+            append([.title("Avasia: King of Nacastrum")])
+            konEngine.restart()
+            konEngine.setTextDelay(AppSettings.textDelay)
             append(konEngine.describeCurrent())
             recordStartingRegion()
         case .soc:
@@ -285,15 +372,19 @@ final class GameViewModel: ObservableObject {
             showStoryPicker = true
         }
         screen = .game
+        syncDisplayedStats()
+        persistSagaProfile()
     }
 
     func continueGame() {
+        haptics.play(.confirm)
         resetTranscript()
         pendingDeath = false
+        SagaXPTracker.resumeSession(profile: &sagaProfile)
         switch product {
         case .kon:
             guard let saved = konStore.load() else {
-                startNewGame(loadError: true)
+                startNewGame(loadError: true, playHaptic: false)
                 return
             }
             konEngine.load(saved)
@@ -301,25 +392,30 @@ final class GameViewModel: ObservableObject {
             recordStartingRegion()
         case .soc:
             guard let saved = socStore.load() else {
-                startNewGame(loadError: true)
+                startNewGame(loadError: true, playHaptic: false)
                 return
             }
             socEngine.load(saved)
             append(socEngine.describeCurrent())
         case .stories:
             guard let saved = anthologyStore.load() else {
-                startNewGame(loadError: true)
+                startNewGame(loadError: true, playHaptic: false)
                 return
             }
             anthologyEngine.load(saved)
             append(anthologyEngine.describeCurrent())
         }
         screen = .game
+        syncDisplayedStats()
+        persistSagaProfile()
     }
 
     private func recordStartingRegion() {
-        let unlocked = AchievementTracker.recordRegion(konEngine.currentMedia().region, into: &achievements)
+        let region = konEngine.currentMedia().region
+        let unlocked = AchievementTracker.recordRegion(region, into: &achievements)
         finishAchievements(unlocked)
+        let xp = SagaXPTracker.apply([.enteredRegion(region)], state: konEngine.state, profile: &sagaProfile)
+        finishChroniclerGrants(xp)
     }
 
     var hasSave: Bool {
@@ -364,7 +460,8 @@ final class GameViewModel: ObservableObject {
 
     // MARK: - Turn loop
 
-    func submit() {
+    func submit(playHaptic: Bool = false) {
+        if playHaptic { haptics.play(.tap) }
         flushPacing()
         let raw = input.trimmingCharacters(in: .whitespaces)
         input = ""
@@ -389,17 +486,20 @@ final class GameViewModel: ObservableObject {
 
         let unlocked = AchievementTracker.apply(konEngine.lastEvents, state: konEngine.state, into: &achievements)
         finishAchievements(unlocked)
+        let xp = SagaXPTracker.apply(konEngine.lastEvents, state: konEngine.state, profile: &sagaProfile)
+        finishChroniclerGrants(xp)
 
         if konEngine.state.deathCount > before {
-            audio.play(.death)
-            pendingDeath = true
+            if let cause = konEngine.lastDeath?.cause {
+                finishChroniclerGrants([SagaXPTracker.recordKonDeath(cause: cause, profile: &sagaProfile)].compactMap { $0 })
+            }
+            presentDeath()
             return
         }
         if !completeBefore && konEngine.state.gameComplete {
             audio.play(.win)
         } else if case .move = konEngine.lastTransition {
-            audio.play(.move)
-            refreshAmbient()
+            playMoveFeedback()
         }
         if lines.contains(where: { $0.style == .item }) {
             audio.play(lines.contains { $0.text.lowercased().contains("spell") } ? .spellLearned : .itemGained)
@@ -416,10 +516,33 @@ final class GameViewModel: ObservableObject {
         let trophiesBefore = socEngine.state.trophies
         let levelBefore = socEngine.state.playerLevel
         let roomBefore = socEngine.state.currentRoom
+        let hpBefore = socEngine.state.playerHp
+        let enemyHpBefore = socEngine.state.enemy?.hp
+        let enemyMaxBefore = socEngine.state.enemy?.maxHp
+        let enemyNameBefore = socEngine.state.enemy?.name
+        let inCombatBefore = socEngine.state.inCombat
+        let goldBefore = socEngine.state.gold
+        let itemsBefore = socInventoryItems
+        let lineStartIndex = transcript.count
         let lines = socEngine.submit(raw)
+        queueSocCombatPlan(
+            lines: lines,
+            lineStartIndex: lineStartIndex,
+            hpBefore: hpBefore,
+            enemyHpBefore: enemyHpBefore,
+            enemyMaxBefore: enemyMaxBefore,
+            enemyNameBefore: enemyNameBefore,
+            goldBefore: goldBefore,
+            itemsBefore: itemsBefore,
+            inCombatBefore: inCombatBefore
+        )
+        if inCombatBefore || socEngine.state.inCombat {
+            isCombatBusy = true
+        }
         append(lines)
         if socEngine.state.playerLevel > levelBefore {
             pendingLevelUp = socEngine.state.playerLevel
+            haptics.play(.notify)
         }
         if case .move = socEngine.lastTransition, socEngine.state.currentRoom != roomBefore,
            let banner = SoCChapter.banner(for: socEngine.state.currentRoom) {
@@ -427,9 +550,12 @@ final class GameViewModel: ObservableObject {
         }
         finishSocTrophies(before: trophiesBefore, after: socEngine.state.trophies)
         if socEngine.playerDiedOnLastTurn {
-            audio.play(.death)
-            pendingDeath = true
+            finishChroniclerGrants([SagaXPTracker.recordSocDeath(profile: &sagaProfile)].compactMap { $0 })
+            presentDeath()
             return
+        }
+        if !completeBefore && socEngine.state.gameComplete {
+            finishChroniclerGrants([SagaXPTracker.recordSocWin(profile: &sagaProfile)].compactMap { $0 })
         }
         if !audienceBefore && socEngine.state.throneAudience {
             audio.play(.win)
@@ -438,23 +564,51 @@ final class GameViewModel: ObservableObject {
             audio.play(.win)
         }
         if case .move = socEngine.lastTransition {
-            audio.play(.move)
-            refreshAmbient()
+            playMoveFeedback()
         }
         try? socStore.save(socEngine.state)
         try? socStore.save(socEngine.state, to: .checkpoint)
     }
 
     private func submitStories(_ raw: String) {
+        let storiesBefore = anthologyEngine.state.completedStories
         let completeBefore = anthologyCompletedCount
+        let hpBefore = anthologyEngine.state.arenaHp
+        let enemyHpBefore = anthologyEngine.state.arenaEnemyHp
+        let enemyNameBefore = anthologyEngine.state.arenaEnemyName
+        let inCombatBefore = anthologyEngine.state.arenaInCombat
+        let goldBefore = anthologyEngine.state.anthologyGold
+        let lineStartIndex = transcript.count
         let lines = anthologyEngine.submit(raw)
+        queueArenaCombatPlan(
+            lines: lines,
+            lineStartIndex: lineStartIndex,
+            hpBefore: hpBefore,
+            enemyHpBefore: enemyHpBefore,
+            enemyNameBefore: enemyNameBefore,
+            goldBefore: goldBefore,
+            inCombatBefore: inCombatBefore
+        )
+        if inCombatBefore || anthologyEngine.state.arenaInCombat {
+            isCombatBusy = true
+        }
         append(lines)
+        let newStories = anthologyEngine.state.completedStories.subtracting(storiesBefore)
+        for storyID in newStories {
+            let title = AnthologyCatalog.all.first(where: { $0.id == storyID })?.title ?? storyID.rawValue
+            finishChroniclerGrants(
+                [SagaXPTracker.recordAnthologyStoryComplete(
+                    storyKey: storyID.rawValue,
+                    title: title,
+                    profile: &sagaProfile
+                )].compactMap { $0 }
+            )
+        }
         if anthologyCompletedCount > completeBefore {
             audio.play(.win)
         }
         if case .move = anthologyEngine.lastTransition {
-            audio.play(.move)
-            refreshAmbient()
+            playMoveFeedback()
             if anthologyEngine.state.currentRoom == .storyHub {
                 showStoryPicker = true
             }
@@ -512,17 +666,42 @@ final class GameViewModel: ObservableObject {
 
     private func finishAchievements(_ unlocked: [Achievement]) {
         guard !unlocked.isEmpty else { return }
+        haptics.play(.notify)
         konStore.saveAchievements(achievements)
         recentlyUnlocked.append(contentsOf: unlocked)
+        if AppSettings.chroniclerAutoClaimAchievements {
+            for achievement in unlocked {
+                claimChroniclerAchievement(achievement)
+            }
+        }
         Task { [weak self] in
             try? await Task.sleep(nanoseconds: 4_000_000_000)
             self?.recentlyUnlocked.removeAll { unlocked.contains($0) }
         }
     }
 
+    private func finishChroniclerGrants(_ entries: [SagaXPEntry]) {
+        guard !entries.isEmpty else { return }
+        persistSagaProfile()
+        guard AppSettings.chroniclerShowXPToasts else { return }
+        let visible = entries.filter { $0.amount > 0 }
+        guard !visible.isEmpty else { return }
+        recentChroniclerXP.append(contentsOf: visible)
+        let ids = Set(visible.map(\.id))
+        Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
+            self?.recentChroniclerXP.removeAll { ids.contains($0.id) }
+        }
+    }
+
+    private func persistSagaProfile() {
+        sagaStore.save(sagaProfile)
+    }
+
     private func finishSocTrophies(before: Set<SoCTrophy>, after: Set<SoCTrophy>) {
         let unlocked = after.subtracting(before).sorted { $0.rawValue < $1.rawValue }
         guard !unlocked.isEmpty else { return }
+        haptics.play(.notify)
         recentlyUnlockedTrophies.append(contentsOf: unlocked)
         Task { [weak self] in
             try? await Task.sleep(nanoseconds: 4_000_000_000)
@@ -531,6 +710,7 @@ final class GameViewModel: ObservableObject {
     }
 
     func dismissLevelUp() {
+        haptics.play(.notify)
         pendingLevelUp = nil
     }
 
@@ -594,7 +774,13 @@ final class GameViewModel: ObservableObject {
         self.screen = .trophies
     }
 
+    func openCodex(from screen: Screen) {
+        codexReturn = screen
+        self.screen = .codex
+    }
+
     func restartFromCheckpoint() {
+        haptics.play(.confirm)
         resetTranscript()
         pendingDeath = false
         switch product {
@@ -608,6 +794,7 @@ final class GameViewModel: ObservableObject {
             if let cp = anthologyStore.load(.checkpoint) { anthologyEngine.load(cp) }
             append(anthologyEngine.describeCurrent())
         }
+        syncDisplayedStats()
     }
 
     func restartFromBeginning() { startNewGame() }
@@ -627,7 +814,7 @@ final class GameViewModel: ObservableObject {
         if typingVisibleCount != nil {
             typingVisibleCount = nil
             if completedLineCount < transcript.count {
-                completedLineCount += 1
+                completeCurrentLine()
             }
             startPacing()
             return
@@ -648,11 +835,34 @@ final class GameViewModel: ObservableObject {
         isPacingWaiting = false
         typingVisibleCount = nil
         completedLineCount = transcript.count
+        drainAllCombatTriggers()
     }
 
     private func resetTranscript() {
         pacingTask?.cancel()
         pacingTask = nil
+        healthBarFlashTask?.cancel()
+        healthBarFlashTask = nil
+        combatBusyTask?.cancel()
+        combatBusyTask = nil
+        goldFloatTask?.cancel()
+        goldFloatTask = nil
+        lowHpVignetteTask?.cancel()
+        lowHpVignetteTask = nil
+        itemBounceTask?.cancel()
+        itemBounceTask = nil
+        healthBarFlash = nil
+        combatPresentationEvents = []
+        combatLineTriggers = [:]
+        lineEmphases = [:]
+        bouncingSocItems = []
+        goldFloatDelta = nil
+        lowHpVignette = false
+        isCombatBusy = false
+        combatStripVisible = false
+        revealLineIndex = nil
+        revealLineTask?.cancel()
+        revealLineTask = nil
         if isPacingWaiting {
             pacingContinuation?.resume()
             pacingContinuation = nil
@@ -676,6 +886,7 @@ final class GameViewModel: ObservableObject {
             completedLineCount = transcript.count
             typingVisibleCount = nil
             isPacingWaiting = false
+            drainAllCombatTriggers()
             return
         }
         guard completedLineCount < transcript.count else { return }
@@ -698,8 +909,7 @@ final class GameViewModel: ObservableObject {
             }
 
             await typeLine(line)
-            completedLineCount += 1
-            typingVisibleCount = nil
+            completeCurrentLine()
 
             guard completedLineCount < transcript.count else {
                 isPacingWaiting = false
@@ -755,48 +965,28 @@ final class GameViewModel: ObservableObject {
         typingVisibleCount = nil
     }
 
-    // MARK: - Intro text
-
-    private func appendIntro() {
-        append([
-            .title("Avasia: King of Nacastrum"),
-            .body("You hear waves and the sound of the ocean around you."),
-            .body("But... Where are you?"),
-            .body("You pull yourself to your feet."),
-            .body("It appears that you are alongside a beach."),
-            .blank,
-            .body("The whisper of the ocean and the scream of the fierce wind penetrate your ears."),
-            .body("You see the remains of a gate to your north."),
-            .body("As you draw closer you see what appears to be an older gentleman, who seems out of place."),
-            .body("This can't be the guard, you think to yourself."),
-            .body("The guard is dressed in common-wear and has nothing to defend himself, other than a short broken spear."),
-            .blank,
-            .speech("Welcome to Oceandale."),
-            .speech("Or what's left of it..."),
-            .speech("Last week Oceandale was attacked by the faction of Agroman."),
-            .blank,
-            .speech("Once all of Avasia was united under the Kaefden family."),
-            .speech("But the youngest son of the king thirsted for power."),
-            .speech("He began a protest in Kaefden's capital, Aylova, which quickly became violent."),
-            .speech("The youngest son urged his father for the crown and spited him for his lack of leadership."),
-            .speech("Together, the older brother and the king, banished him from all of Kaefden."),
-            .speech("The king couldn't allow for this behavior to fall upon his citizens, or certain chaos would follow."),
-            .blank,
-            .speech("The younger brother built the Agromanian faction from the ground up."),
-            .speech("Of course, many Kaefden people followed of all races. Mages, Humans, and Druids alike."),
-            .speech("Although the brothers, and the king are long gone, the rivalry and the hatred still exist."),
-            .speech("The Agroman faction today believes in brotherhood and loyalty."),
-            .speech("The Kaefden faction believes in order and integrity."),
-            .speech("There's a city who remains neutral in the matter; the city of Ofelos."),
-            .speech("They believe that a united Avasia would benefit the people more than petty fighting."),
-            .speech("After Oceandale nearly fell to the Barbarians, I'm starting to see their point."),
-            .blank,
-            .speech("Go into the city. There isn't much left to see."),
-            .blank,
-            .body("You venture forth until you begin to see the debris of crumbling and post-burnt houses."),
-            .blank
-        ])
+    private func completeCurrentLine() {
+        let index = completedLineCount
+        processCombatTriggers(forLineIndex: index)
+        completedLineCount += 1
+        typingVisibleCount = nil
+        scheduleLineReveal(for: index)
     }
+
+    private func scheduleLineReveal(for index: Int) {
+        guard activeTextDelay != .off else { return }
+        revealLineIndex = index
+        revealLineTask?.cancel()
+        revealLineTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 220_000_000)
+            guard !Task.isCancelled else { return }
+            if self?.revealLineIndex == index {
+                self?.revealLineIndex = nil
+            }
+        }
+    }
+
+    // MARK: - Intro text
 
     /// Scout Patrol (#0) — parallel anthology, not KoN or SoC protagonist.
     private func appendStoriesIntro() {
@@ -887,5 +1077,225 @@ final class GameViewModel: ObservableObject {
         raw.split(separator: " ")
             .map { $0.prefix(1).uppercased() + $0.dropFirst().lowercased() }
             .joined(separator: " ")
+    }
+
+    // MARK: - Feedback
+
+    private func presentDeath() {
+        audio.play(.death)
+        haptics.play(.warning)
+        pendingDeath = true
+    }
+
+    private func playMoveFeedback() {
+        audio.play(.move)
+        refreshAmbient()
+        haptics.play(.impactLight)
+    }
+
+    // MARK: - Combat presentation
+
+    private var socInventoryItems: Set<SoCItem> {
+        Set(SoCItem.allCases.filter { socEngine.state.inventory[$0, default: 0] > 0 })
+    }
+
+    func syncDisplayedStats() {
+        switch product {
+        case .soc:
+            let state = socEngine.state
+            displayedPlayerHp = state.playerHp
+            displayedGold = state.gold
+            if let enemy = state.enemy {
+                displayedEnemyHp = enemy.hp
+                displayedEnemyMaxHp = enemy.maxHp
+                displayedEnemyName = enemy.name
+            } else {
+                displayedEnemyHp = 0
+                displayedEnemyMaxHp = 0
+                displayedEnemyName = ""
+            }
+            combatStripVisible = state.inCombat
+        case .stories:
+            let state = anthologyEngine.state
+            displayedPlayerHp = state.arenaHp
+            displayedGold = state.anthologyGold
+            displayedEnemyHp = state.arenaEnemyHp
+            displayedEnemyMaxHp = state.arenaEnemyMaxHp
+            displayedEnemyName = state.arenaEnemyName
+            combatStripVisible = state.arenaInCombat
+        default:
+            break
+        }
+    }
+
+    private func queueSocCombatPlan(
+        lines: [StyledLine],
+        lineStartIndex: Int,
+        hpBefore: Int,
+        enemyHpBefore: Int?,
+        enemyMaxBefore: Int?,
+        enemyNameBefore: String?,
+        goldBefore: Int,
+        itemsBefore: Set<SoCItem>,
+        inCombatBefore: Bool
+    ) {
+        let after = socEngine.state
+        let plan = CombatTriggerPlanner.planSoc(
+            lines: lines,
+            lineStartIndex: lineStartIndex,
+            hpBefore: hpBefore,
+            playerMaxHp: after.playerMaxHp,
+            enemyHpBefore: enemyHpBefore,
+            enemyMaxHp: enemyMaxBefore,
+            enemyName: enemyNameBefore,
+            goldBefore: goldBefore,
+            newItems: socInventoryItems.subtracting(itemsBefore),
+            inCombatBefore: inCombatBefore,
+            after: after
+        )
+        combatPresentationEvents = plan.events
+        mergeCombatTriggers(plan.triggers)
+    }
+
+    private func queueArenaCombatPlan(
+        lines: [StyledLine],
+        lineStartIndex: Int,
+        hpBefore: Int,
+        enemyHpBefore: Int,
+        enemyNameBefore: String,
+        goldBefore: Int,
+        inCombatBefore: Bool
+    ) {
+        let after = anthologyEngine.state
+        let plan = CombatTriggerPlanner.planArena(
+            lines: lines,
+            lineStartIndex: lineStartIndex,
+            hpBefore: hpBefore,
+            maxHp: after.arenaMaxHp,
+            enemyHpBefore: enemyHpBefore,
+            enemyMaxHp: after.arenaEnemyMaxHp,
+            enemyName: enemyNameBefore,
+            goldBefore: goldBefore,
+            inCombatBefore: inCombatBefore,
+            after: after
+        )
+        combatPresentationEvents = plan.events
+        mergeCombatTriggers(plan.triggers)
+    }
+
+    private func mergeCombatTriggers(_ triggers: [Int: [CombatTriggerAction]]) {
+        for (index, actions) in triggers {
+            combatLineTriggers[index, default: []].append(contentsOf: actions)
+        }
+    }
+
+    private func drainAllCombatTriggers() {
+        let indices = combatLineTriggers.keys.sorted()
+        for index in indices {
+            processCombatTriggers(forLineIndex: index)
+        }
+        finishCombatBusyWindow()
+    }
+
+    private func processCombatTriggers(forLineIndex index: Int) {
+        guard let actions = combatLineTriggers.removeValue(forKey: index) else { return }
+        for action in actions {
+            applyCombatTrigger(action, lineIndex: index)
+        }
+        if combatLineTriggers.isEmpty {
+            finishCombatBusyWindow()
+        }
+    }
+
+    private func applyCombatTrigger(_ action: CombatTriggerAction, lineIndex: Int) {
+        switch action {
+        case .setPlayerHp(let hp, let flash):
+            displayedPlayerHp = hp
+            if let flash { setHealthBarFlash(flash) }
+            markCombatBusy()
+        case .setEnemyHp(let hp, let max, let name):
+            displayedEnemyHp = hp
+            displayedEnemyMaxHp = max
+            if let name, !name.isEmpty { displayedEnemyName = name }
+            markCombatBusy()
+        case .setGold(let gold, let delta):
+            displayedGold = gold
+            if let delta, delta > 0 { showGoldFloat(delta) }
+        case .emphasis(let emphasis):
+            lineEmphases[lineIndex] = emphasis
+        case .playSound(let cue):
+            audio.play(cue)
+        case .haptic(let cue):
+            haptics.play(cue)
+        case .combatEnter:
+            combatStripVisible = true
+            switch product {
+            case .soc:
+                if let enemy = socEngine.state.enemy {
+                    displayedEnemyHp = enemy.hp
+                    displayedEnemyMaxHp = enemy.maxHp
+                    displayedEnemyName = enemy.name
+                }
+            case .stories:
+                let state = anthologyEngine.state
+                displayedEnemyHp = state.arenaEnemyHp
+                displayedEnemyMaxHp = state.arenaEnemyMaxHp
+                displayedEnemyName = state.arenaEnemyName
+            default:
+                break
+            }
+        case .combatExit:
+            Task { @MainActor [weak self] in
+                try? await Task.sleep(nanoseconds: 350_000_000)
+                self?.combatStripVisible = false
+            }
+        case .bounceItem(let item):
+            bouncingSocItems.insert(item)
+            itemBounceTask?.cancel()
+            itemBounceTask = Task { @MainActor [weak self] in
+                try? await Task.sleep(nanoseconds: 700_000_000)
+                self?.bouncingSocItems.remove(item)
+            }
+        case .lowHpVignette:
+            lowHpVignette = true
+            lowHpVignetteTask?.cancel()
+            lowHpVignetteTask = Task { @MainActor [weak self] in
+                try? await Task.sleep(nanoseconds: 450_000_000)
+                self?.lowHpVignette = false
+            }
+        }
+    }
+
+    private func markCombatBusy() {
+        isCombatBusy = true
+        combatBusyTask?.cancel()
+    }
+
+    private func finishCombatBusyWindow() {
+        combatBusyTask?.cancel()
+        combatBusyTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 450_000_000)
+            guard !Task.isCancelled else { return }
+            self?.isCombatBusy = false
+        }
+    }
+
+    private func showGoldFloat(_ delta: Int) {
+        goldFloatDelta = delta
+        goldFloatTask?.cancel()
+        goldFloatTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 700_000_000)
+            self?.goldFloatDelta = nil
+        }
+    }
+
+    private func setHealthBarFlash(_ flash: HealthBarFlash) {
+        healthBarFlash = flash
+        healthBarFlashTask?.cancel()
+        healthBarFlashTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            guard !Task.isCancelled else { return }
+            self?.healthBarFlash = nil
+        }
     }
 }
