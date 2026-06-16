@@ -30,6 +30,43 @@
 
 **Shop:** `trainingShop` — Boots (40g) · Whetstone (60g) · Mail (80g) · Ring Pass (100g)
 
+## Playtime estimates
+
+Rough targets for **current stub-tier prose** (as of tier 6). Revisit when rooms are expanded to full fiction length.
+
+### Scope
+
+| Scope | Stories | Rooms (story) | Turns | Prose | Play time |
+|---|---|---:|---:|---|---|
+| **One alignment path** | Scout + 6 | ~35–40 | ~45–55 | ~3.5k–5k words | **1.5–2.5 h** |
+| **All three paths** | 19 unique | ~95 total¹ | ~130–150 | ~10k–15k words | **5–8 h** |
+
+¹ Includes hub, arena, and shop rooms in the engine (~100 `AnthologyRoomID` values).
+
+### Per-tier story size (typical)
+
+| Tier | Rooms | Turns | Minutes |
+|---|---:|---:|---:|
+| Scout (#0) | 9 | ~12 | 15–20 |
+| Tier 1 | 4–5 | 6–7 | 8–12 |
+| Tier 2 | 4 | 5–6 | 6–10 |
+| Tier 3 | 5–8 | 8–9 | 12–18 |
+| Tier 4 | 4 | 5 | 6–10 |
+| Tier 5 | 3 | 4 | 5–8 |
+| Tier 6 | 6 | 7 | 10–15 |
+
+Tier 6 is the longest individual story today (six-room arc with branch aftermath).
+
+### FP pacing adds hub/arena time
+
+Story rewards equal unlock costs, but **each tier costs more than the prior reward leaves on hand** (e.g. after Good #1 you hold 500 FP; Good #2 costs 1,000). Players bridge gaps with **ring passes** (daily hub grant, 100g shop purchase) rather than arena FP — arena grants 75 gold per clear and only **25 FP once** on first clear.
+
+Expect **~5 ring passes** and **~8–15 arena runs** over a full path if grinding gold for passes. That pushes real play time toward the **high end** of the ranges above.
+
+### Context vs Age-era games
+
+Story Adventures is a **side anthology** (novella per path, short-novel if all paths). KoN and SoC remain the full Age-era text adventures and are substantially longer.
+
 ## Meta state
 
 | Field | Purpose |
