@@ -95,6 +95,7 @@ on the active engine. Engines never import SwiftUI.
 | UI / navigation / theme | `App/Views/`, `App/ViewModels/` | [`WIREFRAMES.md`](WIREFRAMES.md), [`UI_POLISH.md`](UI_POLISH.md) |
 | Art / audio hooks | `App/Views/RegionArt.swift`, `App/Audio/` | [`ASSETS.md`](ASSETS.md) |
 | Achievements (KoN) | `Sources/AvasiaEngine/Engine/AchievementTracker.swift` | [`ACHIEVEMENTS.md`](ACHIEVEMENTS.md) |
+| Chronicler (saga meta) | `Sources/AvasiaEngine/Systems/SagaXPTracker.swift` | [`META_PROGRESSION.md`](META_PROGRESSION.md) |
 | SoC trophies / journal | `Sources/AvasiaSoCEngine/Systems/` | [`sequel/STATUS.md`](sequel/STATUS.md) |
 | Compare against original KoN | External repo | [Avasia-KoN](https://github.com/jacobrozell/avasia-kon) |
 | Compare against SoC prototype | `Avasia-SoC/` | `python3 game.py` |
@@ -192,6 +193,7 @@ swift test
 | [`WIREFRAMES.md`](WIREFRAMES.md) | UI layouts |
 | [`ASSETS.md`](ASSETS.md) | Art & audio manifest |
 | [`ACHIEVEMENTS.md`](ACHIEVEMENTS.md) | Achievement + death screen system |
+| [`META_PROGRESSION.md`](META_PROGRESSION.md) | Chronicler saga meta rank (1.0.0 MVP + post-1.0 roadmap) |
 
 ### Blade of Courage
 
