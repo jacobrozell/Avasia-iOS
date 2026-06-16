@@ -64,6 +64,7 @@ struct SoCCataractaRuinsRoom: SoCRoomScript {
             .body("The keep is a black tooth against the sky."),
             .body(dentros),
             .body("At the garden, Anula's fountain is cracked — blue crystal dull in the rubble."),
+            .body("Someone scratched Many Hands into the stone. Under it, in shaky charcoal: *the chant stayed*."),
             .blank,
             .speech("A coalition scout finds you: Kaefden asked that any Cataractan survivor be brought home safely."),
             .body("You are not home. But you are remembered."),

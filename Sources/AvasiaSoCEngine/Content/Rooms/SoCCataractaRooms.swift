@@ -6,6 +6,12 @@ import AvasiaEngine
 struct SoCCataractaHousing: SoCRoomScript {
     let id: SoCRoomID = .cataractaHousing
 
+    func onEnter(_ state: inout SoCGameState) -> [StyledLine]? {
+        guard !state.actOneIntroShown else { return nil }
+        state.actOneIntroShown = true
+        return SoCCataractaFlavor.actOneOpeningLines(state)
+    }
+
     func describe(_ state: SoCGameState) -> [StyledLine] {
         [
             .title("Southwest Cataracta"),
@@ -110,18 +116,27 @@ struct SoCCataractaWestHallway: SoCRoomScript {
     func describe(_ state: SoCGameState) -> [StyledLine] {
         [
             .title("West Castle Hallway"),
+            .body("Marble underfoot — Cataracta's druid craft meeting Nacastrum stone."),
             .body("To the NORTH is the Nacastrum Library."),
             .body("To the EAST is a grand luxurious door that is encrusted in jewels."),
             .body("To the WEST is the Cataractan portal room."),
-            .hint("Which way would you like to investigate?")
+            .hint("LOOK around, or choose a direction.")
         ]
     }
 
     func handle(_ input: ParsedInput, _ state: inout SoCGameState) -> SoCTurnResult {
+        if input.contains(Verb.look) || input.contains("SEARCH") {
+            return SoCTurnResult([
+                .body("North smells of parchment and cooling wards — Thekia's library, they say."),
+                .body("East, the throne door glitters with Sylvian blue. Kaefden's court is not this keep, but the jewelwork rhymes."),
+                .body("West, the portal room hums — an itch in your teeth, like lightning remembered."),
+                .body("You think of Kimious's rally and the fountain cracked in ash. Whatever lies west, it binds kingdoms.")
+            ])
+        }
         if input.contains(Verb.north) { return SoCTurnResult([], .move(.library)) }
         if input.contains(Verb.east) { return SoCTurnResult([], .move(.throneRoom)) }
         if input.contains(Verb.west) { return SoCTurnResult([], .move(.portalRoom)) }
-        return SoCTurnResult([.hint("You can go NORTH, EAST, or WEST.")])
+        return SoCTurnResult([.hint("You can go NORTH, EAST, or WEST — or LOOK.")])
     }
 }
 
@@ -129,13 +144,18 @@ struct SoCCataractaWestHallway: SoCRoomScript {
 struct SoCCataractaHunterPath: SoCRoomScript {
     let id: SoCRoomID = .cataractaHunterPath
 
+    func onEnter(_ state: inout SoCGameState) -> [StyledLine]? {
+        state.hunterPathVisited = true
+        return nil
+    }
+
     func describe(_ state: SoCGameState) -> [StyledLine] {
         [
             .title("Hunter's Path"),
-            .body("That's the trail hunters use to go hunt."),
+            .body("A worn trail climbs into the pines west of housing."),
             .body("Wolf tracks mark the mud — spirit animals run ahead of the Legion here."),
-            .body("Dentros would tell recruits this path leads nowhere useful today."),
-            .hint("The courtyard is east through town. LEAVE to return home.")
+            .body("Dentros sends recruits this way on training days. The courtyard muster is east through town."),
+            .hint("LOOK at the tracks, or LEAVE to return home.")
         ]
     }
 
@@ -146,8 +166,15 @@ struct SoCCataractaHunterPath: SoCRoomScript {
                 .body("Fresh wolf sign leads into the forest."),
                 .body("Hunters train with their spirit animals out here — not on enlistment day.")
             ]
-            if state.playerClass == .scout {
+            switch state.playerClass {
+            case .hunter:
+                lines.append(.body("A wolf-cry answers from the treeline — spirit answering spirit. You almost know that voice."))
+            case .scout:
                 lines.append(.body("A red fox crosses the trail ahead — cherry fur, gone before you can call out. You almost know that gait."))
+            case .guardian:
+                lines.append(.body("The path is all switchbacks and mud. Bear recruits envy the courtyard's stone yard."))
+            case .none:
+                break
             }
             return SoCTurnResult(lines)
         }
@@ -178,8 +205,12 @@ struct SoCCataractaBarracks: SoCRoomScript {
             var lines: [StyledLine] = [
                 .speech("Legionnaire: Civilians aren't allowed inside."),
                 .speech("Legionnaire: Muster's at the courtyard. Your officer is Dentros."),
-                .speech("Legionnaire: King Kimious called up hidden reserves — something big is moving.")
+                .speech("Legionnaire: King Kimious called up hidden reserves — something big is moving."),
+                .speech("Legionnaire: Quartermaster's weighing Anula again. Gift crystal, war ledger — same blue, different math.")
             ]
+            if state.playerClass == .guardian {
+                lines.append(.speech("Legionnaire: Bear line trains in the yard at dawn. You look like you belong behind a shield, not on the street."))
+            }
             if !state.barracksTalked {
                 state.barracksTalked = true
                 lines.append(contentsOf: SoCQuestProgress.grantQuestExp(8, state: &state))
