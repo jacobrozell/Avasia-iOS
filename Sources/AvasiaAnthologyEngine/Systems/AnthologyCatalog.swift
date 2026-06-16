@@ -188,6 +188,36 @@ public enum AnthologyCatalog {
             fpReward: 10_000,
             requiredAlignment: .neutral,
             requiresPrior: .neutralFour
+        ),
+        AnthologyStoryMeta(
+            id: .goodSix,
+            title: "The Restoration Accord",
+            subtitle: "Sign the Sylvian–Kaefden pact — or walk away.",
+            systemImage: "signature",
+            fpCost: 17_500,
+            fpReward: 17_500,
+            requiredAlignment: .loyalist,
+            requiresPrior: .goodFive
+        ),
+        AnthologyStoryMeta(
+            id: .badSix,
+            title: "Western Throne",
+            subtitle: "Rule occupied Cataracta — or yield the seat.",
+            systemImage: "crown.fill",
+            fpCost: 17_500,
+            fpReward: 17_500,
+            requiredAlignment: .agroman,
+            requiresPrior: .badFive
+        ),
+        AnthologyStoryMeta(
+            id: .neutralSix,
+            title: "The Open Ledger",
+            subtitle: "Publish the neutral archive — or seal it.",
+            systemImage: "book.closed.fill",
+            fpCost: 17_500,
+            fpReward: 17_500,
+            requiredAlignment: .neutral,
+            requiresPrior: .neutralFive
         )
     ]
 
@@ -265,6 +295,9 @@ public enum AnthologyCatalog {
         case .goodFive: state.goodFiveComplete = true
         case .badFive: state.badFiveComplete = true
         case .neutralFive: state.neutralFiveComplete = true
+        case .goodSix: state.goodSixComplete = true
+        case .badSix: state.badSixComplete = true
+        case .neutralSix: state.neutralSixComplete = true
         }
         state.currentStory = nil
         state.clearInProgressStoryFlags()
@@ -284,6 +317,12 @@ public enum AnthologyCatalog {
         }
         if state.storyZeroComplete {
             lines.append(.body("Choose Story — Training Arena — or the Training Shop."))
+        }
+        if let progress = AnthologyPathProgress.progressLabel(state: state) {
+            lines.append(.body(progress))
+        }
+        if AnthologyPathProgress.isActivePathComplete(state: state) {
+            lines.append(.body("Your alignment path is complete. Replay any story from Choose Story."))
         }
         lines.append(.blank)
         lines.append(.hint("Choose Story · Arena · Shop · LIST · PLAY <name>"))
@@ -314,5 +353,17 @@ public enum AnthologyCatalog {
         case .agroman: return "agroman"
         case .neutral: return "neutral"
         }
+    }
+
+    /// Celebration lines when the final story in an alignment path is completed.
+    public static func pathCompletionLines(state: AnthologyGameState) -> [StyledLine] {
+        guard AnthologyPathProgress.isActivePathComplete(state: state) else { return [] }
+        let name = state.alignment.rawValue.capitalized
+        return [
+            .blank,
+            .title("\(name) path complete"),
+            .body("Six stories from fork to finale. Scout Patrol set your allegiance — you walked it to the end."),
+            .body("Replay any story from the hub. Arena and shop stay open.")
+        ]
     }
 }

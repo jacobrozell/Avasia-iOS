@@ -156,6 +156,39 @@ enum AnthologyTestPaths {
         advance(engine, "CONTINUE")
     }
 
+    static func finishGoodFive(_ engine: AnthologyGameEngine) {
+        var boosted = engine.state
+        boosted.factionPoints = max(boosted.factionPoints, 10_000)
+        engine.load(boosted)
+        _ = engine.launchStory(.goodFive)
+        advance(engine, "CONTINUE")
+        advance(engine, "SWEAR")
+        advance(engine, "CONTINUE")
+        advance(engine, "CONTINUE")
+    }
+
+    static func finishBadFive(_ engine: AnthologyGameEngine) {
+        var boosted = engine.state
+        boosted.factionPoints = max(boosted.factionPoints, 10_000)
+        engine.load(boosted)
+        _ = engine.launchStory(.badFive)
+        advance(engine, "CONTINUE")
+        advance(engine, "DECLINE")
+        advance(engine, "CONTINUE")
+        advance(engine, "CONTINUE")
+    }
+
+    static func finishNeutralFive(_ engine: AnthologyGameEngine) {
+        var boosted = engine.state
+        boosted.factionPoints = max(boosted.factionPoints, 10_000)
+        engine.load(boosted)
+        _ = engine.launchStory(.neutralFive)
+        advance(engine, "CONTINUE")
+        advance(engine, "STAY")
+        advance(engine, "CONTINUE")
+        advance(engine, "CONTINUE")
+    }
+
     private static func advance(_ engine: AnthologyGameEngine, _ command: String) {
         _ = engine.submit(command)
     }

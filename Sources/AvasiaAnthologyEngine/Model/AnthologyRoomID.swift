@@ -117,6 +117,21 @@ public enum AnthologyRoomID: String, Codable, CaseIterable, Sendable {
     case neutralFiveSplitpath = "neutral_five_splitpath"
     case neutralFiveMileMarker = "neutral_five_mile_marker"
     case neutralFiveEpilogue = "neutral_five_epilogue"
+
+    // Good #6 — Restoration Accord
+    case goodSixAccordHall = "good_six_accord_hall"
+    case goodSixSigningFloor = "good_six_signing_floor"
+    case goodSixEpilogue = "good_six_epilogue"
+
+    // Bad #6 — Western Throne
+    case badSixOccupiedHall = "bad_six_occupied_hall"
+    case badSixThroneRoom = "bad_six_throne_room"
+    case badSixEpilogue = "bad_six_epilogue"
+
+    // Neutral #6 — Open Ledger
+    case neutralSixArchive = "neutral_six_archive"
+    case neutralSixBindingRoom = "neutral_six_binding_room"
+    case neutralSixEpilogue = "neutral_six_epilogue"
 }
 
 public extension AnthologyRoomID {
@@ -128,19 +143,23 @@ public extension AnthologyRoomID {
              .neutralThreeMarket, .neutralThreeTraderRow, .neutralThreeSchismStall,
              .neutralThreeAftermath, .neutralThreeEpilogue, .neutralFourKaefdenRoad, .neutralFourEpilogue,
              .neutralFiveSplitpath, .neutralFiveEpilogue, .goodFiveEpilogue, .badFiveEpilogue,
+             .goodSixEpilogue, .badSixEpilogue, .neutralSixArchive, .neutralSixEpilogue,
              .badOneEpilogue, .badTwoEpilogue, .badThreeEpilogue, .badFourEpilogue, .elkSplitpath, .elkEpilogue:
             return .splitpath
         case .patrolCamp, .elkHoldfast, .elkFeast, .badTwoPeriphery, .badTwoOverlook,
-             .badThreeCamp, .badThreeMarch, .goodFourMobilizationCamp, .badFourApproach, .badFiveCamp:
+             .badThreeCamp, .badThreeMarch, .goodFourMobilizationCamp, .badFourApproach, .badFiveCamp,
+             .badSixOccupiedHall:
             return .forest
         case .scoutRidge, .scoutWithdraw, .scoutSignal, .scoutPicket,
              .vashirrParley, .scoutFork, .scoutCampExit, .badOneTraining, .badTwoBriefing,
              .badThreeRite, .badThreeOath, .badThreeAfterOath, .badThreeVashirrTent,
              .badFourSiegeLine, .badFourGate, .goodFourCommandTent, .goodFourBriefing,
-             .badFiveCommandFire, .neutralFiveMileMarker:
+             .badFiveCommandFire, .neutralFiveMileMarker, .badSixThroneRoom,
+             .neutralSixBindingRoom, .goodSixSigningFloor:
             return .mountain
         case .goodOneOceandale, .goodOnePier, .badOneColumn, .badOneAudience, .badOneRecon,
-             .arenaPit, .trainingShop, .goodThreeLanding, .neutralFourGate, .neutralFourCrowd:
+             .arenaPit, .trainingShop, .goodThreeLanding, .neutralFourGate, .neutralFourCrowd,
+             .goodSixAccordHall:
             return .shore
         case .goodOneSilvarium, .goodTwoSilvarium, .goodFiveSilvarium, .goodFiveWitnessStone:
             return .tree

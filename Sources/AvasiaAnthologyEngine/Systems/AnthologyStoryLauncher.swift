@@ -148,6 +148,30 @@ public enum AnthologyStoryLauncher {
                 ],
                 .neutralFiveSplitpath
             )
+        case .goodSix:
+            return (
+                [
+                    .title("The Restoration Accord"),
+                    .body("Ministers and elders share a table at last. Your ridge patrol started this war's paperwork.")
+                ],
+                .goodSixAccordHall
+            )
+        case .badSix:
+            return (
+                [
+                    .title("Western Throne"),
+                    .body("Cataracta is taken. Vashirr asks who keeps the hall when the sermon ends.")
+                ],
+                .badSixOccupiedHall
+            )
+        case .neutralSix:
+            return (
+                [
+                    .title("The Open Ledger"),
+                    .body("Suformin and Cellious bind every neutral record — cave, gate, market — into one ledger.")
+                ],
+                .neutralSixArchive
+            )
         }
     }
 }

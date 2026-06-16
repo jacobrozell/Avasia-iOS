@@ -95,6 +95,7 @@ depth and Vashirr's POV.
 | **G — Ring passes** | Daily grant + gold purchase · FP bypass ✅ |
 | **H — Tier 4** | Good/Bad/Neutral #4 at 5,000 FP ✅ (stub) |
 | **I — Tier 5** | Alignment capstone stubs at 10,000 FP ✅ |
+| **J — Tier 6 & paths** | Finale at 17,500 FP · path progress UI ✅ |
 
 ---
 

@@ -71,6 +71,14 @@ struct StoryPickerView: View {
                     .font(.caption.weight(.semibold))
                     .foregroundColor(Theme.parchment.opacity(0.7))
             }
+            if let progress = AnthologyPathProgress.progressLabel(state: vm.anthologyState) {
+                Text(progress)
+                    .font(.caption.weight(.semibold))
+                    .foregroundColor(
+                        AnthologyPathProgress.isActivePathComplete(state: vm.anthologyState)
+                            ? Theme.accent : Theme.parchment.opacity(0.65)
+                    )
+            }
             Text("Spend faction points to unlock paths matching your Scout Patrol choice.")
                 .font(.footnote)
                 .foregroundColor(Theme.parchment.opacity(0.65))

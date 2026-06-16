@@ -20,6 +20,9 @@
 | `goodFive` | `goodFiveSilvarium` | `goodFiveComplete` | 10,000 | 10,000 | loyalist capstone |
 | `badFive` | `badFiveCamp` | `badFiveComplete` | 10,000 | 10,000 | agroman capstone |
 | `neutralFive` | `neutralFiveSplitpath` | `neutralFiveComplete` | 10,000 | 10,000 | neutral capstone |
+| `goodSix` | `goodSixAccordHall` | `goodSixComplete` | 17,500 | 17,500 | loyalist finale |
+| `badSix` | `badSixOccupiedHall` | `badSixComplete` | 17,500 | 17,500 | agroman finale |
+| `neutralSix` | `neutralSixArchive` | `neutralSixComplete` | 17,500 | 17,500 | neutral finale |
 
 **Hub:** `storyHub` — story launchers + `PLAY ARENA` · `SHOP` · `LIST` · daily ring pass
 

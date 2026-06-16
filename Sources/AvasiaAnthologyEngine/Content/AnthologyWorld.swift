@@ -83,7 +83,16 @@ public enum AnthologyWorld {
             BadFiveEpilogueRoom(),
             NeutralFiveSplitpathRoom(),
             NeutralFiveMileMarkerRoom(),
-            NeutralFiveEpilogueRoom()
+            NeutralFiveEpilogueRoom(),
+            GoodSixAccordHallRoom(),
+            GoodSixSigningFloorRoom(),
+            GoodSixEpilogueRoom(),
+            BadSixOccupiedHallRoom(),
+            BadSixThroneRoom(),
+            BadSixEpilogueRoom(),
+            NeutralSixArchiveRoom(),
+            NeutralSixBindingRoom(),
+            NeutralSixEpilogueRoom()
         ]
         return Dictionary(uniqueKeysWithValues: rooms.map { ($0.id, $0) })
     }

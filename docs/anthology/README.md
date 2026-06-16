@@ -41,5 +41,8 @@
 | **Witness Stone** | [stories/STORY_GOOD_FIVE.md](stories/STORY_GOOD_FIVE.md) | — | ✅ | 10,000 FP · loyalist capstone |
 | **Western Command** | [stories/STORY_BAD_FIVE.md](stories/STORY_BAD_FIVE.md) | — | ✅ | 10,000 FP · agroman capstone |
 | **The Unmarked Road** | [stories/STORY_NEUTRAL_FIVE.md](stories/STORY_NEUTRAL_FIVE.md) | — | ✅ | 10,000 FP · neutral capstone |
+| **The Restoration Accord** | [stories/STORY_GOOD_SIX.md](stories/STORY_GOOD_SIX.md) | — | ✅ | 17,500 FP · loyalist finale |
+| **Western Throne** | [stories/STORY_BAD_SIX.md](stories/STORY_BAD_SIX.md) | — | ✅ | 17,500 FP · agroman finale |
+| **The Open Ledger** | [stories/STORY_NEUTRAL_SIX.md](stories/STORY_NEUTRAL_SIX.md) | — | ✅ | 17,500 FP · neutral finale |
 | **Training Arena** | — | `arenaPit` | ✅ | Free · 75 gold / run |
 | **Training Shop** | — | `trainingShop` | ✅ | Gear + ring passes (100g) |

@@ -132,6 +132,21 @@ public struct AnthologyGameState: Codable, Sendable {
     public var neutralFiveStayedOnRoad = false
     public var neutralFiveComplete = false
 
+    // Good #6
+    public var goodSixAccordResolved = false
+    public var goodSixSignedAccord = false
+    public var goodSixComplete = false
+
+    // Bad #6
+    public var badSixThroneResolved = false
+    public var badSixAcceptedRule = false
+    public var badSixComplete = false
+
+    // Neutral #6
+    public var neutralSixLedgerResolved = false
+    public var neutralSixPublishedLedger = false
+    public var neutralSixComplete = false
+
     // Ring passes (gold shop — excuse one FP unlock each)
     public var ringPasses: Int = 0
     public var ringPassLastGrantDay: String?
@@ -172,6 +187,9 @@ public struct AnthologyGameState: Codable, Sendable {
         goodFiveSworeWitness = false
         badFiveAcceptedCommand = false
         neutralFiveStayedOnRoad = false
+        goodSixSignedAccord = false
+        badSixAcceptedRule = false
+        neutralSixPublishedLedger = false
     }
 
     /// Clears room-phase flags when a story ends; keeps outcome choices for debrief/replay memory.
@@ -192,6 +210,9 @@ public struct AnthologyGameState: Codable, Sendable {
         goodFiveStoneResolved = false
         badFiveCommandResolved = false
         neutralFiveRoadResolved = false
+        goodSixAccordResolved = false
+        badSixThroneResolved = false
+        neutralSixLedgerResolved = false
     }
 
     public mutating func resetArenaRun() {
