@@ -35,5 +35,8 @@
 | **Council Under Glass** | [stories/STORY_GOOD_THREE.md](stories/STORY_GOOD_THREE.md) | — | ✅ | 2,500 FP · after Good #2 |
 | **Many Hands Oath** | [stories/STORY_BAD_THREE.md](stories/STORY_BAD_THREE.md) | — | ✅ | 2,500 FP · after Bad #2 |
 | **Two Hands Market** | [stories/STORY_NEUTRAL_THREE.md](stories/STORY_NEUTRAL_THREE.md) | — | ✅ | 2,500 FP · after Cave Record |
+| **Restoration Mobilization** | [stories/STORY_GOOD_FOUR.md](stories/STORY_GOOD_FOUR.md) | — | ✅ | 5,000 FP · after Good #3 |
+| **Cataracta Breach** | [stories/STORY_BAD_FOUR.md](stories/STORY_BAD_FOUR.md) | — | ✅ | 5,000 FP · after Bad #3 |
+| **Cellious at the Gate** | [stories/STORY_NEUTRAL_FOUR.md](stories/STORY_NEUTRAL_FOUR.md) | — | ✅ | 5,000 FP · after Neutral #3 |
 | **Training Arena** | — | `arenaPit` | ✅ | Free · 75 gold / run |
 | **Training Shop** | — | `trainingShop` | ✅ | Gear + ring passes (100g) |

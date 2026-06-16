@@ -84,27 +84,46 @@ public enum AnthologyRoomID: String, Codable, CaseIterable, Sendable {
     case neutralThreeSchismStall = "neutral_three_schism_stall"
     case neutralThreeAftermath = "neutral_three_aftermath"
     case neutralThreeEpilogue = "neutral_three_epilogue"
+
+    // Good #4 — Restoration Mobilization
+    case goodFourMobilizationCamp = "good_four_mobilization_camp"
+    case goodFourCommandTent = "good_four_command_tent"
+    case goodFourBriefing = "good_four_briefing"
+    case goodFourEpilogue = "good_four_epilogue"
+
+    // Bad #4 — Cataracta Breach
+    case badFourApproach = "bad_four_approach"
+    case badFourSiegeLine = "bad_four_siege_line"
+    case badFourGate = "bad_four_gate"
+    case badFourEpilogue = "bad_four_epilogue"
+
+    // Neutral #4 — Cellious at the Gate
+    case neutralFourKaefdenRoad = "neutral_four_kaefden_road"
+    case neutralFourGate = "neutral_four_gate"
+    case neutralFourCrowd = "neutral_four_crowd"
+    case neutralFourEpilogue = "neutral_four_epilogue"
 }
 
 public extension AnthologyRoomID {
     var region: Region {
         switch self {
         case .storyHub, .scoutEpilogue, .goodOneSplitpath, .goodOneEpilogue,
-             .goodTwoWesternRoad, .goodTwoEpilogue, .goodThreeEpilogue,
+             .goodTwoWesternRoad, .goodTwoEpilogue, .goodThreeEpilogue, .goodFourEpilogue,
              .caveRecordTrail, .caveRecordEpilogue,
              .neutralThreeMarket, .neutralThreeTraderRow, .neutralThreeSchismStall,
-             .neutralThreeAftermath, .neutralThreeEpilogue,
-             .badOneEpilogue, .badTwoEpilogue, .badThreeEpilogue, .elkSplitpath, .elkEpilogue:
+             .neutralThreeAftermath, .neutralThreeEpilogue, .neutralFourKaefdenRoad, .neutralFourEpilogue,
+             .badOneEpilogue, .badTwoEpilogue, .badThreeEpilogue, .badFourEpilogue, .elkSplitpath, .elkEpilogue:
             return .splitpath
         case .patrolCamp, .elkHoldfast, .elkFeast, .badTwoPeriphery, .badTwoOverlook,
-             .badThreeCamp, .badThreeMarch:
+             .badThreeCamp, .badThreeMarch, .goodFourMobilizationCamp, .badFourApproach:
             return .forest
         case .scoutRidge, .scoutWithdraw, .scoutSignal, .scoutPicket,
              .vashirrParley, .scoutFork, .scoutCampExit, .badOneTraining, .badTwoBriefing,
-             .badThreeRite, .badThreeOath, .badThreeAfterOath, .badThreeVashirrTent:
+             .badThreeRite, .badThreeOath, .badThreeAfterOath, .badThreeVashirrTent,
+             .badFourSiegeLine, .badFourGate, .goodFourCommandTent, .goodFourBriefing:
             return .mountain
         case .goodOneOceandale, .goodOnePier, .badOneColumn, .badOneAudience, .badOneRecon,
-             .arenaPit, .trainingShop, .goodThreeLanding:
+             .arenaPit, .trainingShop, .goodThreeLanding, .neutralFourGate, .neutralFourCrowd:
             return .shore
         case .goodOneSilvarium, .goodTwoSilvarium:
             return .tree

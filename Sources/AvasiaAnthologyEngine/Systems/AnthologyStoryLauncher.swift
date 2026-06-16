@@ -100,6 +100,30 @@ public enum AnthologyStoryLauncher {
                 ],
                 .neutralThreeMarket
             )
+        case .goodFour:
+            return (
+                [
+                    .title("Restoration Mobilization"),
+                    .body("Thekia sends you to the Oceandale front — Restoration finally moves, and wants your counsel on how hard.")
+                ],
+                .goodFourMobilizationCamp
+            )
+        case .badFour:
+            return (
+                [
+                    .title("Cataracta Breach"),
+                    .body("Vashirr's column closes on the druid city. Your map becomes the first blow.")
+                ],
+                .badFourApproach
+            )
+        case .neutralFour:
+            return (
+                [
+                    .title("Cellious at the Gate"),
+                    .body("Traders speak of a Kaefden clerk who counts deserters without choosing a sermon. The gate waits.")
+                ],
+                .neutralFourKaefdenRoad
+            )
         }
     }
 }

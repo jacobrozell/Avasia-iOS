@@ -128,6 +128,36 @@ public enum AnthologyCatalog {
             fpReward: 2_500,
             requiredAlignment: .neutral,
             requiresPrior: .caveRecord
+        ),
+        AnthologyStoryMeta(
+            id: .goodFour,
+            title: "Restoration Mobilization",
+            subtitle: "Hold the Oceandale line — or push before Paladins swell.",
+            systemImage: "shield.lefthalf.filled",
+            fpCost: 5_000,
+            fpReward: 5_000,
+            requiredAlignment: .loyalist,
+            requiresPrior: .goodThree
+        ),
+        AnthologyStoryMeta(
+            id: .badFour,
+            title: "Cataracta Breach",
+            subtitle: "Burn the garden gate — or storm it with discipline.",
+            systemImage: "flame.fill",
+            fpCost: 5_000,
+            fpReward: 5_000,
+            requiredAlignment: .agroman,
+            requiresPrior: .badThree
+        ),
+        AnthologyStoryMeta(
+            id: .neutralFour,
+            title: "Cellious at the Gate",
+            subtitle: "Witness Kaefden's deserter count — or walk away.",
+            systemImage: "doc.text.fill",
+            fpCost: 5_000,
+            fpReward: 5_000,
+            requiredAlignment: .neutral,
+            requiresPrior: .neutralThree
         )
     ]
 
@@ -199,6 +229,9 @@ public enum AnthologyCatalog {
         case .goodThree: state.goodThreeComplete = true
         case .badThree: state.badThreeComplete = true
         case .neutralThree: state.neutralThreeComplete = true
+        case .goodFour: state.goodFourComplete = true
+        case .badFour: state.badFourComplete = true
+        case .neutralFour: state.neutralFourComplete = true
         }
         state.currentStory = nil
         state.clearInProgressStoryFlags()

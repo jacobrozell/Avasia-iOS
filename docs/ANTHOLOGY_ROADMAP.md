@@ -93,6 +93,7 @@ depth and Vashirr's POV.
 | **E — Arena** | Training arena — 3 waves, gold, first-clear FP ✅ |
 | **F — Shop & tier 3** | Gold shop upgrades ✅ · Good/Bad/Neutral #3 ✅ |
 | **G — Ring passes** | Daily grant + gold purchase · FP bypass ✅ |
+| **H — Tier 4** | Good/Bad/Neutral #4 at 5,000 FP ✅ (stub) |
 
 ---
 

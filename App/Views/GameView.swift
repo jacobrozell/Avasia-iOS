@@ -57,6 +57,15 @@ struct GameView: View {
             if vm.anthologyState.currentRoom == .neutralThreeSchismStall, !vm.anthologyState.neutralThreeStallResolved {
                 return ["Broker", "Lean", "Continue"]
             }
+            if vm.anthologyState.currentRoom == .goodFourBriefing, !vm.anthologyState.goodFourBriefingResolved {
+                return ["Hold", "Push", "Continue"]
+            }
+            if vm.anthologyState.currentRoom == .badFourGate, !vm.anthologyState.badFourGateResolved {
+                return ["Burn", "Storm", "Continue"]
+            }
+            if vm.anthologyState.currentRoom == .neutralFourCrowd, !vm.anthologyState.neutralFourCrowdResolved {
+                return ["Witness", "Walk", "Continue"]
+            }
             return ["Continue", "Look", "Talk"]
         }
         guard vm.product == .soc else { return defaultQuickVerbs }
