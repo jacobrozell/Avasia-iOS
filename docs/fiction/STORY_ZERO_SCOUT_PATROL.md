@@ -111,8 +111,27 @@ After the fork, alignment-specific release beat (`scoutCampExit`) before epilogu
 
 - **Agroman** = banished prince's middle name ([`../LORE_ARCHIVE.md`](../LORE_ARCHIVE.md))
 - **Many Hands** = Paladin doctrine ([`../VASHIRR.md`](../VASHIRR.md))
+- **Anchor law** = schism as competing containers for power ([`../SAGA.md`](../SAGA.md) §0)
 - **Oceandale** = colony the army will strike if REPORT fails or arrives late
 - **KoN PC** = different person years later (teacher mage, not this scout)
+
+---
+
+## Saga alignment seeds *(Story #0 only)*
+
+Story 0 must **prime** anthology readers for the holy pillars without spoiling
+game 3 proper nouns (Red Litany, Splitpath Station economy).
+
+| Pillar | Seed in Story 0 |
+|---|---|
+| **Anchor law** | Vashirr sermon: towers vs blood oath; ridge sighting notes sky-anchors on banners |
+| **Duology argument** | Many Hands pamphlets vs elder "report, do not engage" |
+| **Commodity Era** | Optional dock beat: Sylvian **gift** Anula vs Agromanian **requisition** tallies (no coin economy yet) |
+| **Survivor's legend** | Epilogue names the scout's report — not the SoC druid — so paths stay distinct |
+| **Kaefden IV** | Never on-stage; only "Kaefden rebuilds towers" in Vashirr's rhetoric |
+
+**Fork outcomes** map to anthology economy only — loyalist → Good #1, agroman →
+Bad #1, neutral → Elk Feast — without writing the SoC protagonist into this patrol.
 
 ---
 

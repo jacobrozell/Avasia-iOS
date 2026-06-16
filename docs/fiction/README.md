@@ -5,6 +5,9 @@
 > [`../sequel/STORY.md`](../sequel/STORY.md), [`../SAGA.md`](../SAGA.md)) and
 > translate canon into **narrative craft**: POV, theme, scene beats, and
 > character voice — the material you'd hand an editor or co-author.
+>
+> **Do not contradict** [`../SAGA.md`](../SAGA.md) **§0 (sacred pillars)** —
+> anchor law, Commodity Era, survivor's legend, flesh cult stack, duology argument.
 
 ---
 
@@ -14,6 +17,8 @@
 |---|---|
 | [`CHARACTERS.md`](CHARACTERS.md) | Key cast — wants, wounds, voice, relationships, story hooks |
 | [`SHORT_STORY_SERIES.md`](SHORT_STORY_SERIES.md) | Full saga as a numbered anthology: one spec per story |
+| [`STORY_BRAINSTORM.md`](STORY_BRAINSTORM.md) | **Future beats backlog** — anthology ideas, world-building, game 3 seeds (not canon until drafted) |
+| [`THEKIA_GROUND_HOUSE.md`](THEKIA_GROUND_HOUSE.md) | **Thekia bible** — origin, Oceandale exile, post-KoN arc; Stories 2b, 4b, 9b + prose draft |
 | [`STORY_ZERO_SCOUT_PATROL.md`](STORY_ZERO_SCOUT_PATROL.md) | **Story #0** — alignment fork, Vashirr first contact (future anthology) |
 
 ---

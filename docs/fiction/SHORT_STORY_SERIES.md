@@ -10,13 +10,20 @@
 
 | Volume | Span | Stories | Protagonist lens |
 |---|---|---|---|
-| **I — The Floating Crown** | Schism → KoN ending | 1–8 | Amnesiac mage → Kaefden IV crowned |
-| **II — Blade of Courage** | SoC opening → Age epilogue | 9–16 | Druid legionnaire |
+| **I — The Floating Crown** | Schism → KoN ending | 1–9, **2b, 4b** | Amnesiac mage → Kaefden IV crowned |
+| **I–II bridge** | KoN ending → SoC opening | **9b** | Thekia — restoration and wait |
+| **II — Blade of Courage** | SoC opening → Age epilogue | 10–20 | Druid legionnaire |
 | **III — TBD** | Post–Age era (game 3, 2D) | — | New generation |
 
 **Series thesis:** Avasia breaks apart when power fears sharing the table — and
 mends when scattered peoples choose loyalty over bloodline. Magic, shapeshifting,
 and blue crystal light mark the worthy.
+
+**Saga pillars** ([`../SAGA.md`](../SAGA.md) §0): **anchor law** (power must bind
+to sky, earth, flesh, or civic faith); **duology argument** (Restoration vs Many
+Hands); **Commodity Era** foreshadow (Anula as fuel and coin); **SoC survivor**
+myth for game 3. Each volume should plant at least one anchor and one economic
+echo without naming the post–Age era aloud.
 
 **Recurring refrain:** *"Kaefden to Kaefden"* · *"Let us go, my king"* · the scar
 on Vashirr's eye · the pendant's blue gem.
@@ -40,9 +47,10 @@ on Vashirr's eye · the pendant's blue gem.
 
 **Synopsis:** Before living memory, Avasia united under Kaefden — until the
 youngest son turned a protest in Aylova into violence and demanded the crown.
-Banished with his followers, he founds the Agromanian faction. The elder line
-endures. Neither side is purely villain; both believe chaos or tyranny is the
-alternative.
+Banished with his followers, he founds the Agromanian faction — his **middle name,
+Agroman**, worn as a banner. The elder line endures. Neither side is purely villain;
+both believe chaos or tyranny is the alternative, and both insist power must
+**anchor** to something (crown law vs brotherhood oath).
 
 **Scene beats:**
 1. Peaceful Aylova — the youngest speaks in the square.
@@ -52,7 +60,10 @@ alternative.
 5. Coda — Agroman rises; hatred outlives the brothers. The faction name is the
    prince's **middle name**.
 
-**Theme:** Foundational sin. Every war in the saga is an echo of this room.
+**Theme:** Foundational sin. Every war in the saga is an echo of this room —
+including who gets to decide **where magic may live**.
+
+**Saga seed:** Anchor law stated as myth, not lecture.
 
 **Tone:** Earnest myth. No modern jokes — this is the one story told as legend.
 
@@ -93,6 +104,39 @@ SoC (Vashirr's ongoing alliance).
 
 ---
 
+### Story 2b — *The Night She Did Not Fly*
+
+| Field | Value |
+|---|---|
+| **Canon anchor** | Story 2 parallel · `EndgameRooms` · [`THEKIA_GROUND_HOUSE.md`](THEKIA_GROUND_HOUSE.md) |
+| **POV** | Third limited — Thekia |
+| **Length target** | 2,500–3,000 words |
+| **Cast** | Thekia; liaison family (basin-reflection); Vashirr (distant) |
+
+**Synopsis:** Thekia is **already in Oceandale** when Nacastrum empties. Through
+a scrying basin she watches portals, the father's death, the mother's abduction.
+She cannot reach the tower — **grounded by her own law**. She understands Vashirr
+is breaking anchor-pairs, writes three names in the registry, and holds the ward
+line while the heir washes ashore in six days.
+
+**Scene beats:**
+1. Basin-light — Nacastrum screams in reflection.
+2. Recognition — ground-oath clause she wrote.
+3. Choice — Aylova or shore line; she holds.
+4. Ward flares — torches slide off the arc.
+5. Registry — two names struck through; pendant number circled.
+6. Epilogue — guard: *"Another one from the sky, eh?"*
+
+**Theme:** Witness without rescue. The mentor's guilt is geography.
+
+**Tone:** Tragic, claustrophobic. One room, one basin.
+
+**Connections:** Story 2 · Story 4b · Story 4.
+
+**Full spec:** [`THEKIA_GROUND_HOUSE.md`](THEKIA_GROUND_HOUSE.md) § Story 2b.
+
+---
+
 ### Story 3 — *The King Without Memory*
 
 | Field | Value |
@@ -103,9 +147,11 @@ SoC (Vashirr's ongoing alliance).
 | **Cast** | Player; old gate guard; merchant; ruins of Oceandale |
 
 **Synopsis:** You wake on a beach beside a dying port city. An old guard at the
-broken gate tells you how Avasia split, how Agromanians sacked the coast, and how
-the mages vanished from their floating city. You know nothing — not your name, not
-why ships fish peacefully on the horizon while corpses stack in the graveyard.
+broken gate tells you how Avasia split — Agroman from a prince's middle name,
+Kaefden from law, Ofelos from neutrality — and how power must **cling to an
+anchor** or become chaos. Agromanians sacked the coast; mages vanished from their
+floating city. You know nothing — not your name, not why ships fish peacefully on
+the horizon while corpses stack in the graveyard.
 
 **Scene beats:**
 1. Waves — stretch, disorientation, blue robe, pointed ears.
@@ -134,9 +180,9 @@ warnings optional in prose adaptation).
 
 **Synopsis:** The magehouse door slams shut. An elderly mage tests whether you
 remember your faction — *"What faction do the mages represent?"* — and names
-Vashirr's betrayal. She gives you Levitate and a quest: unlock Nacastrum, unite
-the people. You leave knowing someone believes you are terribly lost, and terribly
-important.
+Vashirr's betrayal and the **Many Hands** rumor (magic for soldiers, not towers).
+She gives you Levitate and a quest: unlock Nacastrum, unite the people. You leave
+knowing someone believes you are terribly lost, and terribly important.
 
 **Scene beats:**
 1. Door seals — unseen magic.
@@ -153,6 +199,37 @@ important.
 
 ---
 
+### Story 4b — *The Ground House*
+
+| Field | Value |
+|---|---|
+| **Canon anchor** | `NARRATIVE_LOGIC` #8–9 · `MagehouseRoom` · [`THEKIA_GROUND_HOUSE.md`](THEKIA_GROUND_HOUSE.md) |
+| **POV** | Third limited — Thekia |
+| **Length target** | 4,500–5,500 words |
+| **Cast** | Young Vashirr; council; liaison family; Oceandale fishers |
+
+**Synopsis:** Thekia votes for the ground-house compromise and signs Oceandale into
+the anchor registry. When Vashirr crowns, she calls Many Hands sincere — and fatal.
+She resigns, descends, binds a Levitate ward, and waits twenty years for an heir
+she knows by pendant number, not face.
+
+**Scene beats:**
+1. Council vote — *"Towers teach mages they are priests."*
+2. Academy corridor — debates young teacher Vashirr.
+3. Coronation year — walks out before banishment.
+4. Descent — ward bound; fisher at the threshold.
+5. Quiet years — propaganda on the wind.
+6. The week before — Oceandale burns; mages fall like blue rain.
+7. Coda — door slams on a stranger in blue robes.
+
+**Theme:** Exile as strategy, not surrender.
+
+**Tone:** Patient, political, intimate. No combat.
+
+**Connections:** Story 4 · Story 2b · Story 9. **Prose draft** in [`THEKIA_GROUND_HOUSE.md`](THEKIA_GROUND_HOUSE.md).
+
+---
+
 ### Story 5 — *Fox at the Mountain*
 
 | Field | Value |
@@ -164,9 +241,9 @@ important.
 
 **Synopsis:** A red fox becomes a man with cherry-red hair and gives you a lantern.
 He sends you toward the cave where Old Mages hid their secrets. At Cataracta's
-stone gate, hunters shapeshift — man to wolf — until you prove you are a mage.
-Chief Cellious turns you away: their king fears spies. You never enter the city
-you will one day see burned.
+stone gate, **Sylvian Anula** gleams in the masonry and hunters shapeshift — man
+to wolf — until you prove you are a mage. Chief Cellious turns you away: their
+king fears spies. You never enter the city you will one day see burned.
 
 **Scene beats:**
 1. Fox encounter — transformation reveal.
@@ -257,9 +334,10 @@ or join the ash. The cave teaches that the quest kills indiscriminately.
 
 **Synopsis:** Inflame breaks an ambush; Stonebend parts stone spires; the memory
 bridge repeats until you jump into water that is not water — and Nacastrum hangs
-above you like a second moon. Thekia activates the Ring with the Staff. You step
-through and remember everything: the Academy, Vashirr's coronation when you were
-thirteen, your mother's abduction, your father's death. You scream. She waits.
+above you like a second moon. Thekia activates the Ring with the Staff — a
+**sky-anchor** network. You step through and remember everything: the Academy,
+Vashirr's coronation when you were thirteen, your mother's abduction, your
+father's death. You scream. She waits.
 
 **Scene beats:**
 1. Agromanian ambush — Inflame or die.
@@ -289,10 +367,11 @@ Vashirr's courtyard).
 | **Cast** | Thekia; father's corpse; exiled mages; Aylova crowd |
 
 **Synopsis:** Nacastrum's silver streets are ransacked but restorable. In the
-courtyard you find your father's body and take his pendant — silver, blue gem.
-Thekia opens a Ring to Aylova and rallies the banished. Mages and non-mages
-stream home. The city repopulates. She looks at you and says: *"Let us go, my
-king."* The work has just started.
+courtyard you find your father's body and take his pendant — silver, **blue gem
+with an earth-crystal hue** (anchor seed for game 3). Thekia opens a Ring to
+Aylova and rallies the banished. Mages and non-mages stream home. The city
+repopulates. She looks at you and says: *"Let us go, my king."* The work has just
+started — scatter, not reunion, is the harder war.
 
 **Scene beats:**
 1. Ruined floating city — towers, silence.
@@ -307,6 +386,36 @@ king."* The work has just started.
 **Tone:** Bittersweet triumph. Volume I closes.
 
 **Connections:** Story 10 (seven-year gap); Story 12 (same king on throne).
+
+---
+
+### Story 9b — *Seven Years of Rising*
+
+| Field | Value |
+|---|---|
+| **Canon anchor** | KoN ending → SoC opening · anthology Good #2–6 · [`THEKIA_GROUND_HOUSE.md`](THEKIA_GROUND_HOUSE.md) |
+| **POV** | Third person episodic (4 vignettes) |
+| **Length target** | 6,000–8,000 words |
+| **Cast** | Kaefden IV; Thekia; Sylvian envoys; Restoration hardliners; future SoC protagonist |
+
+**Synopsis:** The seven-year gap between games, through Thekia's eyes. She rebuilds
+the library, refuses a throne seat, runs coalition logistics from Aylova war camp,
+and becomes the witness rail that vouches for strangers — because she remembers
+what it cost to be one.
+
+**Scene beats:**
+1. **Homecoming** — ledger, not poetry; *"Crowns do not end scatter."*
+2. **Library** — Many Hands pamphlet, margin note.
+3. **Letter to Silvarium** — Blade quest diplomacy.
+4. **War camp** — potion, vouch, field tabard.
+
+**Theme:** Restoration is administration of grief.
+
+**Tone:** Earnest, institutional. The saga's constant changes uniform, not purpose.
+
+**Connections:** Story 9 · Stories 13–15, 20 · anthology Good stories.
+
+**Full spec + post–Age beats:** [`THEKIA_GROUND_HOUSE.md`](THEKIA_GROUND_HOUSE.md) § Story 9b.
 
 ---
 
@@ -327,10 +436,11 @@ king."* The work has just started.
 
 **Synopsis:** Seven years since Oceandale and the crowning of Kaefden IV. No
 Agromanian army has crossed the border — but Paladin rumors reach Silvarium, and
-Cataracta drafts for the pact with Aylova. You volunteer. Before the courtyard,
-you may fish with Doran, browse Athalos's absurdly stocked shop, and toss a coin
-into the Anula fountain where nothing happens. Peace is a room you are about to
-leave forever.
+Cataracta drafts for the pact with Aylova. **Anula requisition** crates appear
+on the Varatho before you volunteer. You may fish with Doran (who grumbles about
+tally clerks), browse Athalos's absurdly stocked shop, and toss a coin into the
+Anula fountain where nothing happens. Peace is a room you are about to leave
+forever.
 
 **Scene beats:**
 1. Intro text — timeline, Vashirr teaching Agromanian magic.
@@ -660,8 +770,8 @@ game 3 setup.
 | Character | Primary stories |
 |---|---|
 | Kaefden IV | 2, 3–9, 14, 19–20 |
-| Vashirr | 2, 4, 8, 12, 19 |
-| Thekia | 4, 8–9, 13–15, 20 |
+| Vashirr | 2, 4, 4b, 8, 12, 19 |
+| Thekia | **2b, 4, 4b, 8–9, 9b**, 13–15, 20 |
 | Dentros | 5, 10–12, 14, 20 |
 | Kimious | 11–12, 20 |
 | SoC protagonist | 10–20 |
@@ -672,10 +782,13 @@ game 3 setup.
 
 ## Appendix — Optional standalone spinoffs
 
-Stories that could be written outside the numbered path without breaking canon:
+> **Full backlog:** [`STORY_BRAINSTORM.md`](STORY_BRAINSTORM.md) — 40+ ideas with priority,
+> pillars, and world-building buckets. Entries below are the original short list;
+> several are expanded there.
 
 | Title | Hook |
 |---|---|
+| *The Ground House* | Thekia's descent — see Story 4b / [`THEKIA_GROUND_HOUSE.md`](THEKIA_GROUND_HOUSE.md) |
 | *Cellious at the Gate* | KoN gate denial from hunter chief's POV |
 | *Marlux on the Great Tree* | Sylvian child during KoN events |
 | *The Merchant's Wife* | Oceandale abduction — horror, no resolution |
@@ -690,6 +803,7 @@ Stories that could be written outside the numbered path without breaking canon:
 - [ ] Preserve verbatim game dialogue where quoted in bibles
 - [ ] Balance earnest tragedy with meta humor per KoN register — heavier in Act I SoC, absent in massacre and memory scenes
 - [ ] Blue crystal / pendant / staff motif in every volume
+- [ ] At least one **anchor-law** beat per volume (gate guard, Ring network, flesh rite, commodity board)
 - [ ] *"Kaefden to Kaefden"* at least once per volume
 - [ ] Do not redeem Vashirr
 - [ ] Kaefden IV and KoN protagonist are the same person — never contradict
