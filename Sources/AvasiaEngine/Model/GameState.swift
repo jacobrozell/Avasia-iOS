@@ -32,6 +32,10 @@ public struct GameState: Codable, Sendable {
     public var magehouseLocked: Bool = false       // was `lock`
     public var teleporterDiscovered: Bool = false  // was `lady`
     public var cataractaGateDone: Bool = false     // was `cgates`
+    public var beachIntroShown: Bool = false       // first-visit beach awakening (saga seed)
+    public var gateGuardLoreHeard: Bool = false    // schism speech at broken gate
+    public var metThekia: Bool = false             // Old Mage revealed in Nacastrum
+    public var aylovaRallySeen: Bool = false       // father's pendant + Aylova rally
 
     /// Surfaced in the UI (improvement over the original, which never showed it).
     public var deathCount: Int = 0

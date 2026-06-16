@@ -15,6 +15,9 @@ public enum DeathCause: String, Codable, Sendable, CaseIterable {
     case fireball     // out of guesses at the pedestal
     case generic
 
+    /// Lethal outcomes with distinct room content (excludes the `.generic` fallback).
+    public static let konAchievable: Set<DeathCause> = Set(allCases.filter { $0 != .generic })
+
     public var title: String {
         switch self {
         case .chasm:      return "Into the Chasm"
