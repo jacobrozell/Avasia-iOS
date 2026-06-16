@@ -14,7 +14,63 @@ struct NeutralSixArchiveRoom: AnthologyRoomScript {
             .speech("Cellious: \"One open ledger. Every faction will hate it equally. That is how we know it is honest.\""),
         ]
         if state.neutralFiveStayedOnRoad {
-            lines.append(.body("You stayed when others left. They trust you to finish what brokers begin."))
+            lines.append(.body("You stayed when others left Splitpath. They trust you to finish what brokers begin."))
+        }
+        lines.append(.hint("CONTINUE to the record hall · LOOK at the stacks."))
+        return lines
+    }
+
+    func handle(_ input: ParsedInput, _ state: inout AnthologyGameState) -> AnthologyTurnResult {
+        if input.contains("LOOK") || input.contains("STACK") {
+            return AnthologyTurnResult([
+                .body("Cave rubbings beside gate counts beside market chalk — six years of neutrality, none of it official until now."),
+                .hint("CONTINUE.")
+            ])
+        }
+        guard advance.contains(where: { input.contains($0) }) else {
+            return AnthologyTurnResult([.hint("CONTINUE.")])
+        }
+        return AnthologyTurnResult([], .move(.neutralSixRecordHall))
+    }
+}
+
+struct NeutralSixRecordHallRoom: AnthologyRoomScript {
+    let id: AnthologyRoomID = .neutralSixRecordHall
+    private let advance = ["CONTINUE", "GO"]
+
+    func describe(_ state: AnthologyGameState) -> [StyledLine] {
+        var lines: [StyledLine] = [
+            .title("Record Hall"),
+            .body("Scribes copy your cave archive notes. Cellious cross-checks gate deserter counts against market truce maps."),
+            .body("Every page names someone who refused both banners — or traded with both and survived."),
+        ]
+        if state.neutralFourStayedWitness {
+            lines.append(.speech("Cellious: \"Your signature at Kaefden gate earns you a line in the master index — whether you want it or not.\""))
+        }
+        lines.append(.hint("CONTINUE to the witness table."))
+        return lines
+    }
+
+    func handle(_ input: ParsedInput, _ state: inout AnthologyGameState) -> AnthologyTurnResult {
+        guard advance.contains(where: { input.contains($0) }) else {
+            return AnthologyTurnResult([.hint("CONTINUE.")])
+        }
+        return AnthologyTurnResult([], .move(.neutralSixWitnessTable))
+    }
+}
+
+struct NeutralSixWitnessTableRoom: AnthologyRoomScript {
+    let id: AnthologyRoomID = .neutralSixWitnessTable
+    private let advance = ["CONTINUE", "YES", "GO"]
+
+    func describe(_ state: AnthologyGameState) -> [StyledLine] {
+        var lines: [StyledLine] = [
+            .title("Witness Table"),
+            .speech("Suformin: \"Publish and every faction calls us traitors. Seal and we become another secret the war can exploit.\""),
+            .speech("Cellious: \"Neutrality without record is just delay. Decide before the couriers arrive.\""),
+        ]
+        if state.neutralThreeBrokersPeace {
+            lines.append(.body("Your Two Hands truce map sits on top — proof brokers can bind violence without crowns."))
         }
         lines.append(.hint("CONTINUE to the binding room."))
         return lines
@@ -38,7 +94,7 @@ struct NeutralSixBindingRoom: AnthologyRoomScript {
         }
         return [
             .title("Binding Room"),
-            .speech("Suformin: \"PUBLISH the ledger for all to read. Or SEAL it — memory for neutrals only.\""),
+            .body("Wax, cord, and neutral ink — the tools of a record that belongs to no banner."),
             .hint("PUBLISH the open ledger · SEAL it hidden.")
         ]
     }
@@ -46,7 +102,7 @@ struct NeutralSixBindingRoom: AnthologyRoomScript {
     func handle(_ input: ParsedInput, _ state: inout AnthologyGameState) -> AnthologyTurnResult {
         if state.neutralSixLedgerResolved {
             if input.contains("CONTINUE") {
-                return AnthologyTurnResult([], .move(.neutralSixEpilogue))
+                return AnthologyTurnResult([], .move(.neutralSixAftermath))
             }
             return AnthologyTurnResult([.hint("CONTINUE.")])
         }
@@ -67,6 +123,35 @@ struct NeutralSixBindingRoom: AnthologyRoomScript {
             ])
         }
         return AnthologyTurnResult([.hint("PUBLISH · SEAL")])
+    }
+}
+
+struct NeutralSixAftermathRoom: AnthologyRoomScript {
+    let id: AnthologyRoomID = .neutralSixAftermath
+    private let advance = ["CONTINUE", "GO"]
+
+    func describe(_ state: AnthologyGameState) -> [StyledLine] {
+        if state.neutralSixPublishedLedger {
+            return [
+                .title("Archive Aftermath"),
+                .body("Couriers scatter with bound copies. Splitpath traders read names they thought would die in cave dust."),
+                .speech("Suformin: \"We are exposed now. That is the price of honest memory.\""),
+                .hint("CONTINUE to archive quiet.")
+            ]
+        }
+        return [
+            .title("Archive Aftermath"),
+            .body("The ledger closes behind wax and neutral seals. Only brokers and witnesses know where it sleeps."),
+            .speech("Cellious: \"When the world can bear it, we unseal. Until then — custody is also mercy.\""),
+            .hint("CONTINUE to archive quiet.")
+        ]
+    }
+
+    func handle(_ input: ParsedInput, _ state: inout AnthologyGameState) -> AnthologyTurnResult {
+        guard advance.contains(where: { input.contains($0) }) else {
+            return AnthologyTurnResult([.hint("CONTINUE.")])
+        }
+        return AnthologyTurnResult([], .move(.neutralSixEpilogue))
     }
 }
 
