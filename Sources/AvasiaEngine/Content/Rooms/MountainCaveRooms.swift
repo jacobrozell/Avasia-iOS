@@ -180,6 +180,11 @@ struct CaveEntranceRoom: RoomScript {
         if input.contains(Verb.back) || input.contains(Verb.south) {
             return TurnResult([], .move(.mountain))
         }
+        if input.contains(Verb.look) || input.contains("SEARCH") || input.contains("HISTORY") {
+            return TurnResult([
+                .body("Scorch marks and old iron rings are bolted into the stone — this cave was a prison long before the mages hid their secrets here.")
+            ])
+        }
         if input.contains(Flag.levitate.castSynonyms) && state.has(.levitate) {
             return TurnResult([
                 .body("Your voice echos through the dark cave as you fling upwards out of the water."),

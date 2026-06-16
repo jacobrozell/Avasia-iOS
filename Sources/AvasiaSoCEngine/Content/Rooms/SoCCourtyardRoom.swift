@@ -98,10 +98,11 @@ struct SoCCourtyardRoom: SoCRoomScript {
 
     private func betweenCombatsLines() -> [StyledLine] {
         [
-            .body("You quickly dispatch the Agromanian and reassess the area around you."),
-            .body("Destros is lying on the floor and an Agromanian is charging toward him."),
-            .body("You swiftly position yourself in-between Destros and the Agromanian."),
-            .blank
+            .body("You dispatch the Agromanian and wheel back toward Dentros."),
+            .body("He lies where he fell, clutching the bolt-wound. Another warrior charges him."),
+            .body("You throw yourself between them."),
+            .blank,
+            .body("A Legion healer's hands flash over your ribs in the chaos — borrowed seconds, not mercy.")
         ]
     }
 
@@ -125,9 +126,9 @@ struct SoCCourtyardRoom: SoCRoomScript {
 
     private func afterCombat2() -> [StyledLine] {
         [
-            .body("Another Agromanian falls to their death."),
-            .body("You turn to help Destros, but it seems your efforts were in vain."),
-            .body("By the time you managed to get to his side, he had already passed."),
+            .body("Another Agromanian falls."),
+            .body("You turn to Dentros. His eyes find yours for a heartbeat — then close."),
+            .body("The bolt did its work. You were too slow."),
             .blank,
             .body("Filled with rage, you turn to find another target,"),
             .body("but you quickly realize that all of the fighting has come to a stand still."),
@@ -193,8 +194,8 @@ struct SoCCourtyardRoom: SoCRoomScript {
             .blank,
             .speech("My friends! The time to fight is drawing near!"),
             .speech("Our people are under constant threat of an Agromanian invasion."),
-            .speech("Seven years after Oceandale, we still live in its shadow — and now Vashirr's Paladins stride openly against us."),
-            .speech("We can no longer rely on our hidden passages and the mountainess terrain to defend us."),
+            .speech("Seven years after Oceandale, we still live in its shadow — and in that quiet, Vashirr bred Paladins in Agroman's forges."),
+            .speech("They stride openly against us now. We can no longer rely on hidden passages and mountain terrain alone."),
             .speech("We must take the fight to them!"),
             .blank,
             .body("The crowd roars in agreement."),
@@ -216,8 +217,9 @@ struct SoCCourtyardRoom: SoCRoomScript {
             .blank,
             .body("The Druids in the courtyard shout in horror and charge in to fight the oncoming Agromanians"),
             .body("The hooded man points his staff toward you and unleashes another bolt of energy."),
-            .body("Before you can react, Dentros shoves you out of the line of fire and takes the hit."),
-            .body("As you stumble over, an Agromanian confronts you.")
+            .body("Before you can react, Dentros shoves you aside — the bolt takes him in the chest."),
+            .body("He collapses in the churning courtyard, still breathing."),
+            .body("An Agromanian confronts you while druids scream around you.")
         ]
     }
 
@@ -230,9 +232,15 @@ struct SoCCourtyardRoom: SoCRoomScript {
             .body("The man has a scar running across his left eye that continues to his chin."),
             .body("He speaks to you in a deep, raspy voice."),
             .blank,
+            .speech("You rebuild what failed — a floating city, council whispers, a king who puts stones back in the sky."),
+            .speech("I scattered the mages so they would feel the ground again. I forged Paladins so magic would belong to every soldier — not a priesthood in blue robes."),
+            .speech("My king and I will knit this continent together. Kaefden's crown is the last stitch that will not hold."),
+            .blank,
             .speech("Listen to me, and listen carefully."),
             .body("He places the tip of his staff to your head."),
             .body("You can hear and feel the energy resonating from it."),
+            .blank,
+            .speech("My king waited seven years while your boy-king rebuilt. Cataracta is the first lesson."),
             .blank,
             .speech("I have a message for you to deliver."),
             .speech("Tell King Kaefden IV of the horrors his ignorance has brought."),

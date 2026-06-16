@@ -142,10 +142,14 @@ struct SoCCataractaHunterPath: SoCRoomScript {
     func handle(_ input: ParsedInput, _ state: inout SoCGameState) -> SoCTurnResult {
         if let block = SoCCataractaGate.ashesBlock(state) { return block }
         if input.contains(Verb.look) || input.contains("SEARCH") || input.contains("TRACK") {
-            return SoCTurnResult([
+            var lines: [StyledLine] = [
                 .body("Fresh wolf sign leads into the forest."),
                 .body("Hunters train with their spirit animals out here — not on enlistment day.")
-            ])
+            ]
+            if state.playerClass == .scout {
+                lines.append(.body("A red fox crosses the trail ahead — cherry fur, gone before you can call out. You almost know that gait."))
+            }
+            return SoCTurnResult(lines)
         }
         if input.contains("LEAVE") || input.contains("BACK") || input.contains(Verb.west) || input.contains(Verb.east) {
             return SoCTurnResult([.body("You head back toward housing.")], .move(.cataractaHousing))

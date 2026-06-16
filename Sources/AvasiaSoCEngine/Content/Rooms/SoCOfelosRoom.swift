@@ -40,14 +40,14 @@ struct SoCOfelosRoom: SoCRoomScript {
     func handle(_ input: ParsedInput, _ state: inout SoCGameState) -> SoCTurnResult {
         if state.ofelosAllianceComplete {
             if departs(input) {
-                return SoCTurnResult(marchNorthLines(), .move(.northernMarch))
+                return SoCTurnResult(marchNorthLines(state), .move(.northernMarch))
             }
             return SoCTurnResult([.hint("MARCH north to the war front.")])
         }
 
         if departs(input), state.ofelosPhase == .done {
             state.ofelosAllianceComplete = true
-            return SoCTurnResult(marchNorthLines(), .move(.northernMarch))
+            return SoCTurnResult(marchNorthLines(state), .move(.northernMarch))
         }
 
         if advances(input) || (input.contains("PRESENT") && state.ofelosPhase == .presentation) {
@@ -69,7 +69,7 @@ struct SoCOfelosRoom: SoCRoomScript {
         switch state.ofelosPhase {
         case .notStarted, .gates:
             state.ofelosPhase = .council
-            return SoCTurnResult(councilLines())
+            return SoCTurnResult(councilLines(state))
 
         case .council:
             state.ofelosPhase = .presentation
@@ -86,7 +86,7 @@ struct SoCOfelosRoom: SoCRoomScript {
             state.ofelosPhase = .done
             state.ofelosAllianceComplete = true
             state.unlockTrophy(.ofelosMarches)
-            var lines = allianceLines()
+            var lines = allianceLines(state)
             lines.append(.title("Ofelos joins the coalition"))
             lines.append(.hint("MARCH north to the war front."))
             return SoCTurnResult(lines)
@@ -105,14 +105,14 @@ struct SoCOfelosRoom: SoCRoomScript {
         ]
     }
 
-    private func councilLines() -> [StyledLine] {
+    private func councilLines(_ state: SoCGameState) -> [StyledLine] {
         [
             .blank,
             .body("The council chamber is round — no head of table, no throne."),
-            .speech("Council Speaker: Seven years of peace made us complacent. Paladins ended that."),
-            .speech("Council Speaker: The Sylvians vouch for this druid. We will hear the proof, not the promise."),
+            .speech("\(SoCStoryVoice.ofelosAddress(state))"),
+            .speech("Council Speaker Maelen: Paladins ended our complacency. The Sylvians vouch for this druid — we will hear proof, not promise."),
             .blank,
-            .speech("Elder: Present what Varatro guarded. Let Ofelos see Kaefden's honor with its own eyes.")
+            .speech("Elder Venna: Present what Varatro guarded. Let Ofelos see Kaefden's honor with its own eyes.")
         ]
     }
 
@@ -127,28 +127,41 @@ struct SoCOfelosRoom: SoCRoomScript {
         [
             .body("You draw Kaefden's Blade of Courage. Blue crystal dust along the fuller catches the sun from the high windows."),
             .blank,
-            .speech("Council Speaker: ...That is the sword from the first king's tomb."),
-            .speech("Elder: Kaefden IV rebuilds Nacastrum. Cataracta burned. The coalition fights — but it needs Ofelos."),
-            .speech("Council Speaker: If the bloodline still bears this symbol, we will march.")
+            .speech("Council Speaker Maelen: ...That is the sword from the first king's tomb."),
+            .speech("Elder Venna: Kaefden IV rebuilds Nacastrum. Cataracta burned. The coalition fights — but it needs Ofelos."),
+            .speech("Council Speaker Maelen: When Oceandale fell, we stayed out. We will not march for revenge alone — but we will march for this symbol.")
         ]
     }
 
-    private func allianceLines() -> [StyledLine] {
-        [
+    private func allianceLines(_ state: SoCGameState) -> [StyledLine] {
+        var lines: [StyledLine] = [
             .blank,
             .body("Hands clasp across the chamber — neutral, Sylvian, and Kaefden envoys alike."),
-            .speech("Council Speaker: Ofelos joins the coalition. Our spears go north with yours."),
-            .speech("Council Speaker: Tell King Kaefden IV the neutrals remember who united Avasia first."),
+            .speech("Council Speaker Maelen: Ofelos joins the coalition. Our spears go north with yours."),
+            .speech("Council Speaker Maelen: Tell King Kaefden IV the neutrals remember who united Avasia first.")
+        ]
+        if state.throneRecountStyle == .honorDentros {
+            lines.append(.speech("Council Speaker Maelen: And tell him a Cataractan who honors the dead is worth ten who only count heads."))
+        }
+        lines += [
             .blank,
             .symbol("The northern war front awaits."),
             .body("Neutral companies already form in the square behind you — late, but not too late.")
         ]
+        return lines
     }
 
-    private func marchNorthLines() -> [StyledLine] {
-        [
+    private func marchNorthLines(_ state: SoCGameState) -> [StyledLine] {
+        let sergeantLine: String
+        switch state.throneRecountStyle {
+        case .honorDentros:
+            sergeantLine = "Coalition Sergeant: Dentros would be proud you're still standing. Ridge won't hold itself."
+        default:
+            sergeantLine = "Coalition Sergeant: About time. Ridge won't hold itself."
+        }
+        return [
             .body("You fall in with Ofelos columns and Kaefden scouts on the road toward Oceandale country."),
-            .speech("Coalition Sergeant: About time. Ridge won't hold itself.")
+            .speech(sergeantLine)
         ]
     }
 }

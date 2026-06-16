@@ -168,7 +168,9 @@ struct SoCMageOutpostRoom: SoCRoomScript {
         [
             .blank,
             .body("The lieutenant collapses. Ward-stakes flicker and die."),
-            .body("On the table: charcoal maps marking a shoreside redoubt — Vashirr's stand.")
+            .body("On the table: charcoal maps marking a shoreside redoubt — Vashirr's stand."),
+            .body("Beside them, a training sheet titled Many Hands — fuse ward-light into plate, bind chant to obedience."),
+            .speech("Coalition Sergeant: He thinks he's freeing magic. Looks like slavery with spell-light.")
         ]
     }
 

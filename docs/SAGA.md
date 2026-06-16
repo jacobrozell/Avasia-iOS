@@ -135,3 +135,4 @@ Blade is the ultimate symbol of honor the coalition needs.
 | 2026-06-15 | **Timeline: 7 years since KoN** — Oceandale fell in game 1; long peace, then Paladin escalation |
 | 2026-06-15 | **Revised:** Age era = **2 text games only** (KoN + SoC) |
 | 2026-06-15 | **Revised:** Game 3 = **first 2D game** (post–Age era), not text |
+| 2026-06-15 | **Found lore merged** — Agroman middle name, Silvarium/Suformin, Oceandale colony, cave prison; see [`LORE_ARCHIVE.md`](LORE_ARCHIVE.md) |

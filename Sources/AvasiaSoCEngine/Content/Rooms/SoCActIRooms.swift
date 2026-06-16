@@ -403,9 +403,9 @@ struct SoCCataractaGarden: SoCRoomScript {
         if input.contains("LOOK") || input.contains("SEARCH") {
             return SoCTurnResult([
                 .body("You decide to take a look around."),
-                .body("People are sitting around the fountain doing different activities."),
-                .body("You see a young couple holding hands and another older gentleman, reading a book."),
-                .body("You also see a young child by the crystal fountain, guiding his hands through the cool water.")
+                .body("People sit by the fountain — a couple holding hands, an elder reading a dispatch from Silvarium."),
+                .body("You catch the word Paladin before the page is folded away."),
+                .body("A young child guides his hands through the cool Anula water.")
             ])
         }
 

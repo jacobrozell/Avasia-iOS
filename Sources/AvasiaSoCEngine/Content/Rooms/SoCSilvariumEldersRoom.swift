@@ -87,7 +87,11 @@ struct SoCSilvariumEldersRoom: SoCRoomScript {
             .title("Silvarium"),
             .body("You ride east from Aylova with coalition papers and Thekia's seal."),
             .body("The forest deepens until the great tree of Silvarium rises — wider than any keep, older than Kaefden's crown."),
-            .body("Sylvian hunters guide you up rope bridges to the elders' hall.")
+            .body("At the rope bridge, a Sylvian marksman checks your papers and nods."),
+            .speech("Marksman: Kaefden to Kaefden. We heard Cataracta burned — the elders are waiting."),
+            .speech("Marksman: Suformin led our hunters to this tree. The druids' Anula still glints in our shrines."),
+            .speech("Marksman: I stood on this bridge when a lost mage cut blood on the fourth floor. Your war is our war now."),
+            .body("Sylvian hunters guide you up into the elders' hall.")
         ]
     }
 
@@ -95,20 +99,23 @@ struct SoCSilvariumEldersRoom: SoCRoomScript {
         [
             .blank,
             .body("Three elders sit in carved thrones grown from living wood."),
-            .speech("Elder: We heard the Agromanian defector. Paladins in the northwest — we believe it."),
-            .speech("Elder: Ofelos will not march for banners alone. They want proof Kaefden still honors the old compact."),
-            .speech("Elder: Bring us Kaefden's Blade of Courage from Varatro Falls, where the first king of the bloodline sleeps."),
+            .body("The marksman from the bridge stands at the wall, arms folded."),
+            .speech("Elder Venna: We heard the Agromanian defector from Silvarium's border. Paladins in the northwest — we believe it."),
+            .speech("Elder Venna: Ofelos will not march for banners alone. They want proof Kaefden still honors the old compact."),
+            .speech("Elder Venna: Bring Kaefden's Blade of Courage from Varatro Falls, where the first king of the bloodline sleeps."),
             .blank,
-            .speech("Thekia's letter names you. We trust her word — not yet yours.")
+            .speech("Elder: Thekia's letter names you. We trust her word — not yet yours."),
+            .speech("Marksman: They survived Cataracta's courtyard. That is proof enough for me.")
         ]
     }
 
     private func commissionLines() -> [StyledLine] {
         [
-            .speech("Elder: Varatro is warded. Agromanian scouts watch the falls since the Paladins rose."),
-            .speech("Elder: Return with the Blade, and we will speak for Ofelos in the coalition council."),
+            .speech("Elder Venna: Varatro is warded. Agromanian scouts watch the falls since the Paladins rose."),
+            .speech("Elder Venna: Vashirr waited seven years to strike — he will not let the Blade reach Ofelos without a fight."),
+            .speech("Elder: Return with the sword, and we will speak for Ofelos in the coalition council."),
             .blank,
-            .body("The hunters mark a trail on your map — downriver, through mist and old stone.")
+            .body("The marksman marks a trail on your map — downriver, through mist and old stone.")
         ]
     }
 

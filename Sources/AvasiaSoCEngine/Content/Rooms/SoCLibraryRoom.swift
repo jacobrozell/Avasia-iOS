@@ -29,7 +29,11 @@ struct SoCLibraryRoom: SoCRoomScript {
                 .body("Youths didn't have an academy, like one you would see in Nacastrum."),
                 .body("You were taught to fish, hunt, and survive."),
                 .body("And eventually, you found your way into the role of Hunter, Guardian, or Scout."),
-                .body("Perhaps, in another life, you would have enjoyed reading.")
+                .body("Perhaps, in another life, you would have enjoyed reading."),
+                .blank,
+                .body("One shelf holds a cracked pamphlet — Vashirr's address when he disbanded the High Mage's Council."),
+                .speech("...Magic hoarded in towers did not save Oceandale. The Many Hands doctrine: power for every soldier who bleeds for Avasia."),
+                .body("Someone else's hand has underlined the last line twice.")
             ]
             if !state.libraryLooked {
                 state.libraryLooked = true

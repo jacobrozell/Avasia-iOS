@@ -150,9 +150,11 @@ struct SoCOceandaleFrontRoom: SoCRoomScript {
     private func stagingLines() -> [StyledLine] {
         [
             .title("Oceandale Ridge"),
-            .body("The coalition halts at the tree line. Below, the ridge burns — Agromanian banners where KoN's beach once lay quiet."),
-            .body("Spell-flash stutters along the heights. Your sergeant grips your shoulder."),
-            .speech("Coalition Sergeant: That's Vashirr's teaching. Hold until the horns — then we take the ridge or die on it.")
+            .body("The coalition halts at the tree line. Below, the ridge burns — Agromanian banners where a Kaefden fishing colony once lay quiet."),
+            .body("Through the smoke, King Kaefden IV rides the line on a gray mount — pointed ears, field armor, no crown."),
+            .speech("Kaefden IV: Oceandale again. Hold the ridge — I will not lose this coast twice."),
+            .body("He rides toward the flank and disappears into the smoke. Your sergeant grips your shoulder."),
+            .speech("Coalition Sergeant: That's Vashirr's teaching on those heights. Hold until the horns — then we take the ridge or die on it.")
         ]
     }
 
@@ -179,8 +181,8 @@ struct SoCOceandaleFrontRoom: SoCRoomScript {
         [
             .blank,
             .body("The first wave breaks. For a breath, the slope is yours."),
-            .body("Then blue-white fire erupts from the ridgeline — a Paladin channeling Vashirr's craft."),
-            .speech("Coalition Sergeant: Paladin on the crest! Push through!")
+            .body("Then blue-white fire erupts from the ridgeline — a Paladin, Vashirr's craft fused into Agromanian plate."),
+            .speech("Coalition Sergeant: Paladin on the crest! That light is bred in, not borrowed — push through!")
         ]
     }
 

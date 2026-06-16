@@ -253,6 +253,7 @@ struct TeleporterRoom: RoomScript {
                 .body("Then, at thirty-three: a blinding light at your window. Guards dragging citizens to Vashirr's castle. You among hundreds of mages."),
                 .body("Beside Vashirr stands a man in barbaric armor — an Agromanian — and a portal taking women and children."),
                 .body("One of the faces is your mother. Your father breaks free and runs to her — and is blasted with magic by Vashirr."),
+                .speech("You will touch the earth again — or die in the sky! I do this because Avasia cannot survive your nostalgia!"),
                 .body("Vashirr raises his hand and light falls from the sky. This is the last thing you remember before you woke up on the beach."),
                 .blank,
                 .body("You fall to your knees and scream out in anger and pain."),

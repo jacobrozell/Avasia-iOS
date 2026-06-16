@@ -129,9 +129,15 @@ struct SoCVashirrStandRoom: SoCRoomScript {
             .speech("Kaefden IV: Vashirr. You taught Agromanian butchers to burn Cataracta. You sent a druid to my throne with threats."),
             .speech("Vashirr: I sent them the truth. You sit on a crown you never earned, boy-king."),
             .speech("Kaefden IV: I earned it when you scattered the Council and murdered my people."),
+            .speech("Vashirr: I taught you history. You teach Restoration. One of us is building Avasia's future."),
+            .speech("Kaefden IV: You build on ashes and call it foundation."),
             .blank,
             .body("Vashirr pulls back his hood. The scar across his eye is exactly as you remember."),
-            .speech("Vashirr: Cataracta fell. Kimious is ash. And still you march children against me."),
+            .speech("Vashirr: Cataracta hid behind mountains while I matured the Paladins. Every day you rebuilt Nacastrum, you chose more blood."),
+            .speech("Kaefden IV: Kimious chose alliance, not hiding. You murdered him for it."),
+            .speech("Vashirr: I offer one army. One law. Magic in every gauntlet — not hoarded in towers while the schism rots the ground."),
+            .speech("Kaefden IV: One fist. You fused magic into soldiers who never chose it. That is not unity. That is theft."),
+            .speech("Vashirr: When you wore my classroom, you said mages must serve the people. I listened. I simply stopped waiting for councils to agree."),
             .speech("Kaefden IV: Druid of Cataracta — step forward. Finish what he started with you.")
         ]
     }
@@ -168,6 +174,7 @@ struct SoCVashirrStandRoom: SoCRoomScript {
             .body("Vashirr struggles, then the gray wood splinters. Dark energy recoils into the portal and collapses it."),
             .body("Vashirr drops to his knees in the surf, powerless."),
             .speech("Kaefden IV: The Age ends your treachery here. Agromanian armies scatter without his portals."),
+            .speech("Vashirr: Then bury your united Avasia in blue crystal. History will know I tried to end the schism."),
             .speech("Vashirr: This land will forget you too, Kaefden."),
             .body("Guards bind Vashirr. The coalition cheers along the shore — ragged, exhausted, real.")
         ]

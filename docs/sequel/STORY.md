@@ -95,7 +95,7 @@ castle garden fountain (echoing KoN's blue-crystal motif).
 |---|---|---|
 | **Dentros** | Legion recruiter | Guides class selection; dies shielding the player from Vashirr |
 | **Kimious** | King of Cataracta | Rallies the legion; killed by Vashirr's dark bolt |
-| **Vashirr** | Antagonist | Hooded, scarred, gray staff; portals Agromanian army into Cataracta |
+| **Vashirr** | Antagonist | Hooded; scarred; gray staff; portals Agromanian army into Cataracta | **Many Hands** ideologue — see [`../VASHIRR.md`](../VASHIRR.md) |
 | **Athalos** | Shopkeeper | "Althalos' Wares"; eccentric, struggling business |
 | **Ulric** | Blacksmith | Sends player to brother Doran for fishing |
 | **Doran** | Fisherman | Pier owner; rough but fair; brotherly-love trophy |
@@ -266,6 +266,21 @@ falls in Act II. A **later revisit** to the ruins remains possible (see Act IV).
 | Player crowned in KoN | **Same person as Kaefden IV** — NPC in SoC |
 | Rings of Malkos / blue gems | Anula crystal in Cataracta garden |
 
+---
+
+## 10. Vashirr's motivation
+
+Vashirr is a **true believer**, not a generic dark lord. He preaches the
+**Many Hands doctrine** — magic fused into soldiers to end Avasia's schism — and
+accepts Cataracta, the scatter of Nacastrum, and the Paladin program as the price
+of that vision.
+
+Kaefden IV was his **student**; their conflict is personal and philosophical.
+
+Full bible: [`../VASHIRR.md`](../VASHIRR.md) — beliefs, counter-reads, quote bank,
+and scene checklist.
+
 **Throne room writing note:** Kaefden IV should read as the mage-king the player
 knows from KoN — pointed ears, shared history with Vashirr, weight of the crown.
-The Druid PC may not know his full story; the *player* does.
+The Druid PC may not know his full story; the *player* does. Kaefden must **engage
+Vashirr's ideology**, not only his crimes.

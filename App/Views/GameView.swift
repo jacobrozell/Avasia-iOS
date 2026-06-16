@@ -55,6 +55,19 @@ struct GameView: View {
         .overlay(alignment: .top) { toastOverlay(metrics) }
         .overlay { if vm.pendingDeath { deathOverlay(metrics) } }
         .overlay { if vm.pendingLevelUp != nil { levelUpOverlay(metrics) } }
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button { dismissKeyboard() } label: {
+                    Image(systemName: "keyboard.chevron.compact.down")
+                }
+                .accessibilityLabel("Dismiss keyboard")
+            }
+        }
+    }
+
+    private func dismissKeyboard() {
+        inputFocused = false
     }
 
     // MARK: - Layouts
@@ -240,8 +253,12 @@ struct GameView: View {
                 }
                 .padding()
                 .contentShape(Rectangle())
-                .onTapGesture { vm.advancePacing() }
+                .onTapGesture {
+                    dismissKeyboard()
+                    vm.advancePacing()
+                }
             }
+            .scrollDismissesKeyboard(.interactively)
             .accessibilityElement(children: .contain)
             .accessibilityLabel("Game transcript")
             .onChange(of: vm.completedLineCount) { _ in scrollTranscript(proxy) }
@@ -271,6 +288,7 @@ struct GameView: View {
                     ScrollView {
                         quickActionsGrid(metrics)
                     }
+                    .scrollDismissesKeyboard(.interactively)
                     .frame(maxHeight: 180)
                 } else {
                     quickActionsGrid(metrics)
@@ -284,6 +302,7 @@ struct GameView: View {
                     }
                     .padding(.horizontal, metrics.horizontalPadding)
                 }
+                .scrollDismissesKeyboard(.interactively)
             }
         }
         .padding(.vertical, 6)
@@ -304,7 +323,10 @@ struct GameView: View {
     }
 
     private func quickActionButton(_ verb: String, metrics: LayoutMetrics) -> some View {
-        Button(verb) { vm.quickAction(verb) }
+        Button(verb) {
+            dismissKeyboard()
+            vm.quickAction(verb)
+        }
             .font(metrics.isAccessibilityText ? .body : .caption)
             .lineLimit(2)
             .minimumScaleFactor(0.85)

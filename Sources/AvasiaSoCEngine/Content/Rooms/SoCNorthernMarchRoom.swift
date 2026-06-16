@@ -95,7 +95,7 @@ struct SoCNorthernMarchRoom: SoCRoomScript {
         if result.fled {
             state.northernMarchPhase = .aftermath
             output.append(.body("You regroup with the column — the skirmisher loses your trail."))
-            output.append(contentsOf: patrolVictoryLines())
+            output.append(contentsOf: patrolVictoryLines(state))
             return SoCTurnResult(output)
         }
 
@@ -104,7 +104,7 @@ struct SoCNorthernMarchRoom: SoCRoomScript {
         }
 
         state.northernMarchPhase = .aftermath
-        output.append(contentsOf: patrolVictoryLines())
+        output.append(contentsOf: patrolVictoryLines(state))
         return SoCTurnResult(output)
     }
 
@@ -136,11 +136,18 @@ struct SoCNorthernMarchRoom: SoCRoomScript {
         ]
     }
 
-    private func patrolVictoryLines() -> [StyledLine] {
-        [
+    private func patrolVictoryLines(_ state: SoCGameState) -> [StyledLine] {
+        let sergeantTail: String
+        switch state.throneRecountStyle {
+        case .reportFacts:
+            sergeantTail = "Scouts report mage-fire on the ridgeline — coordinates match the outpost. Move."
+        default:
+            sergeantTail = "Keep moving — Oceandale ridge before sundown."
+        }
+        return [
             .blank,
             .body("The skirmisher falls. Your sergeant signals the column forward."),
-            .speech("Coalition Sergeant: First blood. Keep moving — Oceandale ridge before sundown."),
+            .speech("Coalition Sergeant: First blood. \(sergeantTail)"),
             .body("Smoke rises ahead, thicker now. You can smell burned timber on the wind.")
         ]
     }

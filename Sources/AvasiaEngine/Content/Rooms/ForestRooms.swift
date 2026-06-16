@@ -276,6 +276,7 @@ struct TreeChurchRoom: RoomScript {
             return TurnResult([
                 .speech("Ah! Suformin is the God of the Hunt, our mistress of the kill. We owe our lives to her."),
                 .speech("When we first left Aylova in search of a new home, it was Suformin who showed us this place."),
+                .speech("When she ascended, she entrusted her dagger to one worthy hunter — he founded our elder line."),
                 .speech("Those who left turned their backs on her and will face her wrath in due time.")
             ])
         }

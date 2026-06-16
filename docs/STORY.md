@@ -59,19 +59,34 @@ Delivered in the intro by the old guard at the broken gate of Oceandale:
 > *"Of course, many Kaefden people followed of all races. Mages, Humans, and Druids alike."*
 > *"Although the brothers, and the king are long gone, the rivalry and the hatred still exist."*
 
-### 2.2 The three factions
+**Extended fable (author reference — not verbatim in-game):** See
+[`LORE_ARCHIVE.md`](LORE_ARCHIVE.md) §1.1. The banished prince was **not** heir
+(his **older brother** was). Jealousy bred an **underground movement** that went
+public and violent. Banished from Aylova, he fled **west** with his followers;
+neighbors joined; the faction took his **middle name — Agroman**. Centuries later,
+**Aylova still holds the Kaefden bloodline** (King Kaefden IV in the Age era).
+
+### 2.2 Oceandale
+
+Coastal city on KoN's starting map. **History:** began as a **fishing colony**;
+as its population grew, Kaefden absorbed it as a full faction city rather than a
+colony. That same fishing economy and open coast made it Agromania's preferred
+**warning strike** target (the attack that precedes KoN).
+
+### 2.3 The three factions
 
 - **Kaefden** — the original royal/loyalist faction. *"The Kaefden faction
   believes in order and integrity."* Capital: **Aylova**. The Mages are Kaefden.
-- **Agroman (Agromanian)** — founded by the banished youngest son. *"The Agroman
-  faction today believes in brotherhood and loyalty."* The antagonist faction:
+- **Agroman (Agromanian)** — founded by the banished youngest son; named for his
+  **middle name, Agroman** (author fable). *"The Agroman faction today believes in
+  brotherhood and loyalty."* The antagonist faction:
   they sacked the region around Oceandale, abduct and prey on travelers, and are
   secretly allied with Vashirr.
 - **Neutrals / Ofelos** — *"There's a city who remains neutral in the matter;
   the city of Ofelos."* *"They believe that a united Avasia would benefit the
   people more than petty fighting."* The Neutrals reside in Ofelos.
 
-### 2.3 Nacastrum and the mages
+### 2.4 Nacastrum and the mages
 
 The Mages lived in **Nacastrum**, a **floating city**. Their current king is
 **Vashirr** (crowned when the player was 13). Their first king was **Malkos**,
@@ -87,6 +102,28 @@ citizens; most fled east to Aylova. The Old Mage doubts this story:
 > scattered his people for a reason. All this seems to me, that he has sided
 > with the Agromanians. The mages lived in a floating city... What real threat
 > did the barbarians pose?"*
+
+### 2.5 Silvarium (Sylvian forest city)
+
+Forest-druid city built in and around the **Great Tree**. **Founding:** **Suformin,
+Goddess of the Hunt**, led hunters to the tree; on ascending, she entrusted her
+**dagger** to one worthy man, who founded the **elder system** (→ Church of
+Suformin, Floor 3; **Suformin's Dagger** quest).
+
+**Kaefden alliance:** Silvarium joined Kaefden formally. Gifts:
+- **Mages** → **Stonebend**, for mining and forging hunting arms; elders later
+  **sealed** it on Floor 4 with a **mage-blood** lock (KoN blood ritual).
+- **Druids** → **Anula** (blue crystals) — same mineral as Cataracta's garden
+  fountain (SoC).
+
+**KoN timeline:** After Oceandale's fall, ~**80%** of Sylvians migrated **north**
+with the elders; ~**20% stayed** to defend the homeland (Sylvian marksman). The
+sealed chamber atop the tree is what the player opens in KoN.
+
+**SoC timeline:** Sylvian **elders** broker the **Ofelos** alliance and the
+**Blade of Courage** quest.
+
+Full detail: [`LORE_ARCHIVE.md`](LORE_ARCHIVE.md) §1.3.
 
 ---
 
@@ -211,6 +248,11 @@ SOUTH → upper Oceandale. During the escort, only WEST (to Nacastrum) is valid.
   **Cellious** turns them away — Cataracta itself is never entered.
 
 ### The Cave (inside the mountain)
+
+**History (author reference):** Before the Old Mages hid **Inflame** here, the
+cave served as a **jail and punishment center** for thieves, murderers, and
+anarchists — see [`LORE_ARCHIVE.md`](LORE_ARCHIVE.md) §1.4.
+
 - **Cave entrance:** pitch dark; needs the **lantern**. A flooded passage; swim
   through a hole to reach the main cavern. (Levitate here = death by stalactites.)
 - **Main cave (mcave):** *"Enormous pink crystals illuminate the room."* Branches
@@ -279,6 +321,8 @@ Where Thekia rallies the exiled mages.
 - **Vashirr** — King of the Mages; the antagonist. Disbanded the High Mage's
   Council, secretly **allied with the Agroman**, banished/scattered the mages,
   **murdered the player's father with magic**, and abducted the player's mother.
+  **Believes** in the **Many Hands doctrine** — magic fused into soldiers to
+  end Avasia's schism (see [`VASHIRR.md`](VASHIRR.md)). Sincere, not cartoon evil.
   *"Vashirr is a powerful mage and a formidable foe, but I know we can stop him."*
 
 - **Dentros** — Druid **scout from Cataracta**; first appears as a red fox, then

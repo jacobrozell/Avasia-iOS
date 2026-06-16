@@ -144,17 +144,15 @@ struct SoCAylovaWarCampRoom: SoCRoomScript {
         case .none: unit = "general column"
         }
         return [
-            .speech("Coalition Sergeant: Eyes up, Cataractan. King Kaefden isn't here to give pretty speeches — listen."),
+            .speech(SoCStoryVoice.sergeantOpener(state)),
             .blank,
             .body("She unrolls a map scarred with charcoal X's along the northern border."),
-            .speech("Vashirr's Paladins hit three border villages last week. Their magic isn't borrowed anymore — it's bred into the rank."),
+            .speech("Seven years the border held — while Vashirr taught Agromanian steel to drink magic. Those soldiers are Paladins now."),
+            .speech("Last week they hit three border villages. Their craft isn't borrowed anymore — it's bred into the rank."),
             .speech("Oceandale ridge is the next push. Hold the high ground and we keep their army out of Aylova's throat."),
             .blank,
-            .speech("King Kaefden's envoys seek the Blade at Varatro Falls — when it returns, Ofelos may finally march with us."),
-            .blank,
-            .speech("King Kaefden's envoys seek the Blade at Varatro Falls — you ride east to Silvarium first."),
-            .blank,
-            .speech("Your \(unit) deploys at first light once Ofelos marches. Until then, get fed and get armed."),
+            .speech("Before the northern front: Silvarium's elders, Varatro Falls, and Kaefden's Blade of Courage — Ofelos won't march without that symbol."),
+            .speech("You ride east to Silvarium first. When Ofelos joins, your \(unit) deploys at first light."),
             .speech("Thekia's tent is east of the cookfires. Don't report to the front empty-handed.")
         ]
     }

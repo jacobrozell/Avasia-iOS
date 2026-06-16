@@ -27,9 +27,14 @@ data-driven, testable engine suitable for iOS.
 |---|---|
 | [`DEVELOPERS.md`](DEVELOPERS.md) | **Onboarding** — setup, repo layout, workflows, doc map. |
 | [`SAGA.md`](SAGA.md) | Series bible — Age-era duology (text), game 3 (2D), engine evolution. |
+| [`LORE_ARCHIVE.md`](LORE_ARCHIVE.md) | **Found lore** — schism fable, Silvarium/Oceandale history, archived future systems. |
+| [`ANTHOLOGY_ROADMAP.md`](ANTHOLOGY_ROADMAP.md) | **Future stories** — Story #0, faction points, arena, post-duology content. |
+| [`VASHIRR.md`](VASHIRR.md) | **Villain motivation** — Many Hands doctrine, beliefs, counter-reads, quote bank. |
+| [`fiction/`](fiction/README.md) | **Author fiction specs** — character bible + short story anthology outline for the full saga. |
 | [`STORY.md`](STORY.md) | Story bible — lore, factions, plot arc, locations, NPCs, key scenes, tone, and motifs. The narrative source of truth. |
 | [`ENGINE_SPEC.md`](ENGINE_SPEC.md) | Engine spec — Part A documents how the original works (state flags, parser, combat, puzzles, death); Part B defines the target Swift/SwiftUI architecture and a fidelity checklist. |
 | [`WORLD_MAP.md`](WORLD_MAP.md) | Room graph — every area, its exits, gates, items, and the critical-path walkthrough. |
+| [`WALKTHROUGH.md`](WALKTHROUGH.md) | Player walkthrough — completion guide from the beach to the ending (original guide). |
 | [`WIREFRAMES.md`](WIREFRAMES.md) | Low-fidelity UI layouts for every screen, mapped to the SwiftUI views. |
 | [`UI_POLISH.md`](UI_POLISH.md) | Motion, haptics, and region-art rollout spec — next polish after wireframes. |
 | [`ASSETS.md`](ASSETS.md) | Art & audio manifest — exact asset names per region and how the hooks/fallbacks work. |
