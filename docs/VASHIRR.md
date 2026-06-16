@@ -6,7 +6,7 @@
 > the player understands him — then reject him anyway.
 >
 > Cross-refs: [`STORY.md`](STORY.md) §2.3, §6 · [`sequel/STORY.md`](sequel/STORY.md)
-> · [`fiction/CHARACTERS.md`](fiction/CHARACTERS.md)
+> · [`fiction/CHARACTERS.md`](fiction/CHARACTERS.md) · [`SAGA.md`](SAGA.md) **§0**
 
 ---
 
@@ -143,4 +143,5 @@ Use sparingly — Vashirr is eloquent, not verbose.
 - No redemption arc in the Age-era finale — he is bound and defeated, still believing.
 
 Game 3+ may revisit his imprisonment or legacy; that is out of scope for text
-games 1–2.
+games 1–2. Post-war flesh cults (**Red Litany**, §8.11 in [`SAGA.md`](SAGA.md))
+are a **perversion** of Many Hands — not Vashirr's authorized program.

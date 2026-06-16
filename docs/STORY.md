@@ -54,10 +54,13 @@ Delivered in the intro by the old guard at the broken gate of Oceandale:
 > *"The youngest son urged his father for the crown and spited him for his lack of leadership."*
 > *"Together, the older brother and the king, banished him from all of Kaefden."*
 > *"The king couldn't allow for this behavior to fall upon his citizens, or certain chaos would follow."*
+> *"His middle name was Agroman. The exiles took it for their faction — a wound that outlived the brothers."*
 
 > *"The younger brother built the Agromanian faction from the ground up."*
 > *"Of course, many Kaefden people followed of all races. Mages, Humans, and Druids alike."*
 > *"Although the brothers, and the king are long gone, the rivalry and the hatred still exist."*
+> *"Power must cling to something — crown, tower, blood oath, or shrine."*
+> *"Kaefden binds it to law. Agroman binds it to brotherhood. The fight is over which anchor holds."*
 
 **Extended fable (author reference — not verbatim in-game):** See
 [`LORE_ARCHIVE.md`](LORE_ARCHIVE.md) §1.1. The banished prince was **not** heir
@@ -435,3 +438,12 @@ Where Thekia rallies the exiled mages.
   by the Old Mage, the marksman, and others.
 - **Worthy blood** — the blood seal, the "their blood isn't worthy" line, and the
   player's heritage tie magic to lineage and sacrifice.
+
+### Saga foreshadowing (KoN → Commodity Era)
+
+KoN plants pillars that pay off in SoC and game 3. Optional LOOK/ASK lines name
+**Anula**, **Many Hands**, and **anchors** without lecturing; critical-path beats
+at Nacastrum, Aylova rally, and ending name the **scatter** and **cost of victory**.
+
+Full room map: [`FORESHADOWING.md`](FORESHADOWING.md) · holy rules: [`SAGA.md`](SAGA.md) §0.
+SoC payoff table: [`sequel/STORY.md`](sequel/STORY.md) §11.
