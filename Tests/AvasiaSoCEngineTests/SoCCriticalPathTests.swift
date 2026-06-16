@@ -35,6 +35,7 @@ final class SoCCriticalPathTests: XCTestCase {
         state.applyClass(.guardian)
         state.courtyardComplete = true
         state.currentRoom = .portalRoom
+        state.inventory[.potion] = 5
         let engine = SoCGameEngine(state: state)
 
         _ = engine.submit("search")
@@ -63,23 +64,23 @@ final class SoCCriticalPathTests: XCTestCase {
         XCTAssertEqual(engine.state.currentRoom, .northernMarch)
 
         _ = engine.submit("continue")
-        fightToVictory(engine)
+        engine.fightToVictory()
         _ = engine.submit("continue")
         _ = engine.submit("continue")
         XCTAssertEqual(engine.state.currentRoom, .oceandaleFront)
 
         _ = engine.submit("continue")
         _ = engine.submit("continue")
-        fightToVictory(engine)
+        engine.fightToVictory()
         _ = engine.submit("continue")
-        fightToVictory(engine)
+        engine.fightToVictory()
         _ = engine.submit("continue")
         XCTAssertTrue(engine.state.oceandaleFrontCleared)
 
         _ = engine.submit("advance")
         _ = engine.submit("continue")
         _ = engine.submit("continue")
-        fightToVictory(engine)
+        engine.fightToVictory()
         _ = engine.submit("continue")
         XCTAssertTrue(engine.state.mageOutpostCleared)
 
@@ -87,7 +88,9 @@ final class SoCCriticalPathTests: XCTestCase {
         _ = engine.submit("continue")
         _ = engine.submit("continue")
         _ = engine.submit("continue")
-        fightToVictory(engine)
+        _ = engine.submit("continue")
+        engine.fightToVictory()
+        XCTAssertEqual(engine.state.vashirrStandPhase, .resolution)
         _ = engine.submit("continue")
         XCTAssertTrue(engine.state.vashirrDefeated)
 
@@ -103,13 +106,14 @@ final class SoCCriticalPathTests: XCTestCase {
     func testCourtyardThroughPortal() {
         var state = SoCGameState()
         state.playerName = "Hero"
+        state.inventory[.potion] = 3
         state.currentRoom = .cataractaNorth
         let engine = SoCGameEngine(state: state)
 
         _ = engine.submit("east")
         _ = engine.submit("bear")
-        fightToVictory(engine)
-        fightToVictory(engine)
+        engine.fightToVictory()
+        engine.fightToVictory()
 
         XCTAssertTrue(engine.state.courtyardComplete)
         XCTAssertEqual(engine.state.currentRoom, .portalRoom)
@@ -154,7 +158,7 @@ final class SoCCriticalPathTests: XCTestCase {
 
         _ = engine.submit("continue")
         _ = engine.submit("continue")
-        fightToVictory(engine)
+        engine.fightToVictory()
         _ = engine.submit("continue")
         XCTAssertTrue(engine.state.varatroFallsCleared)
         XCTAssertTrue(engine.state.trophies.contains(.bladeBearer))
@@ -167,14 +171,5 @@ final class SoCCriticalPathTests: XCTestCase {
         _ = engine.submit("continue")
         XCTAssertTrue(engine.state.ofelosAllianceComplete)
         _ = engine.submit("march")
-    }
-
-    private func fightToVictory(_ engine: SoCGameEngine, maxTurns: Int = 60) {
-        var turns = 0
-        while engine.state.inCombat, turns < maxTurns {
-            _ = engine.submit("attack")
-            turns += 1
-        }
-        XCTAssertFalse(engine.state.inCombat, "Combat did not end within \(maxTurns) turns")
     }
 }
