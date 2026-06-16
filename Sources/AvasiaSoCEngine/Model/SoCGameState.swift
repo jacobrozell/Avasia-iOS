@@ -61,6 +61,8 @@ public struct SoCGameState: Codable, Sendable {
     public var gardenInsight: Bool = false
     public var varathoCrossed: Bool = false
     public var barracksTalked: Bool = false
+    public var hunterPathVisited: Bool = false
+    public var actOneIntroShown: Bool = false
     public var athalosVisitCount: Int = 0
     public var ulric: Bool = false
     public var doran: Bool = false
@@ -87,6 +89,7 @@ public struct SoCGameState: Codable, Sendable {
     public var northernMarchCleared: Bool = false
     public var oceandaleFrontPhase: OceandaleFrontPhase = .notStarted
     public var oceandaleFrontCleared: Bool = false
+    public var oceandalePaladinAdvantage: OceandalePaladinAdvantage = .none
     public var mageOutpostPhase: MageOutpostPhase = .notStarted
     public var mageOutpostCleared: Bool = false
     public var vashirrStandPhase: VashirrStandPhase = .notStarted

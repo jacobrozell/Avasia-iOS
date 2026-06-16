@@ -138,6 +138,14 @@ public enum OceandaleFrontPhase: String, Codable, Sendable {
     case done
 }
 
+/// Class ingenuity spent on the Paladin before wave two begins.
+public enum OceandalePaladinAdvantage: String, Codable, Sendable {
+    case none
+    case scoutWardGap
+    case hunterOpening
+    case guardianBrace
+}
+
 public enum MageOutpostPhase: String, Codable, Sendable {
     case notStarted
     case approach
