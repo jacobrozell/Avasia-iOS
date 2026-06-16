@@ -15,6 +15,7 @@ struct SagaTitleView: View {
                 VStack(spacing: metrics.isAccessibilityText ? 20 : 28) {
                     Spacer(minLength: metrics.isLandscape ? 8 : 24)
                     sagaHero
+                    chroniclerStrip
                     gamePicker
                     footerHint
                 }
@@ -51,6 +52,40 @@ struct SagaTitleView: View {
         }
     }
 
+    private var chroniclerStrip: some View {
+        let profile = vm.sagaProfile
+        let progress = ChroniclerRank.progressToNextRank(from: profile.sagaXP)
+        return Button {
+            vm.openChroniclerLedger(from: .saga)
+        } label: {
+            VStack(spacing: 8) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Chronicler · Rank \(profile.chroniclerRank)")
+                            .font(.system(.headline, design: .serif))
+                            .foregroundColor(Theme.parchment)
+                        Text(profile.chroniclerSubtitle)
+                            .font(.caption)
+                            .foregroundColor(Theme.parchment.opacity(0.65))
+                    }
+                    Spacer()
+                    Text("\(profile.sagaXP) XP")
+                        .font(.caption.weight(.semibold))
+                        .foregroundColor(Theme.accent)
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundColor(Theme.parchment.opacity(0.35))
+                }
+                ProgressBar(value: progress)
+            }
+            .padding(14)
+            .background(Theme.accent.opacity(0.10), in: RoundedRectangle(cornerRadius: 14))
+            .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.palette.cardStroke, lineWidth: 1))
+        }
+        .buttonStyle(PressScaleButtonStyle())
+        .accessibilityLabel("Chronicler rank \(profile.chroniclerRank), \(profile.sagaXP) experience")
+    }
+
     private var gamePicker: some View {
         VStack(spacing: 14) {
             ForEach(AvasiaProduct.allCases, id: \.self) { game in
@@ -58,10 +93,14 @@ struct SagaTitleView: View {
                     product: game,
                     systemImage: icon(for: game),
                     hasSave: vm.hasSave(for: game),
-                    saveHint: vm.sagaSaveHint(for: game)
+                    saveHint: vm.sagaSaveHint(for: game),
+                    completionCount: vm.sagaProfile.completions(for: game)
                 ) {
                     vm.openProduct(game)
                 }
+            }
+            MenuButton(title: "Saga Timeline", systemImage: "clock.arrow.circlepath") {
+                vm.openTimeline(from: .saga)
             }
             MenuButton(title: "Settings", systemImage: "gearshape", accessibilityIdentifier: "saga-settings") {
                 vm.openSettings(from: .saga)

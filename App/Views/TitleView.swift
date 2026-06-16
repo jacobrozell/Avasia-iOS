@@ -6,6 +6,7 @@ struct TitleView: View {
     @EnvironmentObject var vm: GameViewModel
     @Environment(\.layoutMetrics) private var metrics
     @ScaledMetric(relativeTo: .largeTitle) private var titleSize: CGFloat = 52
+    @State private var codexPreview: JournalEntry?
 
     var body: some View {
         ZStack {
@@ -14,6 +15,7 @@ struct TitleView: View {
                 VStack(spacing: metrics.isAccessibilityText ? 20 : 32) {
                     Spacer(minLength: metrics.isLandscape ? 8 : 20)
                     titleHero
+                    codexSection
                     menuSection
                     footerHint
                 }
@@ -23,6 +25,25 @@ struct TitleView: View {
                 .padding(.top, 16)
                 .padding(.bottom, 32)
             }
+        }
+        .sheet(item: $codexPreview) { entry in
+            CodexDetailSheet(entry: entry)
+        }
+    }
+
+    @ViewBuilder
+    private var codexSection: some View {
+        let unlocked = JournalCatalog.unlockedEntries(
+            for: vm.product,
+            kon: vm.konCodexState,
+            soc: vm.socCodexState
+        )
+        if !unlocked.isEmpty {
+            CodexStrip(
+                entries: unlocked,
+                onOpenJournal: { vm.openCodex(from: .title) },
+                onSelect: { codexPreview = $0 }
+            )
         }
     }
 
@@ -51,10 +72,37 @@ struct TitleView: View {
                 .foregroundColor(Theme.parchment.opacity(0.92))
                 .multilineTextAlignment(.center)
 
+            chroniclerBadge
+
             TitleOrnament(flipped: true)
                 .padding(.top, 2)
         }
         .accessibilityElement(children: .combine)
+    }
+
+    private var chroniclerBadge: some View {
+        let profile = vm.sagaProfile
+        return Button {
+            vm.openChroniclerLedger(from: .title)
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "sparkles")
+                    .font(.caption2)
+                Text("Chronicler · Rank \(profile.chroniclerRank)")
+                    .font(.caption.weight(.semibold))
+                if profile.currentRunXP > 0, AppSettings.chroniclerShowThisRunXP {
+                    Text("· +\(profile.currentRunXP) this run")
+                        .font(.caption2)
+                        .foregroundColor(Theme.parchment.opacity(0.7))
+                }
+            }
+            .foregroundColor(Theme.accent)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(Theme.accent.opacity(0.12), in: Capsule())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Chronicler rank \(profile.chroniclerRank), open ledger")
     }
 
     private var menuSection: some View {
@@ -77,10 +125,16 @@ struct TitleView: View {
                 }
             }
             if vm.product == .kon {
+                MenuButton(title: "Journal", systemImage: "book.closed.fill") {
+                    vm.openCodex(from: .title)
+                }
                 MenuButton(title: "Achievements", systemImage: "trophy") {
                     vm.openAchievements(from: .title)
                 }
             } else if vm.product == .soc {
+                MenuButton(title: "Journal", systemImage: "book.closed.fill") {
+                    vm.openCodex(from: .title)
+                }
                 MenuButton(title: "Trophies", systemImage: "trophy") {
                     vm.openTrophies(from: .title)
                 }
