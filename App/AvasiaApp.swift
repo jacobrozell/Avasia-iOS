@@ -32,6 +32,7 @@ struct AvasiaApp: App {
 struct RootView: View {
     @EnvironmentObject var vm: GameViewModel
     @Environment(\.colorScheme) private var systemColorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         LayoutMetricsReader { _ in
@@ -45,9 +46,13 @@ struct RootView: View {
                 case .credits:          CreditsView()
                 case .achievements:     AchievementsView()
                 case .trophies:         SoCTrophiesView()
+                case .codex:            CodexView()
+                case .timeline:         SagaTimelineView()
+                case .chroniclerLedger: ChroniclerLedgerView()
                 }
             }
-            .animation(.easeInOut(duration: 0.22), value: vm.screen)
+            .transition(ScreenTransition.transition(for: vm.screen, reduceMotion: reduceMotion))
+            .animation(Motion.accessible(.easeInOut(duration: 0.28), reduceMotion: reduceMotion), value: vm.screen)
             .id(vm.themeRevision)
             .onAppear {
                 vm.onLaunch()
