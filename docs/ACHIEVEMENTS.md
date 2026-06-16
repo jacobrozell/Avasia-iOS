@@ -45,8 +45,8 @@ GameViewModel.submit ─────► AchievementTracker.apply(events, state, 
   metadata (`title`, `detail`, `isSecret`). Criteria are **not** here.
 - **`AchievementState`** (`Model/Achievement.swift`) — persistent, **cross-run**
   progress: `unlocked: Set<Achievement>`, `totalDeaths`, `regionsVisited`,
-  `orangeFishTossed`. Saved separately from `GameState` (which resets each new
-  game) in `achievements.json`.
+  `orangeFishTossed`, `deathCausesExperienced`. Saved separately from `GameState`
+  (which resets each new game) in `achievements.json`.
 - **`AchievementTracker`** (`Engine/AchievementTracker.swift`) — the pure
   evaluator. `apply(events:state:into:)` folds events into progress and returns
   the achievements newly unlocked this turn (for toasts). `recordRegion` seeds
@@ -71,13 +71,25 @@ Secret achievements are masked ("??? (Secret)") in the list until earned.
 | `firekeeper` | Firekeeper | P | no | learn Inflame |
 | `earthshaper` | Earthshaper | P | no | learn Stonebend |
 | `fullArsenal` | Full Arsenal | P | no | know all three spells |
+| `fullyLoaded` | Fully Loaded | P | no | all three spells + sword, lantern, dagger, rod |
 | `kingOfNacastrum` | King of Nacastrum | P | no | complete the game |
+| `cleanCoronation` | Clean Coronation | P | no | win without dying that run |
 | `druidFriend` | Friend of the Druids | E | no | get Dentros's lantern |
 | `wanderer` | Wanderer | E | no | visit 8 distinct regions |
 | `worldsEnd` | To the World's End | E | no | visit every region |
+| `schismScholar` | Schism Scholar | E | no | hear the gate guard's lore (TALK) |
 | `meaningOfLife` | The Meaning of Life | F | yes | hear the priestess say "42" |
 | `goldRush` | Gold Rush | F | yes | catch the golden fish |
 | `persistentAngler` | Persistent Angler | F | yes | throw back 3 orange fish |
+| `crowPose` | Crow Pose | F | yes | stretch or yoga on the beach |
+| `thanksForHonesty` | Thanks for Your Honesty | F | yes | type NOIDEA at the fireball pedestal |
+| `againstInstinct` | Against Instinct | F | yes | swim through the dream bridge |
+| `alreadyLitFam` | Already Lit Fam | F | yes | try to light an already lit lantern |
+| `soleSurvivor` | Sole Survivor | F | yes | reel in the old shoe |
+| `clawAndOrder` | Claw and Order | F | yes | survive the fishing crab |
+| `goneFishin` | Gone Fishin' | E | no | take the fishing rod |
+| `earApparent` | Ear Apparent | F | yes | prove yourself with pointed ears at the druid gate |
+| `widowersLament` | Widower's Lament | F | yes | hear the trading-post merchant's grief |
 | `firstBlood` | First Blood | D | yes | die once |
 | `intoTheDeep` | Into the Deep | D | yes | die in the chasm |
 | `crabDinner` | Crab Dinner | D | yes | die to the fishing crab |
@@ -88,6 +100,7 @@ Secret achievements are masked ("??? (Secret)") in the list until earned.
 | `ambushed` | Ambushed | D | yes | die in the road ambush |
 | `burnedToAsh` | Burned to Ash | D | yes | run out of guesses at the pedestal |
 | `martyr` | Martyr | D | yes | die 10 times (lifetime) |
+| `grimCatalog` | Grim Catalog | D | yes | die to every distinct cause (8 total; `.generic` excluded) |
 
 `regionsVisited` counts the 12 `Region` cases, so `worldsEnd` requires all 12 and
 `wanderer` requires 8.
@@ -98,8 +111,11 @@ Secret achievements are masked ("??? (Secret)") in the list until earned.
   ~4s when `recentlyUnlocked` is non-empty.
 - **Achievements screen** — `App/Views/AchievementsView.swift`: progress count,
   lifetime deaths, and a row per achievement (trophy if unlocked, lock/`???` if
-  not). Reached from the title menu and the in-game trophy button
-  (`openAchievements(from:)` remembers where to return).
+  not). Unlocked achievements show **Claim +N XP** for one-time Chronicler XP
+  (see [`META_PROGRESSION.md`](META_PROGRESSION.md)). Reached from the title menu
+  and the in-game trophy button (`openAchievements(from:)` remembers where to return).
+- **Chronicler's Ledger** — saga-wide rank and XP log on the saga hub and in
+  Settings. Hooks: `SagaXPTracker`, `SagaProfileStore`.
 
 ## Adding a new achievement
 
@@ -114,6 +130,8 @@ No UI changes are needed — the list and toasts are catalog-driven.
 ## Future ideas (not yet implemented)
 
 - Speedrun / "Fastest run" timer achievement (the original brags a 1:59.2 time).
-- "Pacifist" (win without ever dying), "Completionist" (all spells + rod + visit
-  every NPC), per-NPC "talked to everyone in Silvarium".
+- Per-NPC "talked to everyone in Silvarium".
 - Game Center integration (map `Achievement.rawValue` → GC identifiers).
+
+Implemented from prior list: **Fully Loaded** (completionist kit), **Clean Coronation**
+(pacifist win), **Schism Scholar** (gate guard TALK).
