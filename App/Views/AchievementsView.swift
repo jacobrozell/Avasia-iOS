@@ -18,6 +18,12 @@ struct AchievementsView: View {
                         ForEach(Achievement.allCases, id: \.self) { ach in
                             row(ach, unlocked: vm.achievements.has(ach))
                         }
+                        if !vm.chroniclerPendingClaims.isEmpty {
+                            Text("Tap Claim to add achievement XP to your Chronicler rank.")
+                                .font(.caption)
+                                .foregroundColor(Theme.parchment.opacity(0.5))
+                                .padding(.top, 4)
+                        }
                     }
                     .padding(.horizontal, metrics.horizontalPadding)
                     .padding(.bottom, 8)
@@ -47,6 +53,12 @@ struct AchievementsView: View {
                 Text("Lifetime deaths: \(p.totalDeaths)")
                     .font(.caption2).foregroundColor(Theme.parchment.opacity(0.4))
             }
+            let pending = vm.chroniclerPendingClaims.count
+            if pending > 0 {
+                Text("\(pending) achievement\(pending == 1 ? "" : "s") ready to claim for Chronicler XP")
+                    .font(.caption2)
+                    .foregroundColor(Theme.accent.opacity(0.85))
+            }
         }
         .padding(.top, 24)
         .padding(.horizontal, metrics.horizontalPadding)
@@ -73,6 +85,17 @@ struct AchievementsView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             Spacer(minLength: 0)
+            if unlocked, vm.sagaProfile.canClaimAchievement(ach) {
+                Button("Claim +\(SagaXPTracker.xpForAchievement(ach))") {
+                    vm.claimChroniclerAchievement(ach)
+                }
+                .font(.caption.weight(.semibold))
+                .foregroundColor(Theme.accent)
+            } else if unlocked, !vm.sagaProfile.canClaimAchievement(ach) {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(Theme.accent.opacity(0.6))
+                    .accessibilityLabel("XP claimed")
+            }
         }
         .padding(14)
         .background(RoundedRectangle(cornerRadius: 12)
