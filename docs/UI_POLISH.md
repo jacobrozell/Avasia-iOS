@@ -18,13 +18,15 @@ competing with the transcript — the text stays the hero.
 | Saga chapter cards + save hints | `ChapterCard`, `GameViewModel.sagaSaveHint` |
 | Parchment transcript wash | `ParchmentBackground` |
 | Region label on illustration band | `RegionIllustration` gradient scrim |
-| Combat badge | `StatusBadge` in game status strip |
 | Screen crossfade | `RootView` `.animation(.easeInOut, value: vm.screen)` |
 | Achievement/trophy progress | `ProgressBar` in list headers |
 | Light/dark palettes | `ThemeColors`, `AppAppearance` |
+| **Combat & status** | See [`COMBAT_UI.md`](COMBAT_UI.md) — HP bars, pacing-sync, SFX, haptics on beats |
+| **Haptics** | `AppSettings.hapticsEnabled` + `HapticManager` — menus, combat, story beats |
 
-**Not yet shipped:** haptics, per-screen enter motion, region-change crossfade,
-celebration moments, settings for motion/haptics.
+**Living checklist:** [`POLISH_ROADMAP.md`](POLISH_ROADMAP.md)
+
+**Not yet shipped:** P0 region art, full non-combat SFX/ambient (see freeze in [`POLISH_ROADMAP.md`](POLISH_ROADMAP.md)).
 
 ---
 
@@ -358,10 +360,12 @@ Recommended order: **P1 → P3 → P2 → P4 (parallel art) → P5 → P6**.
 
 | Topic | Doc |
 |---|---|
+| **Living checklist** | [`POLISH_ROADMAP.md`](POLISH_ROADMAP.md) |
 | Screen layout | [`WIREFRAMES.md`](WIREFRAMES.md) |
 | Asset file names | [`ASSETS.md`](ASSETS.md) — add `cataracta` when implementing P4 |
 | Styled text colors | [`ENGINE_SPEC.md`](ENGINE_SPEC.md) §B.7 |
 | SoC regions / rooms | [`sequel/WORLD_MAP.md`](sequel/WORLD_MAP.md) |
+| Combat & status-strip motion | [`COMBAT_UI.md`](COMBAT_UI.md) |
 | Blue-crystal motif | [`STORY.md`](STORY.md) §8 |
 
 ---
