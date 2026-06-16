@@ -60,6 +60,7 @@ struct ForestTrapRoom: RoomScript {
             .speech("Kaefden to Kaefden, you must reestablish Nacastrum as the great city it once was."),
             .speech("And with it, unite the mages of Avasia."),
             .speech("A few of us decided to stay. This is our homeland, and if war is coming, we will stand and fight or we will die."),
+            .speech("Word from Aylova says Vashirr preaches magic for soldiers now — Many Hands, they call it. We still trust towers and blood."),
             .speech("It's in my people's best interest to help you. Follow me."),
             .body("You follow steadfast, feeling a bond between your fellow Kaefden."),
             .hint("Go FORWARD.")
@@ -83,6 +84,7 @@ struct SilvariumRoom: RoomScript {
                 .blank,
                 .speech("This is my home, Silvarium. My people have lived here for centuries."),
                 .speech("When my ancestors joined the Kaefden faction, your people, the mages, gave us a gift."),
+                .speech("The druids of Cataracta sent cartloads of Anula — blue crystal for our shrines and gates."),
                 .speech("The Elders kept this spell in secretism, wanting to keep all marksmen equal."),
                 .speech("The spell is kept at the very top of the tree, where the Elders resided."),
                 .speech("When my people went north to escape the barbarians, they sealed the upper chamber."),
@@ -184,7 +186,7 @@ struct TreeButcherRoom: RoomScript {
                 .blank,
                 .body("You dig up a dagger that looks like nothing you've ever seen."),
                 .body("The hilt is wrapped in dark leather; the cross-guards form what looks like mandibles."),
-                .body("The blade is razor sharp and made of a metal unknown to you. The metal is a clear blue."),
+                .body("The blade is razor sharp and made of a metal unknown to you. The metal is a clear blue — Anula."),
                 .item("You received Dagger!"),
                 .body("You put the dagger away and head back to the atrium.")
             ], .move(.treeFloor2))
@@ -264,7 +266,7 @@ struct TreeChurchRoom: RoomScript {
             .body("Civilians approach and pray to the statue — some kind of shrine."),
             .body("A woman in an elk's head and strange animal skins attends to them."),
             .speech("Greetings, mage. All are welcome in the Church of Suformin, God of the Hunt. What can I do for you?"),
-            .hint("You could ASK about SUFORMIN, the DAGGER, or another question — or go BACK.")
+            .hint("You could ASK about SUFORMIN, ANULA, the DAGGER, or another question — or go BACK.")
         ]
     }
 
@@ -278,6 +280,13 @@ struct TreeChurchRoom: RoomScript {
                 .speech("When we first left Aylova in search of a new home, it was Suformin who showed us this place."),
                 .speech("When she ascended, she entrusted her dagger to one worthy hunter — he founded our elder line."),
                 .speech("Those who left turned their backs on her and will face her wrath in due time.")
+            ])
+        }
+        if input.contains(["ANULA", "CRYSTAL", "BLUE"]) {
+            return TurnResult([
+                .speech("Anula is earth-gift — blue crystal from living stone. The druids share it; we light our shrines with it."),
+                .speech("It is not coin. Not yet. The elders say what is given freely must not be weighed."),
+                .speech("I pray they are right.")
             ])
         }
         if input.contains(["DAGGER", "BLADE", "SUFORMIN'S"]) {
@@ -313,7 +322,7 @@ struct TreeLibraryRoom: RoomScript {
             .speech("Welcome, Mage. I pride myself as the number one hoarder of knowledge in this city."),
             .speech("Should I find you mistreating any of the books here, I will have you fed to angry, starving wolves."),
             .speech("Now that you know how things work here, what can I do for you?"),
-            .hint("You could EXPLAIN your task, ASK about the MAGES, or go BACK.")
+            .hint("You could EXPLAIN your task, ASK about the MAGES or ANULA, or go BACK.")
         ]
     }
 
@@ -325,6 +334,13 @@ struct TreeLibraryRoom: RoomScript {
                 .speech("I was excited to hear that they were going to give us a spell as a sort of peace offering."),
                 .speech("And then those damned Elders sealed it up and saved it for themselves."),
                 .speech("I've heard rumors that the Elders themselves have been unable to open the seal. It seems that their blood isn't worthy!")
+            ])
+        }
+        if input.contains(["ANULA", "CRYSTAL", "BLUE"]) {
+            return TurnResult([
+                .speech("Anula? The druids cart it in from the mountains. Blue shards for lamps and gate-work."),
+                .speech("The elders count every crate when it arrives — and again when the war drums sound."),
+                .speech("If you're asking whether I'd sell you some, the answer is no. I'm a librarian, not a merchant.")
             ])
         }
         if input.contains(["EXPLAIN", "TASK", "SEAL"]) {
@@ -349,11 +365,18 @@ struct TreeFloor4Room: RoomScript {
         return [
             .body("At the top of the tree, a seal is set into the wood: crossed daggers within a target."),
             .body("Dried blood crusts its grooves. It wants more."),
-            .hint("You could CUT yourself (name a blade and where), or go DOWN.")
+            .hint("You could CUT yourself (name a blade and where), LOOK at the seal, or go DOWN.")
         ]
     }
 
     func handle(_ input: ParsedInput, _ state: inout GameState) -> TurnResult {
+        if input.contains(["LOOK", "EXAMINE", "SEAL"]) && !state.has(.stonebend) {
+            return TurnResult([
+                .body("Mage-blood in the grooves — power tied to lineage, not market."),
+                .body("Sylvian hunter blood could not answer — only the line Malkos bred for the sky."),
+                .body("Stonebend waits behind consent written in crimson. Vashirr would call that weakness.")
+            ])
+        }
         if state.has(.stonebend) || input.contains(Verb.down) {
             return TurnResult([], .move(.treeFloor3))
         }
