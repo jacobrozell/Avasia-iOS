@@ -4,7 +4,7 @@ import SwiftUI
 enum ScreenTransition {
     static func transition(for screen: GameViewModel.Screen, reduceMotion: Bool) -> AnyTransition {
         switch screen {
-        case .saga, .title:
+        case .onboarding, .saga, .title:
             return hubEnter(reduceMotion: reduceMotion)
         case .game:
             return playEnter(reduceMotion: reduceMotion)

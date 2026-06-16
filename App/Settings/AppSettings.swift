@@ -97,6 +97,12 @@ enum AppSettings {
     private static let chroniclerShowXPToastsKey = "avasia.chronicler.showXPToasts"
     private static let chroniclerAutoClaimKey = "avasia.chronicler.autoClaim"
     private static let chroniclerShowThisRunKey = "avasia.chronicler.showThisRun"
+    private static let onboardingCompletedKey = "avasia.onboarding.completed"
+
+    static var hasCompletedOnboarding: Bool {
+        get { UserDefaults.standard.bool(forKey: onboardingCompletedKey) }
+        set { UserDefaults.standard.set(newValue, forKey: onboardingCompletedKey) }
+    }
 
     static var hapticsEnabled: Bool {
         get {

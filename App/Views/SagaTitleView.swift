@@ -119,6 +119,9 @@ struct SagaTitleView: View {
                     }
                 }
             }
+            MenuButton(title: "How to play", systemImage: "questionmark.circle") {
+                vm.openOnboarding(from: .saga)
+            }
             MenuButton(title: "Saga Timeline", systemImage: "clock.arrow.circlepath") {
                 vm.openTimeline(from: .saga)
             }

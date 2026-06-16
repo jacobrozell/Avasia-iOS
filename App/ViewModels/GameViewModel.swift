@@ -11,7 +11,7 @@ import UIKit
 /// with separate saves, selected from `SagaTitleView`.
 @MainActor
 final class GameViewModel: ObservableObject {
-    enum Screen { case saga, title, settings, game, credits, achievements, trophies, codex, timeline, privacyPolicy, chroniclerLedger }
+    enum Screen { case onboarding, saga, title, settings, game, credits, achievements, trophies, codex, timeline, privacyPolicy, chroniclerLedger }
 
     @Published var screen: Screen = .saga {
         didSet { screenDidChange() }
@@ -274,12 +274,27 @@ final class GameViewModel: ObservableObject {
     }
 
     func onLaunch() {
-        if screen == .saga || screen == .title { audio.playAmbient(SoundCue.titleTheme.rawValue) }
+        if !AppSettings.hasCompletedOnboarding {
+            screen = .onboarding
+        }
+        if screen == .onboarding || screen == .saga || screen == .title {
+            audio.playAmbient(SoundCue.titleTheme.rawValue)
+        }
+    }
+
+    func completeOnboarding() {
+        AppSettings.hasCompletedOnboarding = true
+        screen = menuReturn
+    }
+
+    func openOnboarding(from screen: Screen) {
+        menuReturn = screen
+        self.screen = .onboarding
     }
 
     private func screenDidChange() {
         switch screen {
-        case .saga, .title, .credits:
+        case .onboarding, .saga, .title, .credits:
             audio.playAmbient(SoundCue.titleTheme.rawValue)
         case .game:
             refreshAmbient()
