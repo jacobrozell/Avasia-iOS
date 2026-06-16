@@ -12,9 +12,10 @@ struct StoryZeroPatrolCampRoom: AnthologyRoomScript {
     func describe(_ state: AnthologyGameState) -> [StyledLine] {
         [
             .title("Scout Patrol Camp"),
-            .body("Cold fire. Mira's breathing steadies beside you on the pine needles."),
+            .body("Cold fire. Mira's breathing steadies beside you on the pine needles — two scouts, one ridge, no second chance if you miss the count."),
             .body("A bark strip is pinned to your pack — Silvarium elders' hand: observe Agroman movement. Do not engage."),
-            .hint("CONTINUE toward the ridge, or TALK to Mira.")
+            .body("East, the valley still sleeps. West, Splitpath waits if you need to run."),
+            .hint("CONTINUE toward the ridge · TALK to Mira · LOOK at the camp.")
         ]
     }
 
@@ -23,6 +24,14 @@ struct StoryZeroPatrolCampRoom: AnthologyRoomScript {
             return AnthologyTurnResult([
                 .speech("Mira: If we see a real army, we run. Elders need truth, not two more bodies."),
                 .speech("You: Truth is why they sent us."),
+                .speech("Mira: Then count every fire. Poetry comes later — if we live to write it."),
+                .hint("CONTINUE toward the ridge.")
+            ])
+        }
+        if input.contains("LOOK") {
+            return AnthologyTurnResult([
+                .body("Ridge path east. Campfire ash. Mira's bow unstrung — rules of the patrol."),
+                .body("Her bark tally stick is already half-scored — she counts before dawn, always."),
                 .hint("CONTINUE toward the ridge.")
             ])
         }
@@ -35,13 +44,7 @@ struct StoryZeroPatrolCampRoom: AnthologyRoomScript {
                 .move(.scoutRidge)
             )
         }
-        if input.contains("LOOK") {
-            return AnthologyTurnResult([
-                .body("Ridge path east. Campfire ash. Mira's bow unstrung — rules of the patrol."),
-                .hint("CONTINUE toward the ridge.")
-            ])
-        }
-        return AnthologyTurnResult([.hint("CONTINUE toward the ridge, or TALK to Mira.")])
+        return AnthologyTurnResult([.hint("CONTINUE toward the ridge · TALK to Mira · LOOK at the camp.")])
     }
 }
 
@@ -72,6 +75,8 @@ struct StoryZeroScoutRidgeRoom: AnthologyRoomScript {
         if input.contains("LOOK") {
             return AnthologyTurnResult([
                 .body("Smoke threads the valley. Paladin pairs drill between tents — fewer than the stories warn, but real."),
+                .body("Many Hands banners beside Restoration blue — a sermon and a threat in the same cloth."),
+                .body("Mira's knuckles whiten on her tally stick. She has already stopped counting aloud."),
                 .hint("WITHDRAW · CONTINUE.")
             ])
         }
@@ -108,15 +113,23 @@ struct StoryZeroScoutWithdrawRoom: AnthologyRoomScript {
         [
             .title("Ridge Retreat"),
             .body("The valley fires shrink behind pine. Mira counts under her breath — hundreds, not dozens."),
+            .body("Many Hands banners mix with camp smoke. Paladin drill calls echo up the scree — real, not rumor."),
             .body("Elders need more than a guess before Oceandale's ships turn shoreward."),
-            .hint("CONTINUE — raise a signal fire on the splitpath.")
+            .hint("CONTINUE toward Splitpath · TALK to Mira · LOOK back at the valley.")
         ]
     }
 
     func handle(_ input: ParsedInput, _ state: inout AnthologyGameState) -> AnthologyTurnResult {
+        if input.contains("LOOK") || input.contains("VALLEY") {
+            return AnthologyTurnResult([
+                .body("Too many fires for a raid. Not enough for a kingdom — yet. Green smoke could still buy Silvarium a day."),
+                .hint("CONTINUE · TALK to Mira.")
+            ])
+        }
         if input.contains("TALK") || input.contains("MIRA") {
             return AnthologyTurnResult([
                 .speech("Mira: Thin smoke on the ridge beats two corpses in a sermon tent."),
+                .speech("Mira: REPORT when we hit Splitpath. REFUSE if you cannot stomach either banner. I follow your count — not his poetry."),
                 .hint("CONTINUE.")
             ])
         }
@@ -142,7 +155,8 @@ struct StoryZeroScoutSignalRoom: AnthologyRoomScript {
         return [
             .title("Splitpath Signal"),
             .body("Dry pine and bark strip cipher. Mira stacks kindling while you scrape flint."),
-            .hint("SIGNAL the elders · CONTINUE without fire.")
+            .body("Splitpath wind carries cook-smoke from neutral holdfasts — truce week ended, but the road remembers."),
+            .hint("SIGNAL the elders · CONTINUE without fire · TALK to Mira.")
         ]
     }
 
@@ -152,6 +166,13 @@ struct StoryZeroScoutSignalRoom: AnthologyRoomScript {
                 return AnthologyTurnResult([.hint("CONTINUE.")])
             }
             return AnthologyTurnResult([], .move(.scoutFork))
+        }
+        if input.contains("TALK") || input.contains("MIRA") {
+            return AnthologyTurnResult([
+                .speech("Mira: Green smoke means urgent count — not battle. Elders send riders, not armies."),
+                .speech("Mira: Signal or don't. Either way, the fork asks whose truth we carry."),
+                .hint("SIGNAL · CONTINUE.")
+            ])
         }
         if input.contains("SIGNAL") || input.contains("FIRE") {
             state.scoutSignalSent = true
@@ -180,15 +201,24 @@ struct StoryZeroScoutPicketRoom: AnthologyRoomScript {
         [
             .title("Agroman Picket Line"),
             .body("Soldiers flank you without striking. Mira's quiver is taken; your knife is gone."),
+            .body("Many Hands pamphlets peek from kit flaps — magic for every shield, not mages in towers."),
             .body("An officer speaks quietly: Vashirr wants witnesses, not corpses."),
-            .hint("CONTINUE under escort.")
+            .hint("CONTINUE under escort · TALK to Mira · LOOK at the column.")
         ]
     }
 
     func handle(_ input: ParsedInput, _ state: inout AnthologyGameState) -> AnthologyTurnResult {
+        if input.contains("LOOK") || input.contains("COLUMN") {
+            return AnthologyTurnResult([
+                .body("Farmhands and deserters in formation — not Paladins yet, but the drill yard is close."),
+                .body("You counted these fires from the ridge. Now you walk among them."),
+                .hint("CONTINUE under escort.")
+            ])
+        }
         if input.contains("TALK") || input.contains("MIRA") {
             return AnthologyTurnResult([
                 .speech("Mira: (whisper) If we live through this, elders hear every word."),
+                .speech("Mira: (whisper) Do not FOLLOW rashly. I will not march west for his sermon."),
                 .hint("CONTINUE.")
             ])
         }
@@ -359,6 +389,7 @@ struct StoryZeroScoutForkRoom: AnthologyRoomScript {
             return AnthologyTurnResult([
                 .speech("Mira: Thank the roots. I'll run with you."),
                 .body("You choose truth for Silvarium — every fire counted, every banner noted."),
+                .body("Oceandale's ships are still on the horizon. Venna will want names before the tide turns."),
                 .hint("CONTINUE.")
             ])
         }
@@ -382,6 +413,7 @@ struct StoryZeroScoutForkRoom: AnthologyRoomScript {
             state.forkResolved = true
             return AnthologyTurnResult([
                 .body("You refuse both sermon and easy loyalty. The choice stands — what happens next depends on who holds the valley."),
+                .body("Somewhere east, an elk horn may still call truce week. Suformin's holdfast does not ask which sermon you walked out on."),
                 .hint("CONTINUE.")
             ])
         }

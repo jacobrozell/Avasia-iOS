@@ -24,11 +24,19 @@ struct NeutralSixArchiveRoom: AnthologyRoomScript {
         if input.contains("LOOK") || input.contains("STACK") {
             return AnthologyTurnResult([
                 .body("Cave rubbings beside gate counts beside market chalk — six years of neutrality, none of it official until now."),
-                .hint("CONTINUE.")
+                .body("The schism fable appears on every third page — two hands, one wrist. Restoration and Agroman both hate the phrasing."),
+                .hint("CONTINUE · TALK to Suformin.")
+            ])
+        }
+        if input.contains("TALK") || input.contains("SUFORMIN") || input.contains("CELLIOUS") {
+            return AnthologyTurnResult([
+                .speech("Suformin: Publish and every faction calls us traitors. Seal and we become another secret the war exploits."),
+                .speech("Cellious: Neutrality without record is delay dressed as virtue. Decide before couriers arrive."),
+                .hint("CONTINUE to the record hall.")
             ])
         }
         guard advance.contains(where: { input.contains($0) }) else {
-            return AnthologyTurnResult([.hint("CONTINUE.")])
+            return AnthologyTurnResult([.hint("CONTINUE · LOOK · TALK.")])
         }
         return AnthologyTurnResult([], .move(.neutralSixRecordHall))
     }
@@ -95,7 +103,8 @@ struct NeutralSixBindingRoom: AnthologyRoomScript {
         return [
             .title("Binding Room"),
             .body("Wax, cord, and neutral ink — the tools of a record that belongs to no banner."),
-            .hint("PUBLISH the open ledger · SEAL it hidden.")
+            .body("Suformin holds the cave copies. Cellious holds the gate ledger. You hold the market truce map — if you brokered it."),
+            .hint("PUBLISH the open ledger · SEAL it hidden · LOOK at the copies.")
         ]
     }
 
@@ -105,6 +114,13 @@ struct NeutralSixBindingRoom: AnthologyRoomScript {
                 return AnthologyTurnResult([], .move(.neutralSixAftermath))
             }
             return AnthologyTurnResult([.hint("CONTINUE.")])
+        }
+        if input.contains("LOOK") || input.contains("COPY") || input.contains("READ") {
+            return AnthologyTurnResult([
+                .body("Every page names someone who refused both banners — or traded with both and survived."),
+                .body("Publish and truth travels without a guard. Seal and custody becomes its own mercy."),
+                .hint("PUBLISH · SEAL.")
+            ])
         }
         if input.contains("PUBLISH") || input.contains("OPEN") || input.contains("READ") {
             state.neutralSixLedgerResolved = true
@@ -160,7 +176,7 @@ struct NeutralSixEpilogueRoom: AnthologyRoomScript {
 
     func describe(_ state: AnthologyGameState) -> [StyledLine] {
         if state.neutralSixComplete {
-            return [.body("The Open Ledger — complete.")]
+            return [.body("The Open Ledger — complete."), .hint("Return to the story hub from the menu.")]
         }
         let line = state.neutralSixPublishedLedger
             ? "The ledger travels. Neutrality, for you, meant letting truth survive without a banner to protect it."
@@ -178,7 +194,8 @@ struct NeutralSixEpilogueRoom: AnthologyRoomScript {
         AnthologyCatalog.complete(.neutralSix, state: &state)
         var lines: [StyledLine] = [
             .title("The Open Ledger — complete"),
-            .body("+\(AnthologyCatalog.meta(for: .neutralSix).fpReward) faction points.")
+            .body("+\(AnthologyCatalog.meta(for: .neutralSix).fpReward) faction points."),
+            .hint("Story hub unlocked — continue from the menu.")
         ]
         lines.append(contentsOf: AnthologyCatalog.pathCompletionLines(state: state))
         return AnthologyTurnResult(lines, .move(.storyHub))

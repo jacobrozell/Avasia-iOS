@@ -255,6 +255,43 @@ public enum AnthologyCatalog {
     /// Stories included in lean 1.0.0 ship — Scout, tier 1 forks, hub utilities.
     public static let shipsIn100: [AnthologyStoryMeta] = all.filter(\.shipsIn100)
 
+    public struct PickerSection: Sendable {
+        public let title: String
+        public let systemImage: String
+        public let stories: [AnthologyStoryMeta]
+    }
+
+    /// Story picker grouping — Scout, then each alignment path in play order.
+    public static let pickerSections: [PickerSection] = [
+        PickerSection(title: "Scout Patrol", systemImage: "binoculars.fill", stories: [meta(for: .storyZero)]),
+        PickerSection(
+            title: "Loyalist Path",
+            systemImage: "shield.lefthalf.filled",
+            stories: AnthologyPathProgress.stories(for: .loyalist).map { meta(for: $0) }
+        ),
+        PickerSection(
+            title: "Agroman Path",
+            systemImage: "figure.walk",
+            stories: AnthologyPathProgress.stories(for: .agroman).map { meta(for: $0) }
+        ),
+        PickerSection(
+            title: "Neutral Path",
+            systemImage: "signpost.right.fill",
+            stories: AnthologyPathProgress.stories(for: .neutral).map { meta(for: $0) }
+        )
+    ]
+
+    /// 1-based step within an alignment path, e.g. `(2, 6)` for Good #2.
+    public static func pathStep(for story: AnthologyStoryID) -> (step: Int, total: Int)? {
+        for alignment in [AnthologyAlignment.loyalist, .agroman, .neutral] {
+            let path = AnthologyPathProgress.stories(for: alignment)
+            if let index = path.firstIndex(of: story) {
+                return (index + 1, path.count)
+            }
+        }
+        return nil
+    }
+
     public static let shopTitle = "Training Shop"
     public static let shopSubtitle = "Arena gear and ring passes."
     public static let ringPassCost = AnthologyRingPass.shopCost

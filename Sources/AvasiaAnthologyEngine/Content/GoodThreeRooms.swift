@@ -207,7 +207,7 @@ struct GoodThreeEpilogueRoom: AnthologyRoomScript {
 
     func describe(_ state: AnthologyGameState) -> [StyledLine] {
         if state.goodThreeComplete {
-            return [.body("Council Under Glass — complete.")]
+            return [.body("Council Under Glass — complete."), .hint("Return to the story hub from the menu.")]
         }
         let line = state.goodThreePublicTestimony
             ? "The glass dome echoes with names the Restoration wished to forget. Loyalty, this time, meant volume."
@@ -225,7 +225,8 @@ struct GoodThreeEpilogueRoom: AnthologyRoomScript {
         AnthologyCatalog.complete(.goodThree, state: &state)
         return AnthologyTurnResult([
             .title("Council Under Glass — complete"),
-            .body("+\(AnthologyCatalog.meta(for: .goodThree).fpReward) faction points.")
+            .body("+\(AnthologyCatalog.meta(for: .goodThree).fpReward) faction points."),
+            .hint("Story hub unlocked — continue from the menu.")
         ], .move(.storyHub))
     }
 }
