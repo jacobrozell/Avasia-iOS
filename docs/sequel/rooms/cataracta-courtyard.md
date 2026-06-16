@@ -25,10 +25,10 @@ for Kaefden IV. Ends with Cataracta in ashes; `current_room_id` → `c_portal_ro
 
 | Name | Role | Appears when | Notes |
 |---|---|---|---|
-| **Dentros** | Legion recruiter | Intro | Dies blocking Vashirr's bolt |
+| **Dentros** | Legion recruiter | Intro | Falls to Vashirr's bolt; **still alive** between fights |
 | **Kimious** | King of Cataracta | Speech | Killed by dark energy |
-| **Vashirr** | Antagonist | Invasion | Hooded; scar; gray staff; unmasked after fights |
-| **Destros** | *(typo?)* | Between fights | "lying on the floor" — likely **Dentros** |
+| **Vashirr** | Antagonist | Invasion | Many Hands ideology; names Agroman's prince-middle-name origin |
+| Legion healer | NPC | Between fights | Explains HP restore — *borrowed seconds, not mercy* |
 | Agromanian Grunt | Enemy 1 | Combat 1 | — |
 | Agromanian Warrior | Enemy 2 | Combat 2 | — |
 
@@ -70,7 +70,7 @@ Reach from [North](cataracta-north.md) (`EAST`).
 | `ATTACK`, `STRIKE`, `FIGHT` | Combat round |
 | `HELP`, `COMMANDS` | List ATTACK, HEAL, HELP |
 
-Between fights: **full HP restore** (author note in source: needs story excuse).
+Between fights: **full HP restore** — Legion healer in chaos (`betweenCombatsLines`).
 
 ### Phase 3 — Scripted aftermath
 
@@ -106,7 +106,7 @@ None in this room.
 ## Source quirks
 
 - Sets `config.current_room_id = "c_portal_room"` and `return "reload"` — no return to Cataracta graph.
-- **Destros** vs **Dentros** typo in between-combat line.
+- iOS fixed **Destros** typo; Dentros timeline now consistent with bolt → alive → you shield him.
 
 ## Related rooms
 

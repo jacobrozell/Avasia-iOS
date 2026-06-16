@@ -15,6 +15,33 @@ final class SoCEngineTests: XCTestCase {
         XCTAssertTrue(state.inCombat)
         XCTAssertFalse(result.playerDied)
         XCTAssertTrue(result.lines.contains { $0.text.contains("Kimious") })
+        XCTAssertTrue(result.lines.contains { $0.text.contains("Dentros") })
+    }
+
+    func testGardenLookMentionsRequisition() {
+        var state = SoCGameState()
+        state.currentRoom = .cataractaGarden
+        let engine = SoCGameEngine(state: state)
+
+        let lines = engine.submit("look")
+
+        XCTAssertTrue(lines.contains { $0.text.contains("requisition") })
+        XCTAssertTrue(lines.contains { $0.text.contains("Gift becomes ledger") })
+    }
+
+    func testCourtyardMassacreEndsInPortalRoom() {
+        var state = SoCGameState()
+        state.currentRoom = .cataractaCourtyard
+        state.inventory[.potion] = 2
+        let engine = SoCGameEngine(state: state)
+
+        _ = engine.submit("bear")
+        engine.fightToVictory()
+        engine.fightToVictory()
+
+        XCTAssertTrue(engine.state.courtyardComplete)
+        XCTAssertEqual(engine.state.currentRoom, .portalRoom)
+        XCTAssertEqual(engine.state.playerClass, .guardian)
     }
 
     func testPortalBooksReachLibrary() {
@@ -43,7 +70,30 @@ final class SoCEngineTests: XCTestCase {
         let result = room.handle(Parser.parse("vent", mode: .raw), &state)
 
         XCTAssertEqual(result.transition, SoCTransition.stay)
-        XCTAssertTrue(result.lines.contains { $0.text.contains("too short") })
+        XCTAssertTrue(result.lines.contains { $0.text.contains("reach") })
+    }
+
+    func testPortalFirstVisitMentionsMission() {
+        var state = SoCGameState()
+        state.courtyardComplete = true
+        state.currentRoom = .portalRoom
+        let room = SoCPortalRoom()
+
+        let lines = room.describe(state)
+
+        XCTAssertTrue(lines.contains { $0.text.contains("Vashirr") })
+        XCTAssertTrue(lines.contains { $0.text.contains("Kaefden") })
+    }
+
+    func testAthalosLookMentionsLedger() {
+        var state = SoCGameState()
+        state.athalosVisitCount = 2
+        state.currentRoom = .cataractaAthalos
+        let engine = SoCGameEngine(state: state)
+
+        let lines = engine.submit("look")
+
+        XCTAssertTrue(lines.contains { $0.text.contains("ledger") || $0.text.contains("Ledger") })
     }
 
     func testThroneAudienceCompletes() {
@@ -54,6 +104,7 @@ final class SoCEngineTests: XCTestCase {
         let engine = SoCGameEngine(state: state)
 
         _ = engine.submit("east")
+        _ = engine.submit("continue")
         _ = engine.submit("continue")
         _ = engine.submit("continue")
         _ = engine.submit("continue")
@@ -81,7 +132,7 @@ final class SoCEngineTests: XCTestCase {
         XCTAssertEqual(engine.state.currentRoom, .aylovaWarCamp)
     }
 
-    func testAylovaCampReachesNorthernMarch() {
+    func testAylovaCampReachesSilvarium() {
         var state = SoCGameState()
         state.applyClass(.guardian)
         state.warCampBriefed = true
@@ -95,13 +146,14 @@ final class SoCEngineTests: XCTestCase {
 
         XCTAssertTrue(engine.state.aylovaProvisioned)
         XCTAssertTrue(engine.state.aylovaMusterComplete)
-        XCTAssertEqual(engine.state.currentRoom, .northernMarch)
+        XCTAssertEqual(engine.state.currentRoom, .silvariumElders)
     }
 
     func testNorthernMarchPatrolCombat() {
         var state = SoCGameState()
         state.applyClass(.hunter)
         state.aylovaMusterComplete = true
+        state.ofelosAllianceComplete = true
         state.currentRoom = .northernMarch
         let engine = SoCGameEngine(state: state)
 
@@ -117,13 +169,81 @@ final class SoCEngineTests: XCTestCase {
         XCTAssertTrue(engine.state.northernMarchCleared)
     }
 
-    func testHunterPathAutoReturns() {
+    func testHunterPathLeaveReturns() {
         let engine = SoCGameEngine()
         engine.load(SoCGameState())
 
         _ = engine.submit("west")
+        XCTAssertEqual(engine.state.currentRoom, .cataractaHunterPath)
+        XCTAssertTrue(engine.state.hunterPathVisited)
 
+        _ = engine.submit("leave")
         XCTAssertEqual(engine.state.currentRoom, .cataractaHousing)
+    }
+
+    func testHunterPathHunterLookMentionsWolfCry() {
+        var state = SoCGameState()
+        state.applyClass(.hunter)
+        state.currentRoom = .cataractaHunterPath
+        let engine = SoCGameEngine(state: state)
+
+        let lines = engine.submit("look")
+
+        XCTAssertEqual(engine.state.playerClass, .hunter)
+        XCTAssertTrue(lines.contains { $0.text.contains("wolf") && $0.text.contains("treeline") })
+    }
+
+    func testWestHallwayLookForeshadowsPortal() {
+        var state = SoCGameState()
+        state.currentRoom = .westHallway
+        let room = SoCCataractaWestHallway()
+
+        let result = room.handle(Parser.parse("look", mode: .normalized), &state)
+
+        XCTAssertTrue(result.lines.contains { $0.text.contains("portal room") })
+        XCTAssertTrue(result.lines.contains { $0.text.contains("fountain cracked") })
+    }
+
+    func testAthalosShopOnReturnVisit() {
+        var state = SoCGameState()
+        state.currentRoom = .cataractaShopping
+        let engine = SoCGameEngine(state: state)
+
+        _ = engine.submit("south")
+        XCTAssertEqual(engine.state.currentRoom, .cataractaShopping)
+
+        _ = engine.submit("south")
+        XCTAssertEqual(engine.state.currentRoom, .cataractaAthalos)
+
+        let goldBefore = engine.state.gold
+        _ = engine.submit("buy potion")
+        XCTAssertEqual(engine.state.gold, goldBefore - 25)
+        XCTAssertEqual(engine.state.inventory[.potion], 2)
+    }
+
+    func testVarathoBridgeGrantsExpOnce() {
+        let engine = SoCGameEngine()
+        engine.load(SoCGameState())
+
+        _ = engine.submit("north")
+        XCTAssertTrue(engine.state.varathoCrossed)
+        XCTAssertGreaterThan(engine.state.questExp, 0)
+
+        let exp = engine.state.questExp
+        _ = engine.submit("south")
+        _ = engine.submit("north")
+        XCTAssertEqual(engine.state.questExp, exp)
+    }
+
+    func testBarracksGuardGossip() {
+        var state = SoCGameState()
+        state.currentRoom = .cataractaNorth
+        let engine = SoCGameEngine(state: state)
+
+        _ = engine.submit("west")
+        _ = engine.submit("talk")
+        XCTAssertTrue(engine.state.barracksTalked)
+        XCTAssertGreaterThan(engine.state.questExp, 0)
     }
 
     func testAthalosAutoReturns() {
@@ -203,11 +323,51 @@ final class SoCEngineTests: XCTestCase {
         XCTAssertTrue(engine.state.trophies.contains(.ageComplete))
     }
 
+    func testCodexUnlocksFromSaveFlags() {
+        var fresh = SoCGameState()
+        XCTAssertFalse(SoCCodex.isUnlocked(.ulric, state: fresh))
+        fresh.ulric = true
+        XCTAssertTrue(SoCCodex.isUnlocked(.ulric, state: fresh))
+
+        fresh.courtyardComplete = true
+        XCTAssertTrue(SoCCodex.isUnlocked(.courtyardMassacre, state: fresh))
+        XCTAssertTrue(SoCCodex.isUnlocked(.enlistment, state: fresh))
+        XCTAssertTrue(SoCCodex.isUnlocked(.kimious, state: fresh))
+        XCTAssertFalse(SoCCodex.isUnlocked(.campaignComplete, state: fresh))
+
+        let before = SoCCodex.unlockedCount(for: fresh)
+        XCTAssertEqual(before, 4, "ulric, kimious, enlistment, courtyardMassacre")
+
+        fresh.gameComplete = true
+        XCTAssertTrue(SoCCodex.isUnlocked(.campaignComplete, state: fresh))
+        XCTAssertEqual(SoCCodex.unlockedCount(for: fresh), before + 1)
+        XCTAssertLessThan(SoCCodex.unlockedCount(for: fresh), SoCCodexEntry.allCases.count)
+    }
+
+    func testVashirrStandCombatThenContinueDefeatsVashirr() {
+        var state = SoCGameState()
+        state.applyClass(.guardian)
+        state.playerName = "Hero"
+        state.vashirrStandPhase = .finalCombat
+        state.currentRoom = .vashirrStand
+        state.inventory[.potion] = 3
+        SoCCombat.begin(
+            enemy: SoCCombatant(name: "Vashirr's War Mage", atk: 11, speed: 8, hp: 28, luck: 6),
+            deathText: "The war mage's bolt tears through your line.",
+            state: &state
+        )
+        let engine = SoCGameEngine(state: state)
+
+        engine.fightToVictory()
+        XCTAssertEqual(engine.state.vashirrStandPhase, .resolution)
+        XCTAssertFalse(engine.state.vashirrDefeated)
+
+        _ = engine.submit("continue")
+        XCTAssertTrue(engine.state.vashirrDefeated)
+        XCTAssertEqual(engine.state.vashirrStandPhase, .done)
+    }
+
     private func fightUntilClear(_ engine: SoCGameEngine) {
-        var turns = 0
-        while engine.state.inCombat, turns < 40 {
-            _ = engine.submit("attack")
-            turns += 1
-        }
+        engine.fightToVictory()
     }
 }

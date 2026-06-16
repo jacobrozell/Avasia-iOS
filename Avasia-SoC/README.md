@@ -1,4 +1,4 @@
-# Avasia: Sword of Courage
+# Avasia: Blade of Courage
 
 Python reference build of **Avasia #2** — imported from
 [github.com/jacobrozell/Avasia](https://github.com/jacobrozell/Avasia).

@@ -1,4 +1,4 @@
-# Avasia: Sword of Courage — Roadmap
+# Avasia: Blade of Courage — Roadmap
 
 > Phased plan to finish the sequel and align it with the KoN iOS remake. Timelines
 > are intentionally open — reorder phases based on what motivates you.
@@ -7,7 +7,7 @@
 
 ## Vision (north star)
 
-**Avasia: Sword of Courage** is the second and **final text game** of the Age era:
+**Avasia: Blade of Courage** is the second and **final text game** of the Age era:
 a Druid soldier's story that shows Vashirr's war from the ground, destroys the
 player's home, and fights the **full continental war** under **King Kaefden IV**
 (the KoN protagonist). Game 3 is the first **2D** title in a new era. See
@@ -51,7 +51,7 @@ Success looks like:
 
 ### 1.1 Royal structure — decided
 
-- **Kaefden IV** = KoN protagonist (mage-king, six months into his reign).
+- **Kaefden IV** = KoN protagonist (mage-king, **seven years** into his reign).
 - SoC PC is a Druid soldier; Kaefden IV is NPC / commander.
 
 ### 1.2 Act structure
@@ -170,4 +170,5 @@ Record major forks here as you decide:
 | 2026-06-15 | SoC = full war campaign | Act IV+, not messenger-only |
 | 2026-06-15 | Age era = **2 text games**; game 3 = **first 2D** | See `docs/SAGA.md` |
 | 2026-06-15 | Combat = varied authored encounters, not grind | See `ENGINE_SPEC.md` §B.3 |
-| 2026-06-15 | Title: *Sword of Courage* (working) | Alternatives in `SAGA.md` §6 |
+| 2026-06-15 | Title: *Blade of Courage* — relic quest names the game |
+| 2026-06-15 | Timeline: **7 years since KoN**; Paladins escalate the cold war |

@@ -10,3 +10,6 @@ Expected names (see `docs/ASSETS.md` for the full manifest):
   `amb_nacastrum`, `amb_aylova`
 - Music: `music_title`
 - SFX: `sfx_item`, `sfx_spell`, `sfx_death`, `sfx_win`, `sfx_move`
+- Combat SFX: `sfx_hit`, `sfx_miss`, `sfx_block`, `sfx_heal`, `sfx_combat_start`, `sfx_victory`
+
+Regenerate combat placeholders: `python3 scripts/generate_combat_sfx.py`

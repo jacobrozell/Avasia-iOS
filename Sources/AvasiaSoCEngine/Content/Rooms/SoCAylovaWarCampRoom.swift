@@ -25,7 +25,7 @@ struct SoCAylovaWarCampRoom: SoCRoomScript {
         case .briefing:
             return [.hint("CONTINUE to see the quartermaster.")]
         case .quartermaster:
-            return [.hint("CONTINUE when you are provisioned.")]
+            return [.hint("BUY POTION (25g), BUY RATIONS (15g), or CONTINUE when ready.")]
         case .readyToMarch:
             return [.hint("MARCH north toward the border.")]
         case .done:
@@ -36,7 +36,7 @@ struct SoCAylovaWarCampRoom: SoCRoomScript {
     func handle(_ input: ParsedInput, _ state: inout SoCGameState) -> SoCTurnResult {
         if state.aylovaMusterComplete {
             if marchTriggers.contains(where: { input.contains($0) }) {
-                return SoCTurnResult(marchLines(), .move(.northernMarch))
+                return SoCTurnResult(marchLines(), .move(bladeQuestDestination(state)))
             }
             return SoCTurnResult([.hint("MARCH north when you are ready.")])
         }
@@ -46,6 +46,9 @@ struct SoCAylovaWarCampRoom: SoCRoomScript {
             return advanceScene(&state)
         }
 
+        if input.contains("BUY") || input.contains("PURCHASE") {
+            return handlePurchase(input, &state)
+        }
         if advances(input) {
             return advanceScene(&state)
         }
@@ -79,11 +82,32 @@ struct SoCAylovaWarCampRoom: SoCRoomScript {
             state.aylovaMusterComplete = true
             var lines = deploymentLines(state) + marchLines()
             lines.append(.title("War camp muster complete"))
-            return SoCTurnResult(lines, .move(.northernMarch))
+            return SoCTurnResult(lines, .move(.silvariumElders))
 
         case .done:
             return SoCTurnResult(musterCompleteLines())
         }
+    }
+
+    private func handlePurchase(_ input: ParsedInput, _ state: inout SoCGameState) -> SoCTurnResult {
+        guard state.warCampPhase == .quartermaster || state.warCampPhase == .briefing else {
+            return SoCTurnResult([.body("The quartermaster is not taking orders right now.")])
+        }
+        if input.contains("POTION") {
+            guard state.spendGold(25) else {
+                return SoCTurnResult([.body("You need 25 gold for a potion.")])
+            }
+            state.addItem(.potion)
+            return SoCTurnResult([.body("Thekia sells you an extra potion. Gold: \(state.gold)")])
+        }
+        if input.contains("RATION") {
+            guard state.spendGold(15) else {
+                return SoCTurnResult([.body("You need 15 gold for field rations.")])
+            }
+            state.addItem(.fieldRations)
+            return SoCTurnResult([.body("You tuck coalition rations into your pack. Gold: \(state.gold)")])
+        }
+        return SoCTurnResult([.hint("BUY POTION (25g) or BUY RATIONS (15g).")])
     }
 
     private func provision(_ state: inout SoCGameState) -> [StyledLine] {
@@ -106,6 +130,7 @@ struct SoCAylovaWarCampRoom: SoCRoomScript {
         [
             .title("Aylova War Camp"),
             .body("Smiths hammer at field forges. Nacastrum mages trace wards along the supply wagons."),
+            .body("Crates stamped COALITION REQUISITION — ANULA — SYLVIAN STOCK line the supply road."),
             .body("Aylovan officers bark orders in a tongue you almost understand."),
             .body("Your unit's sergeant waves you toward the command pavilion.")
         ]
@@ -120,13 +145,16 @@ struct SoCAylovaWarCampRoom: SoCRoomScript {
         case .none: unit = "general column"
         }
         return [
-            .speech("Coalition Sergeant: Eyes up, Cataractan. King Kaefden isn't here to give pretty speeches — listen."),
+            .speech(SoCStoryVoice.sergeantOpener(state)),
             .blank,
             .body("She unrolls a map scarred with charcoal X's along the northern border."),
-            .speech("Vashirr's Agromanians hit three border villages last week. Their mages throw fire now — his teaching, not theirs."),
+            .speech("Seven years the border held — while Vashirr taught Agromanian steel to drink magic. Those soldiers are Paladins now."),
+            .speech("Last week they hit three border villages. Their craft isn't borrowed anymore — it's bred into the rank."),
             .speech("Oceandale ridge is the next push. Hold the high ground and we keep their army out of Aylova's throat."),
             .blank,
-            .speech("Your \(unit) deploys at first light. Until then, get fed and get armed."),
+            .speech("Before the northern front: Silvarium's elders, Varatro Falls, and Kaefden's Blade of Courage — Ofelos won't march without that symbol."),
+            .speech("Elders warn the requisition ledgers will outlive the war. Win first — argue about crystal prices after."),
+            .speech("You ride east to Silvarium first. When Ofelos joins, your \(unit) deploys at first light."),
             .speech("Thekia's tent is east of the cookfires. Don't report to the front empty-handed.")
         ]
     }
@@ -166,7 +194,7 @@ struct SoCAylovaWarCampRoom: SoCRoomScript {
             .blank,
             .body("Horns sound three short blasts — march order."),
             .body("The coalition column turns north, toward smoke on the horizon."),
-            .symbol("Northern march toward Oceandale ridge.")
+            .symbol("Ride east to Silvarium — then Varatro Falls and Ofelos.")
         ]
     }
 
@@ -177,8 +205,15 @@ struct SoCAylovaWarCampRoom: SoCRoomScript {
     private func musterCompleteLines() -> [StyledLine] {
         [
             .title("Aylova War Camp"),
-            .body("The camp bustles behind you. Your unit waits at the road's edge."),
-            .hint("MARCH north toward the border.")
+            .body("The camp bustles behind you. The Blade quest leads east before the northern front."),
+            .hint("MARCH east toward Silvarium.")
         ]
+    }
+
+    private func bladeQuestDestination(_ state: SoCGameState) -> SoCRoomID {
+        if !state.silvariumEldersComplete { return .silvariumElders }
+        if !state.varatroFallsCleared { return .varatroFalls }
+        if !state.ofelosAllianceComplete { return .ofelos }
+        return .northernMarch
     }
 }

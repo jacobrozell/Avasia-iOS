@@ -1,45 +1,99 @@
-# XcodeGen spec — generates AvasiaKoN.xcodeproj from this declarative file so the
-# project doesn't have to be hand-maintained. Install with `brew install
-# xcodegen`, then run `xcodegen generate` (see docs/BUILD.md).
-name: AvasiaKoN
+# XcodeGen spec — generates Avasia-iOS.xcodeproj for xcodebuild / Xcode.
+# Install: brew install xcodegen
+# Generate: xcodegen generate
+name: Avasia-iOS
 options:
-  bundleIdPrefix: com.avasia
+  bundleIdPrefix: com.jacobrozell
   deploymentTarget:
     iOS: "16.0"
   createIntermediateGroups: true
+  groupOrdering:
+    - order: [App, Config, Sources, Tests]
+  developmentLanguage: en
+
+configFiles:
+  Debug: Config/Signing.xcconfig
+  Release: Config/Signing.xcconfig
 
 packages:
   AvasiaEngine:
-    path: .            # the local Swift package defined by Package.swift
+    path: .
 
 targets:
-  AvasiaKoN:
+  Avasia-iOS:
     type: application
     platform: iOS
     sources:
       - path: App
+        excludes:
+          - "**/Info.plist"
+    resources:
+      - path: App/Resources/Assets.xcassets
+      - path: App/Resources/Audio
     dependencies:
       - package: AvasiaEngine
         product: AvasiaEngine
       - package: AvasiaEngine
         product: AvasiaSoCEngine
+      - package: AvasiaEngine
+        product: AvasiaAnthologyEngine
     settings:
       base:
-        GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: App/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS: YES
         INFOPLIST_KEY_CFBundleDisplayName: Avasia
-        PRODUCT_BUNDLE_IDENTIFIER: com.avasia.kon
-        MARKETING_VERSION: "0.1.0"
+        PRODUCT_BUNDLE_IDENTIFIER: com.jacobrozell.avasia-ios
+        PRODUCT_NAME: Avasia
+        MARKETING_VERSION: "1.0.0"
         CURRENT_PROJECT_VERSION: "1"
-        TARGETED_DEVICE_FAMILY: "1,2"      # iPhone + iPad
+        TARGETED_DEVICE_FAMILY: "1,2"
         SWIFT_VERSION: "5.9"
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen:
+          UIImageName: AvasiaLogo
+          UIColorName: LaunchBackground
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+          - UIInterfaceOrientationPortrait
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+
+  AvasiaAnthologyEngineTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests/AvasiaAnthologyEngineTests
+    dependencies:
+      - package: AvasiaEngine
+        product: AvasiaAnthologyEngine
+      - package: AvasiaEngine
+        product: AvasiaEngine
+    settings:
+      base:
+        SWIFT_VERSION: "5.9"
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.jacobrozell.avasia-ios.anthology-tests
 
 schemes:
-  AvasiaKoN:
+  Avasia-iOS:
     build:
       targets:
-        AvasiaKoN: all
+        Avasia-iOS: all
     run:
       config: Debug
     test:
       config: Debug
+      gatherCoverageData: false
+      targets:
+        - AvasiaAnthologyEngineTests

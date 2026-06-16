@@ -1,0 +1,184 @@
+import Foundation
+import AvasiaEngine
+
+/// Locations in anthology stories.
+public enum AnthologyRoomID: String, Codable, CaseIterable, Sendable {
+    case storyHub = "story_hub"
+
+    // Story #0 — Scout Patrol
+    case patrolCamp = "scout_patrol_camp"
+    case scoutRidge = "scout_ridge"
+    case scoutWithdraw = "scout_withdraw"
+    case scoutSignal = "scout_signal"
+    case scoutPicket = "scout_picket"
+    case vashirrParley = "vashirr_parley"
+    case scoutFork = "scout_fork"
+    case scoutCampExit = "scout_camp_exit"
+    case scoutEpilogue = "scout_epilogue"
+
+    // Good #1 — Oceandale Warning
+    case goodOneSilvarium = "good_one_silvarium"
+    case goodOneSplitpath = "good_one_splitpath"
+    case goodOneOceandale = "good_one_oceandale"
+    case goodOnePier = "good_one_pier"
+    case goodOneEpilogue = "good_one_epilogue"
+
+    // Good #2 — Nascastrum Courier
+    case goodTwoSilvarium = "good_two_silvarium"
+    case goodTwoWesternRoad = "good_two_western_road"
+    case goodTwoNacastrumGate = "good_two_nacastrum_gate"
+    case goodTwoEpilogue = "good_two_epilogue"
+
+    // Bad #1 — Walking with Vashirr
+    case badOneColumn = "bad_one_column"
+    case badOneTraining = "bad_one_training"
+    case badOneAudience = "bad_one_audience"
+    case badOneRecon = "bad_one_recon"
+    case badOneEpilogue = "bad_one_epilogue"
+
+    // Bad #2 — Cataracta Periphery
+    case badTwoPeriphery = "bad_two_periphery"
+    case badTwoOverlook = "bad_two_overlook"
+    case badTwoBriefing = "bad_two_briefing"
+    case badTwoEpilogue = "bad_two_epilogue"
+
+    // Elk Feast
+    case elkSplitpath = "elk_splitpath"
+    case elkHoldfast = "elk_holdfast"
+    case elkFeast = "elk_feast"
+    case elkEpilogue = "elk_epilogue"
+
+    // Neutral #2 — Cave Record
+    case caveRecordTrail = "cave_record_trail"
+    case caveRecordEntrance = "cave_record_entrance"
+    case caveRecordCavern = "cave_record_cavern"
+    case caveRecordArchive = "cave_record_archive"
+    case caveRecordEpilogue = "cave_record_epilogue"
+
+    // Arena training
+    case arenaPit = "arena_pit"
+    case trainingShop = "training_shop"
+
+    // Good #3 — Council Under Glass
+    case goodThreeLanding = "good_three_landing"
+    case goodThreeAntechamber = "good_three_antechamber"
+    case goodThreeWitnessPrep = "good_three_witness_prep"
+    case goodThreeNacastrum = "good_three_nacastrum"
+    case goodThreeCouncil = "good_three_council"
+    case goodThreeVerdict = "good_three_verdict"
+    case goodThreeAftermath = "good_three_aftermath"
+    case goodThreeEpilogue = "good_three_epilogue"
+
+    // Bad #3 — Many Hands Oath
+    case badThreeMarch = "bad_three_march"
+    case badThreeCamp = "bad_three_camp"
+    case badThreeVashirrTent = "bad_three_vashirr_tent"
+    case badThreeRite = "bad_three_rite"
+    case badThreeOath = "bad_three_oath"
+    case badThreeAfterOath = "bad_three_after_oath"
+    case badThreeEpilogue = "bad_three_epilogue"
+
+    // Neutral #3 — Two Hands Market
+    case neutralThreeMarket = "neutral_three_market"
+    case neutralThreeTraderRow = "neutral_three_trader_row"
+    case neutralThreeSchismStall = "neutral_three_schism_stall"
+    case neutralThreeAftermath = "neutral_three_aftermath"
+    case neutralThreeEpilogue = "neutral_three_epilogue"
+
+    // Good #4 — Restoration Mobilization
+    case goodFourMobilizationCamp = "good_four_mobilization_camp"
+    case goodFourCommandTent = "good_four_command_tent"
+    case goodFourBriefing = "good_four_briefing"
+    case goodFourEpilogue = "good_four_epilogue"
+
+    // Bad #4 — Cataracta Breach
+    case badFourApproach = "bad_four_approach"
+    case badFourSiegeLine = "bad_four_siege_line"
+    case badFourGate = "bad_four_gate"
+    case badFourEpilogue = "bad_four_epilogue"
+
+    // Neutral #4 — Cellious at the Gate
+    case neutralFourKaefdenRoad = "neutral_four_kaefden_road"
+    case neutralFourGate = "neutral_four_gate"
+    case neutralFourCrowd = "neutral_four_crowd"
+    case neutralFourEpilogue = "neutral_four_epilogue"
+
+    // Good #5 — Witness Stone
+    case goodFiveSilvarium = "good_five_silvarium"
+    case goodFiveWitnessStone = "good_five_witness_stone"
+    case goodFiveEpilogue = "good_five_epilogue"
+
+    // Bad #5 — Western Command
+    case badFiveCamp = "bad_five_camp"
+    case badFiveCommandFire = "bad_five_command_fire"
+    case badFiveEpilogue = "bad_five_epilogue"
+
+    // Neutral #5 — Unmarked Road
+    case neutralFiveSplitpath = "neutral_five_splitpath"
+    case neutralFiveMileMarker = "neutral_five_mile_marker"
+    case neutralFiveEpilogue = "neutral_five_epilogue"
+
+    // Good #6 — Restoration Accord
+    case goodSixAccordHall = "good_six_accord_hall"
+    case goodSixAccordAntechamber = "good_six_accord_antechamber"
+    case goodSixWitnessPrep = "good_six_witness_prep"
+    case goodSixSigningFloor = "good_six_signing_floor"
+    case goodSixAftermath = "good_six_aftermath"
+    case goodSixEpilogue = "good_six_epilogue"
+
+    // Bad #6 — Western Throne
+    case badSixOccupiedHall = "bad_six_occupied_hall"
+    case badSixOccupiedStreet = "bad_six_occupied_street"
+    case badSixOfficersCircle = "bad_six_officers_circle"
+    case badSixThroneRoom = "bad_six_throne_room"
+    case badSixAftermath = "bad_six_aftermath"
+    case badSixEpilogue = "bad_six_epilogue"
+
+    // Neutral #6 — Open Ledger
+    case neutralSixArchive = "neutral_six_archive"
+    case neutralSixRecordHall = "neutral_six_record_hall"
+    case neutralSixWitnessTable = "neutral_six_witness_table"
+    case neutralSixBindingRoom = "neutral_six_binding_room"
+    case neutralSixAftermath = "neutral_six_aftermath"
+    case neutralSixEpilogue = "neutral_six_epilogue"
+}
+
+public extension AnthologyRoomID {
+    var region: Region {
+        switch self {
+        case .storyHub, .scoutEpilogue, .goodOneSplitpath, .goodOneEpilogue,
+             .goodTwoWesternRoad, .goodTwoEpilogue, .goodThreeEpilogue, .goodFourEpilogue,
+             .caveRecordTrail, .caveRecordEpilogue,
+             .neutralThreeMarket, .neutralThreeTraderRow, .neutralThreeSchismStall,
+             .neutralThreeAftermath, .neutralThreeEpilogue, .neutralFourKaefdenRoad, .neutralFourEpilogue,
+             .neutralFiveSplitpath, .neutralFiveEpilogue, .goodFiveEpilogue, .badFiveEpilogue,
+             .goodSixEpilogue, .badSixEpilogue, .neutralSixArchive, .neutralSixEpilogue,
+             .goodSixAftermath, .badSixAftermath, .neutralSixAftermath,
+             .badOneEpilogue, .badTwoEpilogue, .badThreeEpilogue, .badFourEpilogue, .elkSplitpath, .elkEpilogue:
+            return .splitpath
+        case .patrolCamp, .elkHoldfast, .elkFeast, .badTwoPeriphery, .badTwoOverlook,
+             .badThreeCamp, .badThreeMarch, .goodFourMobilizationCamp, .badFourApproach, .badFiveCamp,
+             .badSixOccupiedHall, .badSixOccupiedStreet:
+            return .forest
+        case .scoutRidge, .scoutWithdraw, .scoutSignal, .scoutPicket,
+             .vashirrParley, .scoutFork, .scoutCampExit, .badOneTraining, .badTwoBriefing,
+             .badThreeRite, .badThreeOath, .badThreeAfterOath, .badThreeVashirrTent,
+             .badFourSiegeLine, .badFourGate, .goodFourCommandTent, .goodFourBriefing,
+             .badFiveCommandFire, .neutralFiveMileMarker, .badSixThroneRoom,
+             .badSixOfficersCircle, .neutralSixBindingRoom, .goodSixSigningFloor,
+             .goodSixWitnessPrep, .neutralSixWitnessTable:
+            return .mountain
+        case .goodOneOceandale, .goodOnePier, .badOneColumn, .badOneAudience, .badOneRecon,
+             .arenaPit, .trainingShop, .goodThreeLanding, .neutralFourGate, .neutralFourCrowd,
+             .goodSixAccordHall, .goodSixAccordAntechamber, .neutralSixRecordHall:
+            return .shore
+        case .goodOneSilvarium, .goodTwoSilvarium, .goodFiveSilvarium, .goodFiveWitnessStone:
+            return .tree
+        case .goodTwoNacastrumGate, .goodThreeNacastrum, .goodThreeCouncil, .goodThreeVerdict,
+             .goodThreeAntechamber, .goodThreeWitnessPrep, .goodThreeAftermath:
+            return .nacastrum
+        case .caveRecordEntrance, .caveRecordCavern, .caveRecordArchive:
+            return .cave
+        }
+    }
+}

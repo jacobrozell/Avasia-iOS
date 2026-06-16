@@ -1,0 +1,12 @@
+schemaVersion: 1
+sessionDefaults:
+  projectPath: /Users/jrozell/Desktop/personal/Avasia-iOS/Avasia-iOS.xcodeproj
+  scheme: Avasia-iOS
+  simulatorId: 22114A58-1110-4FC7-8431-F7B84B6C7465
+  useLatestOS: true
+  bundleId: com.jacobrozell.avasia-ios
+  simulatorName: iPhone 17
+  simulatorPlatform: iOS Simulator
+  deviceId: 6736DBF2-7EE6-54B4-A9F8-0DA70A3A0549
+  platform: iOS
+  preferXcodebuild: true

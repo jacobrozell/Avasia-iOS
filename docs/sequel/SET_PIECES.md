@@ -1,4 +1,4 @@
-# Avasia: Sword of Courage — Set Pieces
+# Avasia: Blade of Courage — Set Pieces
 
 > **Source material only** — scenes that exist in `Avasia-SoC/`. Do not treat
 > invented content as canon when porting to iOS.

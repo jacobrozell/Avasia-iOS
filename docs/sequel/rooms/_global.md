@@ -1,4 +1,4 @@
-# Global Systems — Sword of Courage
+# Global Systems — Blade of Courage
 
 > Applies everywhere; not tied to a single room. Source: `Avasia-SoC/Logic/`,
 > `Player/Player.py`, `Combat/Combat.py`, `Logic/main.py`.
@@ -11,7 +11,7 @@
 |---|---|
 | Load or new | Prompt: load save or start new |
 | Name entry | Loop until player confirms; `config.player.set_name(name.title())` |
-| Opening prose | Six months since Oceandale; Kaefden IV; Vashirr teaching magic; Cataracta volunteers |
+| Opening prose | Seven years since KoN; no invasion since; Paladin intel from Silvarium; Kaefden IV recruiting; Cataracta volunteers |
 | House scene | Join Legion today → head to courtyard |
 | Starting gifts | **100 gold**, **1× Potion** (10 HP food) |
 | Trophy | `startedAdventure` — "Started the Adventure" |

@@ -40,6 +40,7 @@ name below (@1x/@2x/@3x as usual). Two per region.
 | shore | `bg_shore` | `art_shore` |
 | nacastrum | `bg_nacastrum` | `art_nacastrum` |
 | aylova | `bg_aylova` | `art_aylova` |
+| cataracta | `bg_cataracta` | `art_cataracta` |
 
 - **Background** (`bg_*`): full-bleed, drawn at ~45% opacity behind the text — so
   favor darker, low-contrast images. Portrait-friendly (fills width).
@@ -58,7 +59,7 @@ match wins). Base names only — no extension in code.
 ### Ambient loops (one per region) — `amb_<region>`
 `amb_oceandale`, `amb_beach`, `amb_graveyard`, `amb_splitpath`, `amb_mountain`,
 `amb_cave`, `amb_forest`, `amb_tree`, `amb_road`, `amb_shore`, `amb_nacastrum`,
-`amb_aylova`. Seamless loops; played at 50% volume. Suggested beds: waves
+`amb_aylova`, `amb_cataracta`. Seamless loops; played at 50% volume. Suggested beds: waves
 (beach/shore), wind (mountain/road), dripping water (cave), birdsong/leaves
 (forest/tree), low hum (nacastrum/aylova).
 
@@ -73,6 +74,15 @@ match wins). Base names only — no extension in code.
 | `.death` | `sfx_death` | the red "You have died." banner |
 | `.win` | `sfx_win` | the canonical ending |
 | `.move` | `sfx_move` | any room transition (footstep) |
+| `.hit` | `sfx_hit` | combat damage line completes |
+| `.miss` | `sfx_miss` | combat miss line completes |
+| `.block` | `sfx_block` | guardian block absorbs a hit |
+| `.heal` | `sfx_heal` | potion / heal line completes |
+| `.combatStart` | `sfx_combat_start` | combat begins |
+| `.victory` | `sfx_victory` | enemy killed / arena foe falls |
+
+Placeholder combat WAVs ship from `scripts/generate_combat_sfx.py` (procedural tones).
+Replace with final art when ready — same base names, any supported extension.
 
 ## Adding assets — checklist
 

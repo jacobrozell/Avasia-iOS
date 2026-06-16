@@ -29,11 +29,21 @@ struct SoCOceandaleFrontRoom: SoCRoomScript {
         case .notStarted, .staging:
             return [.hint("CONTINUE when horns sound.")]
         case .charge:
-            return [.hint("CONTINUE into the breach.")]
+            var hints: [StyledLine] = [.hint("CONTINUE into the breach.")]
+            if let bypass = SoCClassIngenuity.bypassHint(for: state) {
+                hints.append(bypass)
+            }
+            return hints
         case .combat1, .combat2:
             return SoCCombat.statLines(state: state) + [.hint("ATTACK.")]
         case .betweenWaves:
-            return [.hint("CONTINUE through the mage-fire.")]
+            var hints: [StyledLine] = [.hint("CONTINUE through the mage-fire.")]
+            if let prep = SoCClassIngenuity.paladinPrepHint(for: state) {
+                hints.insert(prep, at: 0)
+            } else if state.oceandalePaladinAdvantage != .none {
+                hints.insert(.body("You're ready for the Paladin."), at: 0)
+            }
+            return hints
         case .victory:
             return [.hint("CONTINUE to regroup.")]
         case .done:
@@ -51,6 +61,17 @@ struct SoCOceandaleFrontRoom: SoCRoomScript {
                 return SoCTurnResult(advanceLines(), .move(.mageOutpost))
             }
             return SoCTurnResult([.hint("ADVANCE toward the mage outpost.")])
+        }
+
+        if state.oceandaleFrontPhase == .charge,
+           SoCClassIngenuity.matches(input, playerClass: state.playerClass) {
+            return bypassWaveOne(&state)
+        }
+
+        if state.oceandaleFrontPhase == .betweenWaves,
+           state.oceandalePaladinAdvantage == .none,
+           SoCClassIngenuity.matches(input, playerClass: state.playerClass) {
+            return prepPaladinFight(&state)
         }
 
         if advances(input) {
@@ -93,12 +114,19 @@ struct SoCOceandaleFrontRoom: SoCRoomScript {
 
     private func handleCombat(_ input: ParsedInput, _ state: inout SoCGameState) -> SoCTurnResult {
         let phase = state.oceandaleFrontPhase
-        let (lines, died) = SoCCombat.handle(input, state: &state)
-        var output = SoCCombat.statLines(state: state) + lines
+        let result = SoCCombat.handle(input, state: &state)
+        var output = SoCCombat.statLines(state: state) + result.lines
 
-        if died {
+        if result.died {
             return SoCTurnResult(output, .stay, playerDied: true)
         }
+
+        if result.fled {
+            state.oceandaleFrontPhase = .betweenWaves
+            output.append(.body("You fall back to regroup — the mage-fire intensifies ahead."))
+            return SoCTurnResult(output)
+        }
+
         guard !state.inCombat else {
             return SoCTurnResult(output)
         }
@@ -120,30 +148,114 @@ struct SoCOceandaleFrontRoom: SoCRoomScript {
         }
     }
 
+    private func prepPaladinFight(_ state: inout SoCGameState) -> SoCTurnResult {
+        let lines: [StyledLine]
+        switch state.playerClass {
+        case .scout:
+            state.oceandalePaladinAdvantage = .scoutWardGap
+            lines = [
+                .body("You crawl through the smoke toward the crest, counting the Paladin's chant rhythm."),
+                .body("Third repetition — the ward-light flickers left. You chalk the gap for the charge.")
+            ]
+        case .hunter:
+            state.oceandalePaladinAdvantage = .hunterOpening
+            lines = [
+                .body("You read the Paladin's silhouette against mage-fire and loose a knife from the smoke."),
+                .body("Plate rings — not a killing blow, but the crest stumbles. You'll finish uphill.")
+            ]
+        case .guardian:
+            state.oceandalePaladinAdvantage = .guardianBrace
+            lines = [
+                .body("You plant shield downslope and study the Paladin's ward-pattern."),
+                .body("The chant hammers one vector. You can hold that line when you crest.")
+            ]
+        case .none:
+            lines = [.body("You study the Paladin's ward-light before the charge.")]
+        }
+        var output = lines
+        output.append(.hint("CONTINUE through the mage-fire."))
+        return SoCTurnResult(output)
+    }
+
+    private func bypassWaveOne(_ state: inout SoCGameState) -> SoCTurnResult {
+        state.oceandaleFrontPhase = .betweenWaves
+        state.restoreHealthToMax()
+        let flank: [StyledLine]
+        switch state.playerClass {
+        case .scout:
+            flank = [
+                .body("You ghost along the burning wagons and chalk gaps in the raider line for the sergeant."),
+                .body("The wedge pours through untouched — the first wave never finds your blade.")
+            ]
+        case .hunter:
+            flank = [
+                .body("You break from the wedge and cut downhill through the smoke."),
+                .body("The raider champion falls before he can raise his axe — the slope opens without a stand-up fight.")
+            ]
+        case .guardian:
+            flank = [
+                .body("You anchor the breach alone, shield locked as the column funnels past."),
+                .body("Raiders break on your line while the coalition crests the slope behind you.")
+            ]
+        case .none:
+            flank = [.body("The first wave scatters before you reach them.")]
+        }
+        var lines = flank
+        lines.append(contentsOf: SoCQuestProgress.grantQuestExp(15, state: &state))
+        lines.append(contentsOf: betweenWavesLines())
+        lines.append(.hint("CONTINUE through the mage-fire."))
+        return SoCTurnResult(lines)
+    }
+
     private func beginWave1(state: inout SoCGameState) -> [StyledLine] {
         SoCCombat.begin(
-            enemy: SoCCombatant(name: "Agromanian Raider", atk: 6, speed: 6, hp: 14, luck: 0),
+            enemy: SoCCombatant(name: "Agromanian Raider", atk: 6, speed: 6, hp: 14, luck: 3),
             deathText: "A raider's axe catches you across the ribs.",
-            state: &state
+            state: &state,
+            allowsFlee: true
         )
         return SoCCombat.statLines(state: state) + [.hint("What do will you do?")]
     }
 
     private func beginWave2(state: inout SoCGameState) -> [StyledLine] {
+        var enemy = SoCCombatant(name: "Agromanian Paladin", atk: 9, speed: 5, hp: 22, luck: 5)
+        var prepLines: [StyledLine] = []
+        let advantage = state.oceandalePaladinAdvantage
+        state.oceandalePaladinAdvantage = .none
+
+        switch advantage {
+        case .scoutWardGap:
+            enemy.luck = max(0, enemy.luck - 2)
+            prepLines = [.body("You charge through the ward gap — the Paladin's chant stutters on the crest.")]
+        case .hunterOpening:
+            enemy.hp = max(1, enemy.hp - 5)
+            prepLines = [.body("Your opening wound already weeps through the plate — the Paladin meets you bleeding.")]
+        case .guardianBrace:
+            prepLines = [.body("You crest braced, bear-form locked before the first ward-bolt flies.")]
+        case .none:
+            break
+        }
+
         SoCCombat.begin(
-            enemy: SoCCombatant(name: "Agromanian Battle Mage", atk: 9, speed: 5, hp: 22, luck: 0),
-            deathText: "Mage-fire consumes your shield line.",
-            state: &state
+            enemy: enemy,
+            deathText: "Paladin-fire consumes your shield line.",
+            state: &state,
+            allowsFlee: false
         )
-        return SoCCombat.statLines(state: state) + [.hint("What do will you do?")]
+        if advantage == .guardianBrace {
+            state.combatGuardianBlockAvailable = true
+        }
+        return prepLines + SoCCombat.statLines(state: state) + [.hint("What do will you do?")]
     }
 
     private func stagingLines() -> [StyledLine] {
         [
             .title("Oceandale Ridge"),
-            .body("The coalition halts at the tree line. Below, the ridge burns — Agromanian banners where KoN's beach once lay quiet."),
-            .body("Spell-flash stutters along the heights. Your sergeant grips your shoulder."),
-            .speech("Coalition Sergeant: That's Vashirr's teaching. Hold until the horns — then we take the ridge or die on it.")
+            .body("The coalition halts at the tree line. Below, the ridge burns — Agromanian banners where a Kaefden fishing colony once lay quiet."),
+            .body("Through the smoke, King Kaefden IV rides the line on a gray mount — pointed ears, field armor, no crown."),
+            .speech("Kaefden IV: Oceandale again. Hold the ridge — I will not lose this coast twice."),
+            .body("He rides toward the flank and disappears into the smoke. Your sergeant grips your shoulder."),
+            .speech("Coalition Sergeant: That's Vashirr's teaching on those heights. Hold until the horns — then we take the ridge or die on it.")
         ]
     }
 
@@ -170,8 +282,8 @@ struct SoCOceandaleFrontRoom: SoCRoomScript {
         [
             .blank,
             .body("The first wave breaks. For a breath, the slope is yours."),
-            .body("Then blue-white fire erupts from the ridgeline — a battle mage channeling Vashirr's craft."),
-            .speech("Coalition Sergeant: Mage on the crest! Push through!")
+            .body("Then blue-white fire erupts from the ridgeline — a Paladin, Vashirr's craft fused into Agromanian plate."),
+            .speech("Coalition Sergeant: Paladin on the crest! That light is bred in, not borrowed — push through!")
         ]
     }
 
@@ -180,7 +292,8 @@ struct SoCOceandaleFrontRoom: SoCRoomScript {
     private func waveTwoVictoryLines() -> [StyledLine] {
         [
             .blank,
-            .body("The battle mage crumples. Mage-fire gutters out along the ridge."),
+            .body("The Paladin crumples. Mage-fire gutters out along the ridge."),
+            .body("For a heartbeat the chant keeps going from the empty helm — then silence."),
             .body("Agromanian survivors flee downhill toward the treeline.")
         ]
     }

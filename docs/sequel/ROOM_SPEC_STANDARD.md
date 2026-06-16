@@ -1,6 +1,6 @@
-# Room Spec Standard — Sword of Courage
+# Room Spec Standard — Blade of Courage
 
-Every playable location in *Avasia: Sword of Courage* has a **room spec** under
+Every playable location in *Avasia: Blade of Courage* has a **room spec** under
 [`rooms/`](rooms/). Specs are **source-first**: content comes from
 `Avasia-SoC/` unless a field is explicitly marked **Design intent** (future writing,
 not in the prototype).

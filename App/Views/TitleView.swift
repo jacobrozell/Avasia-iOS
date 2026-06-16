@@ -1,11 +1,12 @@
 import SwiftUI
 import AvasiaEngine
 
-/// Per-game title screen (KoN or Sword of Courage) after saga selection.
+/// Per-game title screen (KoN or Blade of Courage) after saga selection.
 struct TitleView: View {
     @EnvironmentObject var vm: GameViewModel
     @Environment(\.layoutMetrics) private var metrics
     @ScaledMetric(relativeTo: .largeTitle) private var titleSize: CGFloat = 52
+    @State private var codexPreview: JournalEntry?
 
     var body: some View {
         ZStack {
@@ -14,6 +15,7 @@ struct TitleView: View {
                 VStack(spacing: metrics.isAccessibilityText ? 20 : 32) {
                     Spacer(minLength: metrics.isLandscape ? 8 : 20)
                     titleHero
+                    codexSection
                     menuSection
                     footerHint
                 }
@@ -23,6 +25,25 @@ struct TitleView: View {
                 .padding(.top, 16)
                 .padding(.bottom, 32)
             }
+        }
+        .sheet(item: $codexPreview) { entry in
+            CodexDetailSheet(entry: entry)
+        }
+    }
+
+    @ViewBuilder
+    private var codexSection: some View {
+        let unlocked = JournalCatalog.unlockedEntries(
+            for: vm.product,
+            kon: vm.konCodexState,
+            soc: vm.socCodexState
+        )
+        if !unlocked.isEmpty {
+            CodexStrip(
+                entries: unlocked,
+                onOpenJournal: { vm.openCodex(from: .title) },
+                onSelect: { codexPreview = $0 }
+            )
         }
     }
 
@@ -51,10 +72,37 @@ struct TitleView: View {
                 .foregroundColor(Theme.parchment.opacity(0.92))
                 .multilineTextAlignment(.center)
 
+            chroniclerBadge
+
             TitleOrnament(flipped: true)
                 .padding(.top, 2)
         }
         .accessibilityElement(children: .combine)
+    }
+
+    private var chroniclerBadge: some View {
+        let profile = vm.sagaProfile
+        return Button {
+            vm.openChroniclerLedger(from: .title)
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "sparkles")
+                    .font(.caption2)
+                Text("Chronicler · Rank \(profile.chroniclerRank)")
+                    .font(.caption.weight(.semibold))
+                if profile.currentRunXP > 0, AppSettings.chroniclerShowThisRunXP {
+                    Text("· +\(profile.currentRunXP) this run")
+                        .font(.caption2)
+                        .foregroundColor(Theme.parchment.opacity(0.7))
+                }
+            }
+            .foregroundColor(Theme.accent)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(Theme.accent.opacity(0.12), in: Capsule())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Chronicler rank \(profile.chroniclerRank), open ledger")
     }
 
     private var menuSection: some View {
@@ -69,12 +117,24 @@ struct TitleView: View {
                 MenuButton(title: "Continue", systemImage: "arrow.clockwise", style: .primary) {
                     vm.continueGame()
                 }
+                if let summary = vm.socSaveSummary ?? vm.storiesSaveSummary {
+                    Text(summary)
+                        .font(.footnote)
+                        .foregroundColor(Theme.parchment.opacity(0.65))
+                        .multilineTextAlignment(.center)
+                }
             }
             if vm.product == .kon {
+                MenuButton(title: "Journal", systemImage: "book.closed.fill") {
+                    vm.openCodex(from: .title)
+                }
                 MenuButton(title: "Achievements", systemImage: "trophy") {
                     vm.openAchievements(from: .title)
                 }
-            } else {
+            } else if vm.product == .soc {
+                MenuButton(title: "Journal", systemImage: "book.closed.fill") {
+                    vm.openCodex(from: .title)
+                }
                 MenuButton(title: "Trophies", systemImage: "trophy") {
                     vm.openTrophies(from: .title)
                 }
@@ -121,13 +181,28 @@ struct TitleView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(Theme.accent.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
                 }
+            } else if vm.product == .stories {
+                HStack(alignment: .top, spacing: 8) {
+                    Image(systemName: "book.fill")
+                        .font(.caption)
+                        .foregroundColor(Theme.accent.opacity(0.8))
+                        .accessibilityHidden(true)
+                    Text("Story hub — PLAY SCOUT first, then spend FP on your alignment path.")
+                        .font(.footnote)
+                        .foregroundColor(Theme.parchment.opacity(0.62))
+                        .multilineTextAlignment(.leading)
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Theme.accent.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
             } else {
                 HStack(alignment: .top, spacing: 8) {
                     Image(systemName: "sparkles")
                         .font(.caption)
                         .foregroundColor(Theme.accent.opacity(0.8))
                         .accessibilityHidden(true)
-                    Text("Text pacing On is strongly recommended for first-time players.")
+                    Text("Text pacing On types lines in gradually. Tap the transcript to skip.")
                         .font(.footnote)
                         .foregroundColor(Theme.parchment.opacity(0.62))
                         .multilineTextAlignment(.leading)

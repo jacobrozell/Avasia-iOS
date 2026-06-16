@@ -1,4 +1,4 @@
-# Avasia: Sword of Courage — Engine Spec
+# Avasia: Blade of Courage — Engine Spec
 
 > Part A documents the **Python prototype** (`Avasia-SoC/`). Part B sketches a
 > **target architecture** for finishing the game and eventually shipping on iOS,

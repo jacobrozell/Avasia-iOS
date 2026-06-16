@@ -1,0 +1,275 @@
+:root {
+  color-scheme: light dark;
+  --bg: #1a1410;
+  --bg-card: rgba(255, 235, 205, 0.04);
+  --text: #e8dcc8;
+  --text-muted: rgba(232, 220, 200, 0.65);
+  --accent: #c9a227;
+  --border: rgba(201, 162, 39, 0.35);
+  --link: #d4b84a;
+  --max-width: 42rem;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f4ead8;
+    --bg-card: rgba(26, 20, 16, 0.04);
+    --text: #2a2118;
+    --text-muted: rgba(42, 33, 24, 0.72);
+    --accent: #8a6a12;
+    --border: rgba(138, 106, 18, 0.35);
+    --link: #6b520f;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 18px;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+}
+
+main {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 3rem;
+}
+
+h1,
+h2 {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+h1 {
+  color: var(--accent);
+  font-size: 2rem;
+  text-align: center;
+  margin: 0 0 0.5rem;
+}
+
+.lead {
+  text-align: center;
+  color: var(--text-muted);
+  margin: 0 0 2rem;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem 1.35rem;
+  margin-bottom: 1.25rem;
+}
+
+.card h2 {
+  color: var(--accent);
+  font-size: 1.1rem;
+  margin: 0 0 0.65rem;
+}
+
+.card p {
+  margin: 0;
+}
+
+.card p + p {
+  margin-top: 0.75rem;
+}
+
+a {
+  color: var(--link);
+}
+
+nav.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  justify-content: center;
+  margin: 0 0 2rem;
+  padding: 0;
+  list-style: none;
+}
+
+nav.site-nav a {
+  text-decoration: none;
+  font-weight: 600;
+}
+
+nav.site-nav a:hover,
+nav.site-nav a[aria-current="page"] {
+  text-decoration: underline;
+}
+
+footer {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* ——— Fiction / prose pages ——— */
+
+main.prose {
+  max-width: 48rem;
+}
+
+.breadcrumb {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.breadcrumb a {
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.prose article h1 {
+  text-align: left;
+  font-size: 1.75rem;
+  margin-top: 0;
+}
+
+.prose article h2 {
+  color: var(--accent);
+  font-size: 1.35rem;
+  margin: 2rem 0 0.75rem;
+  font-family: var(--font-serif);
+}
+
+.prose article h3 {
+  color: var(--text);
+  font-size: 1.1rem;
+  margin: 1.5rem 0 0.5rem;
+  font-family: var(--font-serif);
+}
+
+.prose article h4 {
+  font-size: 1rem;
+  margin: 1.25rem 0 0.4rem;
+  color: var(--text-muted);
+}
+
+.prose article p,
+.prose article li {
+  margin: 0.5rem 0;
+}
+
+.prose article ul,
+.prose article ol {
+  padding-left: 1.35rem;
+}
+
+.prose article blockquote {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid var(--accent);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.prose article pre {
+  overflow-x: auto;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.prose article code {
+  font-size: 0.9em;
+}
+
+.prose article table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.92rem;
+}
+
+.prose article th,
+.prose article td {
+  border: 1px solid var(--border);
+  padding: 0.45rem 0.6rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.prose article th {
+  background: var(--bg-card);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.prose article hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
+.prose article em {
+  font-style: italic;
+}
+
+.prose article strong {
+  font-weight: 600;
+}
+
+.catalog-section .section-note {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin: 0 0 0.75rem;
+}
+
+ul.story-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+ul.story-list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+ul.story-list li:last-child {
+  border-bottom: none;
+}
+
+ul.story-list a {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+ul.story-list a:hover {
+  text-decoration: underline;
+}
+
+ul.story-list .desc {
+  display: block;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-top: 0.15rem;
+}

@@ -15,11 +15,18 @@ struct SplitpathRoom: RoomScript {
         return [
             .body("The road forks into a wide crossing — the Splitpath."),
             .body("To the NORTH, a dark forest. To the EAST, a mountain bridge. To the WEST, a long road. To the SOUTH, the city."),
-            .hint("Which way? (NORTH, EAST, WEST, SOUTH)")
+            .hint("Which way? (NORTH, EAST, WEST, SOUTH) — or LOOK at the crossing.")
         ]
     }
 
     func handle(_ input: ParsedInput, _ state: inout GameState) -> TurnResult {
+        if !state.escortActive,
+           input.contains(["LOOK", "EXAMINE", "CROSSING", "ROADS"]) {
+            return TurnResult([
+                .body("Four roads, four anchors of empire — forest, mountain, sky-road, and the sea behind you."),
+                .body("Someday men will chart these paths on paper and charge tolls in blue crystal. Today you walk them barefoot in grief.")
+            ])
+        }
         if input.contains(Verb.west) { return TurnResult([], .move(.westernRoad)) }
         if state.escortActive { return TurnResult([.hint("Lead her WEST toward Nacastrum.")]) }
         if input.contains(Verb.north) { return TurnResult([], .move(.forestEntrance)) }

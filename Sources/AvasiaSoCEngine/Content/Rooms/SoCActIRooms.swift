@@ -18,32 +18,93 @@ enum SoCCataractaGate {
 struct SoCCataractaAthalos: SoCRoomScript {
     let id: SoCRoomID = .cataractaAthalos
 
-    func autoReturnAfterEnter(_ state: SoCGameState) -> SoCRoomID? { .cataractaShopping }
+    func onEnter(_ state: inout SoCGameState) -> [StyledLine]? {
+        state.athalosVisitCount += 1
+        return nil
+    }
+
+    func autoReturnAfterEnter(_ state: SoCGameState) -> SoCRoomID? {
+        state.athalosVisitCount <= 1 ? .cataractaShopping : nil
+    }
 
     func describe(_ state: SoCGameState) -> [StyledLine] {
-        let name = state.playerName.isEmpty ? "friend" : state.playerName
-        return [
-            .title("Althalos' House"),
-            .body("You approach Althalos' shop."),
-            .body("The sight of the \"Althalos' Wares\" sign sparks memories of the eccentric shopkeeper."),
-            .body("You enter and immediately notice the shop is completely absent of people, yet overstocked in goods."),
-            .body("Despite the lack of business, Althalos greets you kindly."),
-            .blank,
-            .speech("Ah, \(name), I hear you're joining the Cataractan Legion!"),
-            .speech("It's mighty brave of you to volunteer!"),
-            .speech("Most would wait to be drafted, but not you!"),
-            .blank,
-            .speech("Listen. I wish I had something to give you, but business hasn't been so good lately."),
-            .speech("If you're ever looking to buy anything, I'll be here as always!"),
-            .blank,
-            .speech("Take care and good luck!"),
-            .body("You thank Althalos and leave.")
-        ]
+        if state.athalosVisitCount <= 1 {
+            return introductionLines(state)
+        }
+        return shopLines(state)
     }
 
     func handle(_ input: ParsedInput, _ state: inout SoCGameState) -> SoCTurnResult {
         if let block = SoCCataractaGate.ashesBlock(state) { return block }
-        return SoCTurnResult([], .move(.cataractaShopping))
+
+        if state.athalosVisitCount <= 1 {
+            return SoCTurnResult([], .move(.cataractaShopping))
+        }
+
+        if input.contains("BUY") && input.contains("POTION") {
+            guard state.spendGold(25) else {
+                return SoCTurnResult([.speech("Can't help you if you can't pay, friend.")])
+            }
+            state.addItem(.potion)
+            return SoCTurnResult([
+                .item("You buy a Health Potion for 25 gold."),
+                .body("Gold: \(state.gold)"),
+                .speech("Athalos: Legion discount — don't spend it all in one battle.")
+            ])
+        }
+
+        if input.contains("BUY") && (input.contains("RATION") || input.contains("FOOD")) {
+            guard state.spendGold(12) else {
+                return SoCTurnResult([.speech("Can't help you if you can't pay, friend.")])
+            }
+            state.addItem(.fieldRations)
+            return SoCTurnResult([
+                .item("You buy Field Rations for 12 gold."),
+                .body("Gold: \(state.gold)"),
+                .speech("Athalos: Dried fish and hard bread. Better than starving on the march.")
+            ])
+        }
+
+        if input.contains("LEAVE") || input.contains("BACK") || input.contains(Verb.south) {
+            return SoCTurnResult([.body("You thank Athalos and leave.")], .move(.cataractaShopping))
+        }
+
+        if input.contains(Verb.look) || input.contains("SEARCH") {
+            return SoCTurnResult([
+                .body("Dusty ledgers list potion sales beside coalition requisition tallies."),
+                .speech("Gift crystal on the shelf, war debt in the ledger — same blue, different math.")
+            ])
+        }
+
+        return SoCTurnResult([.hint("BUY POTION (25g), BUY RATIONS (12g), LOOK, or LEAVE.")])
+    }
+
+    private func introductionLines(_ state: SoCGameState) -> [StyledLine] {
+        let name = state.playerName.isEmpty ? "friend" : state.playerName
+        return [
+            .title("Athalos' House"),
+            .body("The shop is overstocked and empty of customers — shelves groaning, bell silent."),
+            .body("Athalos greets you anyway, as if trade were still a kindness."),
+            .blank,
+            .speech("Ah, \(name) — enlisting today?"),
+            .speech("Brave. Most wait for the draft."),
+            .blank,
+            .speech("I wish I had a send-off gift. Business is thin."),
+            .speech("If Kaefden's coalition starts buying Anula by the crate, maybe I'll clear this dust."),
+            .speech("Come back before the courtyard if you need potions or rations — legion rates."),
+            .blank,
+            .speech("Good luck out there."),
+            .body("You thank Athalos and leave.")
+        ]
+    }
+
+    private func shopLines(_ state: SoCGameState) -> [StyledLine] {
+        [
+            .title("Athalos' House"),
+            .body("Athalos waves from behind dusty shelves."),
+            .speech("Legion rates: potions 25 gold, field rations 12."),
+            .hint("BUY POTION, BUY RATIONS, LOOK, or LEAVE.")
+        ]
     }
 }
 
@@ -63,18 +124,17 @@ struct SoCCataractaBlacksmith: SoCRoomScript {
         }
         return [
             .title("Ulric's House"),
-            .body("You go south to Ulric's Blacksmith, a small building, with stacks of metal and materials everywhere."),
-            .body("You approach Ulric, who is sitting on the steps of his house."),
-            .body("He begins talking to you."),
+            .body("Smoke and hammer-song spill from Ulric's forge."),
+            .body("Anula dust winks in the coal — blue sparks, pretty curse."),
+            .body("Ulric sits on the stoop, arms folded."),
             .blank,
-            .speech("So, you've decided to join the Cataractan army? More business for me I suppose, heh."),
-            .speech("Tell you what, go see my brother Doran at the pier."),
-            .speech("As you know, he rents out fishing poles."),
-            .speech("I bet you can find some pretty interesting stuff out there."),
+            .speech("Joining the Legion? Good for my ledger."),
+            .speech("Plate needs Sylvian shavings. Kimious pays; Kaefden's clerks count every flake."),
+            .speech("Go bother my brother Doran at the pier — he'll lend you a rod if you sweet-talk him."),
+            .speech("Or tell him I sent you and skip the fee."),
             .blank,
-            .speech("What I wouldn't give to be able to fish all day."),
-            .speech("But, there is always work to be done."),
-            .speech("Now go bother my brother.")
+            .speech("I'd fish all day if the war drums would quiet."),
+            .speech("Now move — I have orders to fill.")
         ]
     }
 
@@ -99,36 +159,56 @@ struct SoCCataractaPier: SoCRoomScript {
     func onEnter(_ state: inout SoCGameState) -> [StyledLine]? {
         var lines: [StyledLine] = [
             .title("Doran's Pier"),
-            .body("You enter the fishing hut posted along side the Varatho river."),
-            .body("The hut reeks of fish and bait."),
-            .body("Various fishing poles line the walls in all shapes, sizes, and colors."),
+            .body("You step into the fishing hut perched alongside the Varatho."),
+            .body("Fish and bait hang in the air. Poles line the walls in every size and color."),
             .blank
         ]
         if !state.doran {
             lines += [
-                .body("Doran, who appears to be the owner, hears you enter and calls from a back room with a rough, agitated voice."),
-                .speech("Oi! Whatya be doin' in my hut?"),
+                .body("Doran calls from the back room, voice rough with annoyance."),
+                .speech("Oi! What're you doin' in my hut?"),
                 .blank,
-                .body("You explain that you saw the pier and wanted to take a closer look."),
+                .body("You say you wanted a look at the pier."),
                 .blank,
-                .speech("Hmm.. Doran hums before responding. I don't allow many people to come visit."),
-                .speech("To many of these landfolk don't have any appreciation for the river or my pier."),
-                .speech("Perhaps for a few gold, you can take a look. Think of it as insurance."),
-                .speech("I'll even let you borrow a fishing rod and some bait.")
+                .speech("Hmm. Doran hums. Don't get many who respect the river."),
+                .speech("Too many landfolk treat Varatho like a puddle."),
+                .speech("Fifteen gold — call it insurance — and I'll lend you a rod and bait."),
+                .speech("Or walk. Your coin, your risk.")
             ]
             state.doran = true
         } else {
-            lines.append(.speech("Welcome back! You here to fish or just stand there?"))
+            lines.append(.speech("Back again? Fishin', or just breathin' my air?"))
         }
         return lines
     }
 
     func describe(_ state: SoCGameState) -> [StyledLine] {
-        [.speech("What do ye say? 15 gold?")]
+        if state.doran {
+            return [
+                .speech("What do ye say? 15 gold?"),
+                .hint("YES or NO — LOOK at the river crates, TALK to Doran.")
+            ]
+        }
+        return [StyledLine.speech("What do ye say? 15 gold?")]
     }
 
     func handle(_ input: ParsedInput, _ state: inout SoCGameState) -> SoCTurnResult {
         if let block = SoCCataractaGate.ashesBlock(state) { return block }
+
+        if input.contains(Verb.look) || input.contains("CRATE") || input.contains("RIVER") {
+            return SoCTurnResult([
+                .body("Through the pier shutters, river crates bear Aylova tally marks — Anula requisition, stamped for the pact."),
+                .body("A dockhand mutters that King's war chest buys crystal now; river folk pay in fish and silence.")
+            ])
+        }
+
+        if input.contains(["TALK", "DORAN", "ASK", "ANULA", "REQUISITION"]) {
+            return SoCTurnResult([
+                .speech("Aylova clerks came through last week — counted every blue shaving in my tackle like royal tax."),
+                .speech("Ulric says it's for Kimious and the legion. I say Varatho won't care whose war she's fueling when the nets go empty."),
+                .speech("Use what you must, chain what you can — that's what the broadsheets say Kaefden swears now. Easy for a king.")
+            ])
+        }
 
         if input.contains("YES") {
             if state.ulric {
@@ -143,8 +223,8 @@ struct SoCCataractaPier: SoCRoomScript {
                     .blank,
                     .body("Doran hands you an old fishing rod and some bait then points you towards the door to the pier."),
                     .blank,
-                    .speech("Becareful not to fall in the river."),
-                    .speech("Varatho ain't a kind beast to those who swim her rapids.")
+                    .speech("Be careful on the planks."),
+                    .speech("Varatho ain't kind to swimmers.")
                 ]
                 state.unlockTrophy(.brother)
                 state.ulric = false
@@ -154,10 +234,10 @@ struct SoCCataractaPier: SoCRoomScript {
                 let lines: [StyledLine] = [
                     .body("You pay Doran 15 gold."),
                     .body("Gold: \(state.gold)"),
-                    .body("He hands you an old fishing rod and some bait then points toward the door to the pier."),
+                    .body("He hands you an old fishing rod and bait, then points you toward the pier door."),
                     .blank,
-                    .speech("Becareful not to fall in the river."),
-                    .speech("Varatho ain't a kind beast to those who swim her rapids.")
+                    .speech("Be careful on the planks."),
+                    .speech("Varatho ain't kind to swimmers.")
                 ]
                 return SoCTurnResult(lines, .move(.cataractaFishing))
             }
@@ -310,10 +390,9 @@ struct SoCCataractaGarden: SoCRoomScript {
     func describe(_ state: SoCGameState) -> [StyledLine] {
         [
             .title("Castle Garden"),
-            .body("Around the garden are young druid children playing while their parents socialize."),
-            .body("In front of you is a fountain made of the blue crystal, Anula."),
-            .body("The fountain is filled with gold pieces, scattered around the base, most of which are on tails."),
-            .hint("What would you like to do?")
+            .body("Druid children chase each other between hedges while parents trade gossip in the shade."),
+            .body("At the center, an Anula fountain throws blue light across scattered coins — most landed tails-up."),
+            .hint("COIN, LOOK, TALK, or LEAVE south to North Cataracta.")
         ]
     }
 
@@ -330,37 +409,44 @@ struct SoCCataractaGarden: SoCRoomScript {
             state.fountain = true
             if Bool.random() {
                 return SoCTurnResult([
-                    .body("You toss a gold piece into the water and it lands on heads!"),
-                    .body("Nothing happens."),
-                    .body("I guess some things just aren't worth doing.")
+                    .body("You toss a gold piece. It lands heads-up and sinks without a ripple."),
+                    .body("The fountain keeps its luck for someone else today.")
                 ])
             }
+            state.fountainLuck = true
+            state.playerLuck += 1
             return SoCTurnResult([
-                .body("You toss a gold piece into the water and it lands on tails."),
-                .body("Nothing happens.")
+                .body("You toss a gold piece. It lands tails-up in the Anula basin."),
+                .body("The crystal hums faintly. You feel a whisper of luck."),
+                .body("Maybe the boy was right after all.")
             ])
         }
 
-        if input.contains("LOOK") || input.contains("SEARCH") {
+        if input.contains(Verb.look) || input.contains("SEARCH") {
             return SoCTurnResult([
-                .body("You decide to take a look around."),
-                .body("People are sitting around the fountain doing different activities."),
-                .body("You see a young couple holding hands and another older gentleman, reading a book."),
-                .body("You also see a young child by the crystal fountain, guiding his hands through the cool water.")
+                .body("Couples linger by the water. An elder folds a Silvarium dispatch too quickly to read."),
+                .body("You catch Paladin and requisition before the page disappears."),
+                .body("Gift becomes ledger, he mutters — Kaefden's war will price everything."),
+                .body("A child trails fingers through the cool Anula. The fountain feels older than today's rumors.")
             ])
         }
 
         if input.contains("TALK") || input.contains("APPROACH") || input.contains("SPEAK") || input.contains("PEOPLE") {
-            return SoCTurnResult([
-                .body("You approach the young boy by the crystal fountain."),
+            var lines: [StyledLine] = [
+                .body("A boy watches the coins at the fountain's lip."),
                 .blank,
-                .speech("My parents say that if you toss some gold in the fountain, it brings good luck!"),
-                .speech("I don't know if I believe in stuff like that though..."),
-                .body("The young boy walks off.")
-            ])
+                .speech("Mom says tails in the water brings luck."),
+                .speech("Heads just buys the fish a snack. I don't know if I believe it."),
+                .body("He runs off to chase a friend.")
+            ]
+            if !state.gardenInsight {
+                state.gardenInsight = true
+                lines.append(contentsOf: SoCQuestProgress.grantQuestExp(10, state: &state))
+            }
+            return SoCTurnResult(lines)
         }
 
-        if input.contains("LEAVE") || input.contains("BACK") || input.contains("RETURN") || input.contains("WEST") {
+        if input.contains("LEAVE") || input.contains("BACK") || input.contains("RETURN") || input.contains(Verb.south) {
             return SoCTurnResult([], .move(.cataractaNorth))
         }
 

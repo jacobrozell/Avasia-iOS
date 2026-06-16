@@ -40,7 +40,7 @@ public struct SoCCombatant: Codable, Sendable, Equatable {
     public var isDead: Bool { hp <= 0 }
 }
 
-/// Serializable state for Sword of Courage. Mirrors Python `config.py` + player stats.
+/// Serializable state for Blade of Courage. Mirrors Python `config.py` + player stats.
 public struct SoCGameState: Codable, Sendable {
     public var currentRoom: SoCRoomID = .cataractaHousing
     public var textDelay: TextDelay = .on
@@ -57,6 +57,13 @@ public struct SoCGameState: Codable, Sendable {
     public var trophies: Set<SoCTrophy> = []
 
     public var fountain: Bool = false
+    public var fountainLuck: Bool = false
+    public var gardenInsight: Bool = false
+    public var varathoCrossed: Bool = false
+    public var barracksTalked: Bool = false
+    public var hunterPathVisited: Bool = false
+    public var actOneIntroShown: Bool = false
+    public var athalosVisitCount: Int = 0
     public var ulric: Bool = false
     public var doran: Bool = false
     public var portalRoom: Bool = false
@@ -67,13 +74,22 @@ public struct SoCGameState: Codable, Sendable {
     public var throneAudience: Bool = false
     public var warCampBriefed: Bool = false
     public var thronePhase: ThronePhase = .notStarted
+    public var throneRecountStyle: ThroneRecountStyle = .none
+    public var ruinsVisited: Bool = false
     public var warCampPhase: WarCampPhase = .notStarted
     public var aylovaProvisioned: Bool = false
     public var aylovaMusterComplete: Bool = false
+    public var silvariumEldersPhase: SilvariumEldersPhase = .notStarted
+    public var silvariumEldersComplete: Bool = false
+    public var varatroFallsPhase: VaratroFallsPhase = .notStarted
+    public var varatroFallsCleared: Bool = false
+    public var ofelosPhase: OfelosPhase = .notStarted
+    public var ofelosAllianceComplete: Bool = false
     public var northernMarchPhase: NorthernMarchPhase = .notStarted
     public var northernMarchCleared: Bool = false
     public var oceandaleFrontPhase: OceandaleFrontPhase = .notStarted
     public var oceandaleFrontCleared: Bool = false
+    public var oceandalePaladinAdvantage: OceandalePaladinAdvantage = .none
     public var mageOutpostPhase: MageOutpostPhase = .notStarted
     public var mageOutpostCleared: Bool = false
     public var vashirrStandPhase: VashirrStandPhase = .notStarted
@@ -83,6 +99,10 @@ public struct SoCGameState: Codable, Sendable {
 
     public var courtyardPhase: CourtyardPhase = .notStarted
     public var inCombat: Bool = false
+    public var combatAllowsFlee: Bool = false
+    public var combatHunterStrikeUsed: Bool = false
+    public var combatGuardianBlockAvailable: Bool = false
+    public var combatScoutEdgeUsed: Bool = false
     public var enemy: SoCCombatant?
     public var enemyDeathText: String = ""
     public var neededLuckToHit: Int = 5

@@ -1,69 +1,86 @@
-# Avasia: iOS
+# Avasia (iOS)
 
-Monorepo for the **Avasia** saga on Apple platforms. The app opens to a **saga
-picker** — each chapter is a separate game with its own save file.
+Native iOS home for the **Avasia** text-adventure saga — a saga picker with
+separate chapters, each with its own engine, save file, and story.
 
-## Avasia: King of Nacastrum (Game 1)
+| Chapter | Status | Engine |
+|---|---|---|
+| **King of Nacastrum** | Complete critical path + achievements | `AvasiaEngine` |
+| **Blade of Courage** | Age-era saga playable end-to-end | `AvasiaSoCEngine` |
 
-An iOS remake of **Avasia: King of Nacastrum** — a text-based fantasy adventure
-in which an amnesiac mage must gather three lost spells, unlock the floating city
-of Nacastrum, and reunite a people scattered by a usurper king.
+Faithful ports of the original games: [KoN](https://github.com/jacobrozell/avasia-kon)
+and the Python prototype in [`Avasia-SoC/`](Avasia-SoC/).
 
-This is a faithful port of the original game
-([Avasia-KoN](https://github.com/jacobrozell/avasia-kon)). It contains design
-docs, a pure-Swift game engine package, and a SwiftUI app scaffold. All regions
-are implemented — the full critical path from the beach to the ending is playable
-and covered by an end-to-end test.
+---
 
-## Avasia: Sword of Courage (Game 2)
+## Quick start
 
-The original Python prototype is in [`Avasia-SoC/`](Avasia-SoC/) (source-faithful,
-stops at the throne-room stub). Select it from the **saga home screen** in the app.
-Swift engine: `Sources/AvasiaSoCEngine/`. Docs: [`docs/sequel/`](docs/sequel/README.md).
+```bash
+swift test            # 52 engine tests — no Xcode project required
+xcodegen generate     # create Avasia-iOS.xcodeproj
+open Avasia-iOS.xcodeproj
+```
+
+Run the **Avasia-iOS** scheme on a simulator (⌘R).
+
+**New here?** Read the **[Developer Guide](docs/DEVELOPERS.md)** for architecture,
+workflows, and where to find everything.
+
+---
+
+## Repository layout
+
+```
+App/                        SwiftUI app (views, view models, assets)
+Sources/AvasiaEngine/       King of Nacastrum — engine + content
+Sources/AvasiaSoCEngine/    Blade of Courage — engine + content
+Tests/                      XCTest suites for both engines
+Avasia-SoC/                 Python reference prototype (SoC)
+docs/                       Design docs, build guide, developer guide
+Package.swift               SwiftPM — both engine libraries
+project.yml                 XcodeGen spec (generates the Xcode project)
+```
+
+The Xcode project is **generated** from `project.yml` and is not checked in.
+After changing targets, dependencies, or resources, run `xcodegen generate`.
+
+---
 
 ## Documentation
 
-### King of Nacastrum — see [`docs/`](docs/README.md)
+### For developers
 
-- **[Story bible](docs/STORY.md)** — lore, plot, world, characters, tone.
-- **[Engine spec](docs/ENGINE_SPEC.md)** — how the original works + the target
-  iOS architecture.
-- **[World map](docs/WORLD_MAP.md)** — areas, exits, gates, and the walkthrough.
-- **[Wireframes](docs/WIREFRAMES.md)** — UI layouts for every screen.
-- **[Build](docs/BUILD.md)** — how to build, test, and run.
+- **[Developer guide](docs/DEVELOPERS.md)** — onboarding, architecture, workflows
+- **[Build & run](docs/BUILD.md)** — prerequisites, signing, CLI builds
 
-### Sword of Courage (sequel) — see [`docs/sequel/`](docs/sequel/README.md)
+### King of Nacastrum
 
-- **[Saga bible](docs/SAGA.md)** — Age-era text duology; game 3 is first 2D title.
-- **[Story bible](docs/sequel/STORY.md)** — timeline, Druid protagonist, war arc.
-- **[Engine spec](docs/sequel/ENGINE_SPEC.md)** — Python prototype + iOS target.
-- **[World map](docs/sequel/WORLD_MAP.md)** — Cataracta and Nacastrum castle graph.
-- **[Roadmap](docs/sequel/ROADMAP.md)** — phased plan to finish and port.
+- [Design docs index](docs/README.md)
+- [Story bible](docs/STORY.md) · [Engine spec](docs/ENGINE_SPEC.md) · [World map](docs/WORLD_MAP.md)
+- [Wireframes](docs/WIREFRAMES.md) · [Assets](docs/ASSETS.md) · [Achievements](docs/ACHIEVEMENTS.md)
 
-## Code layout
+### Blade of Courage
 
-- `Sources/AvasiaEngine/` — pure-Swift engine + KoN content (`Package.swift`).
-- `Tests/AvasiaEngineTests/` — engine unit tests (`swift test`).
-- `App/` — SwiftUI app; the Xcode project is generated from `project.yml` via
-  XcodeGen.
-- `Sources/AvasiaSoCEngine/` — Sword of Courage engine shell (port in progress).
-- `Avasia-SoC/` — Python reference (original prototype, `python3 game.py`).
+- [Sequel docs index](docs/sequel/README.md)
+- [Story](docs/sequel/STORY.md) · [Engine spec](docs/sequel/ENGINE_SPEC.md) · [World map](docs/sequel/WORLD_MAP.md)
+- [Port status](docs/sequel/STATUS.md) · [Roadmap](docs/sequel/ROADMAP.md)
 
-Quick start:
+### Series
 
-```bash
-swift test            # run engine tests
-xcodegen generate     # create AvasiaKoN.xcodeproj
-open AvasiaKoN.xcodeproj
-```
+- [Saga bible](docs/SAGA.md) — Age-era duology and planned future titles
+
+---
 
 ## Goal
 
-Faithful first: reproduce the original's content, pacing, and progression
-exactly, on a clean, testable Swift/SwiftUI engine. See the fidelity checklist in
-`docs/ENGINE_SPEC.md` §B.8.
+**Faithful first:** reproduce each original's content, pacing, and progression on
+a clean, testable Swift/SwiftUI stack. Structural improvements (typed state,
+checkpoints, tap-to-advance text) are allowed when they do not change what the
+player sees. See the fidelity checklist in [`docs/ENGINE_SPEC.md`](docs/ENGINE_SPEC.md).
+
+---
 
 ## Credits
 
-Based on the original *Avasia: King of Nacastrum* by Jacob Rozell and
-contributors (Chase Pernatozzi, Devan Deloach, Joshua Rogers).
+Based on *Avasia: King of Nacastrum* and *Avasia: Blade of Courage* by Jacob
+Rozell and contributors (Chase Pernatozzi, Devan Deloach, Joshua Rogers).

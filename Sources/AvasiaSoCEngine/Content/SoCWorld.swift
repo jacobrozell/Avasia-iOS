@@ -19,11 +19,15 @@ public enum SoCWorld {
         add(SoCThroneRoom())
 
         add(SoCAylovaWarCampRoom())
+        add(SoCSilvariumEldersRoom())
+        add(SoCVaratroFallsRoom())
+        add(SoCOfelosRoom())
         add(SoCNorthernMarchRoom())
         add(SoCOceandaleFrontRoom())
         add(SoCMageOutpostRoom())
         add(SoCVashirrStandRoom())
         add(SoCAgeEpilogueRoom())
+        add(SoCCataractaRuinsRoom())
 
         add(SoCCataractaAthalos())
         add(SoCCataractaBlacksmith())

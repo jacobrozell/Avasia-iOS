@@ -1,7 +1,7 @@
 import Foundation
 import AvasiaEngine
 
-/// Age-era epilogue at Aylova — closes Sword of Courage (iOS authored).
+/// Age-era epilogue at Aylova — closes Blade of Courage (iOS authored).
 struct SoCAgeEpilogueRoom: SoCRoomScript {
     let id: SoCRoomID = .ageEpilogue
     var parseMode: Parser.Mode { .raw }
@@ -16,6 +16,9 @@ struct SoCAgeEpilogueRoom: SoCRoomScript {
 
     func describe(_ state: SoCGameState) -> [StyledLine] {
         if state.gameComplete {
+            if !state.ruinsVisited {
+                return epilogueCompleteLines(state) + [.hint("VISIT RUINS for a final pilgrimage, or stay in Aylova.")]
+            }
             return epilogueCompleteLines(state)
         }
         switch state.ageEpiloguePhase {
@@ -30,6 +33,10 @@ struct SoCAgeEpilogueRoom: SoCRoomScript {
 
     func handle(_ input: ParsedInput, _ state: inout SoCGameState) -> SoCTurnResult {
         if state.gameComplete {
+            if !state.ruinsVisited,
+               input.contains("VISIT") || input.contains("RUINS") || input.contains("CATARACTA") {
+                return SoCTurnResult([.body("You request leave to walk the road to Cataracta one last time.")], .move(.cataractaRuins))
+            }
             return SoCTurnResult(epilogueCompleteLines(state))
         }
 
@@ -47,8 +54,11 @@ struct SoCAgeEpilogueRoom: SoCRoomScript {
             state.gameComplete = true
             state.unlockTrophy(.ageComplete)
             var lines = kaefdenSpeechLines(state)
-            lines.append(.title("Sword of Courage — Complete"))
+            lines.append(.title("Blade of Courage — Complete"))
             lines.append(.body("The Age-era text saga ends here. A new era awaits in a different form."))
+            if !state.ruinsVisited {
+                lines.append(.hint("Optional: VISIT RUINS before you rest."))
+            }
             return SoCTurnResult(lines)
 
         case .done:
@@ -69,11 +79,14 @@ struct SoCAgeEpilogueRoom: SoCRoomScript {
     }
 
     private func memorialLines(_ state: SoCGameState) -> [StyledLine] {
-        return [
+        [
             .blank,
             .body("In the square, a new stone lists the fallen of Cataracta — Kimious, Dentros, and thousands without names."),
+            .body("A memorial vendor chips Anula shavings into pouches for donors. \"For the coalition,\" she says. \"Every grain counts.\""),
             .body("Thekia lights a blue crystal at the base. You stand with the handful who survived the courtyard."),
             .speech("Thekia: We carry them forward. All of them."),
+            .blank,
+            .body("Near the dais, a garrison chaplain murmurs to a fresh Warden: \"The chant stays in the plate when you take it off. Remember that.\""),
             .blank,
             .body("Kaefden IV takes the dais. He looks older than the throne room, and more certain.")
         ]
@@ -81,24 +94,40 @@ struct SoCAgeEpilogueRoom: SoCRoomScript {
 
     private func kaefdenSpeechLines(_ state: SoCGameState) -> [StyledLine] {
         let name = state.playerName.isEmpty ? "Survivor" : state.playerName
-        return [
+        var lines: [StyledLine] = [
             .speech("Kaefden IV: Cataracta burned so this coalition could learn the cost of delay."),
-            .speech("Vashirr's portals are shattered. His war mages scatter. He will answer to Kaefden law."),
+            .speech("Vashirr's portals are shattered. His Paladins scatter. He will answer to Kaefden law."),
+            .speech("We will use what we must — Paladin craft, open Ring roads, Sylvian crystal — and chain what we can."),
+            .speech("Coalition debt is real. Western pits and elder stocks will be tallied in Anula, not speeches."),
             .blank,
             .speech("\(name) — you delivered his threat to my throne, and you held Oceandale when I asked."),
+            .speech("Envoys brought the Blade from Varatro Falls — Ofelos marched beside us. This victory will mean something lasting."),
+        ]
+        if state.throneRecountStyle == .honorDentros {
+            lines.append(.speech("Kaefden IV: You honored Dentros before my court. That matters to me."))
+        }
+        lines += [
             .speech("The Druid Legion of Cataracta is not ended. It is reborn in those who lived."),
+            .blank,
+            .body("A veteran near the crowd spits into the gutter. \"Honor doesn't grade Anula,\" he mutters — loud enough for you to hear."),
             .blank,
             .body("The crowd erupts. You feel Dentros's sacrifice, Kimious's speech, and the ashes — all carried to this moment."),
             .blank,
             .symbol("The Age of Courage closes.")
         ]
+        return lines
     }
 
     private func epilogueCompleteLines(_ state: SoCGameState) -> [StyledLine] {
-        [
+        var lines: [StyledLine] = [
             .title("Aylova"),
             .body("The celebration fades. You remain — a soldier who saw the war from enlistment to victory."),
-            .hint("Thank you for playing Avasia: Sword of Courage.")
+            .body("Deaths suffered: \(state.deathCount) · Level \(state.playerLevel) · Trophies: \(state.trophies.count)/\(SoCTrophy.allCases.count)")
         ]
+        if state.ruinsVisited {
+            lines.append(.body("You walked Cataracta's ruins and closed the circle."))
+        }
+        lines.append(.hint("Thank you for playing Avasia: Blade of Courage."))
+        return lines
     }
 }

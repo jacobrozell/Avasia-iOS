@@ -1,10 +1,10 @@
 import Foundation
 
-/// Player-facing text pacing for the "delay between sentences" feature.
+/// Player-facing text pacing for the transcript.
 public enum TextDelay: String, Codable, Sendable {
-    case on             // ~8s base delay (original recommended default)
+    case on             // typewriter + short pause between lines
     case off            // instant
-    case tapToAdvance   // mobile-friendly addition: reveal next line on tap
+    case tapToAdvance   // typewriter, then tap between lines
 }
 
 /// The complete, serializable game state. This replaces the original's loose
@@ -32,6 +32,10 @@ public struct GameState: Codable, Sendable {
     public var magehouseLocked: Bool = false       // was `lock`
     public var teleporterDiscovered: Bool = false  // was `lady`
     public var cataractaGateDone: Bool = false     // was `cgates`
+    public var beachIntroShown: Bool = false       // first-visit beach awakening (saga seed)
+    public var gateGuardLoreHeard: Bool = false    // schism speech at broken gate
+    public var metThekia: Bool = false             // Old Mage revealed in Nacastrum
+    public var aylovaRallySeen: Bool = false       // father's pendant + Aylova rally
 
     /// Surfaced in the UI (improvement over the original, which never showed it).
     public var deathCount: Int = 0

@@ -9,6 +9,11 @@ import UIKit
 /// blue-crystal motif (STORY.md §8).
 enum RegionPalette {
     static func colors(_ region: Region) -> (top: Color, bottom: Color, accent: Color) {
+        if Theme.isLight { return lightColors(region) }
+        return darkColors(region)
+    }
+
+    private static func darkColors(_ region: Region) -> (top: Color, bottom: Color, accent: Color) {
         switch region {
         case .oceandale: return (c(0.10, 0.12, 0.16), c(0.04, 0.05, 0.08), Theme.accent)
         case .beach:     return (c(0.12, 0.16, 0.20), c(0.05, 0.08, 0.12), c(0.45, 0.75, 0.95))
@@ -25,6 +30,24 @@ enum RegionPalette {
         case .cataracta: return (c(0.08, 0.14, 0.11), c(0.03, 0.07, 0.05), c(0.45, 0.85, 0.55))
         }
     }
+
+    private static func lightColors(_ region: Region) -> (top: Color, bottom: Color, accent: Color) {
+        switch region {
+        case .oceandale: return (c(0.90, 0.92, 0.95), c(0.82, 0.86, 0.91), Theme.accent)
+        case .beach:     return (c(0.92, 0.94, 0.96), c(0.84, 0.89, 0.93), c(0.20, 0.45, 0.72))
+        case .graveyard: return (c(0.88, 0.88, 0.90), c(0.80, 0.80, 0.84), c(0.35, 0.35, 0.45))
+        case .splitpath: return (c(0.93, 0.91, 0.86), c(0.86, 0.83, 0.76), c(0.55, 0.42, 0.18))
+        case .mountain:  return (c(0.90, 0.92, 0.95), c(0.82, 0.86, 0.90), c(0.25, 0.45, 0.68))
+        case .cave:      return (c(0.91, 0.86, 0.91), c(0.84, 0.78, 0.84), c(0.55, 0.28, 0.52))
+        case .forest:    return (c(0.88, 0.93, 0.89), c(0.80, 0.88, 0.82), c(0.18, 0.48, 0.28))
+        case .tree:      return (c(0.90, 0.92, 0.86), c(0.83, 0.87, 0.80), c(0.28, 0.52, 0.30))
+        case .road:      return (c(0.93, 0.90, 0.88), c(0.86, 0.82, 0.80), c(0.58, 0.38, 0.22))
+        case .shore:     return (c(0.90, 0.93, 0.95), c(0.82, 0.88, 0.92), c(0.20, 0.45, 0.72))
+        case .nacastrum: return (c(0.91, 0.92, 0.96), c(0.83, 0.85, 0.92), Theme.accent)
+        case .aylova:    return (c(0.92, 0.91, 0.96), c(0.84, 0.83, 0.90), c(0.30, 0.35, 0.68))
+        case .cataracta: return (c(0.88, 0.93, 0.90), c(0.80, 0.88, 0.84), c(0.18, 0.48, 0.32))
+        }
+    }
     private static func c(_ r: Double, _ g: Double, _ b: Double) -> Color { Color(red: r, green: g, blue: b) }
 }
 
@@ -37,10 +60,26 @@ private func assetExists(_ name: String) -> Bool { false }
 /// Full-bleed background: the region's art if present, else a region gradient.
 struct RegionBackground: View {
     let media: RoomMedia
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var body: some View {
-        let p = RegionPalette.colors(media.region)
         ZStack {
-            LinearGradient(colors: [p.top, p.bottom], startPoint: .top, endPoint: .bottom)
+            RegionBackgroundLayer(media: media)
+                .id(media.region)
+                .transition(.opacity)
+        }
+        .animation(Motion.regionBackground(reduceMotion: reduceMotion), value: media.region)
+        .ignoresSafeArea()
+    }
+}
+
+private struct RegionBackgroundLayer: View {
+    let media: RoomMedia
+
+    var body: some View {
+        let palette = RegionPalette.colors(media.region)
+        ZStack {
+            LinearGradient(colors: [palette.top, palette.bottom], startPoint: .top, endPoint: .bottom)
             if assetExists(media.backgroundImage) {
                 Image(media.backgroundImage)
                     .resizable()
@@ -49,7 +88,6 @@ struct RegionBackground: View {
                     .blur(radius: 1)
             }
         }
-        .ignoresSafeArea()
     }
 }
 
@@ -58,16 +96,45 @@ struct RegionBackground: View {
 struct RegionIllustration: View {
     let media: RoomMedia
     var height: CGFloat = 96
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var labelPulse = false
 
     var body: some View {
-        let p = RegionPalette.colors(media.region)
+        ZStack {
+            RegionIllustrationLayer(media: media, height: height, labelPulse: labelPulse)
+                .id(media.region)
+                .transition(.opacity)
+        }
+        .animation(Motion.regionIllustration(reduceMotion: reduceMotion), value: media.region)
+        .onChange(of: media.region) { _ in pulseRegionLabel() }
+    }
+
+    private func pulseRegionLabel() {
+        guard !reduceMotion else { return }
+        labelPulse = true
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 200_000_000)
+            withAnimation(.easeOut(duration: 0.2)) {
+                labelPulse = false
+            }
+        }
+    }
+}
+
+private struct RegionIllustrationLayer: View {
+    let media: RoomMedia
+    let height: CGFloat
+    let labelPulse: Bool
+
+    var body: some View {
+        let palette = RegionPalette.colors(media.region)
         ZStack {
             if assetExists(media.illustration) {
                 Image(media.illustration)
                     .resizable()
                     .scaledToFill()
             } else {
-                LinearGradient(colors: [p.accent.opacity(0.25), p.bottom],
+                LinearGradient(colors: [palette.accent.opacity(0.25), palette.bottom],
                                startPoint: .topLeading, endPoint: .bottomTrailing)
                 HStack {
                     Image(systemName: "sparkle")
@@ -76,13 +143,41 @@ struct RegionIllustration: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
                 }
-                .foregroundColor(p.accent)
+                .foregroundColor(palette.accent)
                 .padding(.horizontal, 8)
+            }
+
+            VStack {
+                Spacer()
+                LinearGradient(
+                    colors: [.clear, palette.bottom.opacity(0.85)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(height: 36)
+            }
+
+            VStack {
+                Spacer()
+                HStack {
+                    Text(media.region.title)
+                        .font(.system(.caption, design: .serif).weight(.semibold).smallCaps())
+                        .foregroundColor(
+                            labelPulse
+                                ? Theme.accent
+                                : Theme.parchment.opacity(0.92)
+                        )
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                    Spacer(minLength: 0)
+                }
+                .padding(.horizontal, 12)
+                .padding(.bottom, 8)
             }
         }
         .frame(height: height)
         .clipped()
-        .overlay(Rectangle().frame(height: 1).foregroundColor(p.accent.opacity(0.5)), alignment: .bottom)
+        .overlay(Rectangle().frame(height: 1).foregroundColor(palette.accent.opacity(0.5)), alignment: .bottom)
         .accessibilityLabel("Region: \(media.region.title)")
     }
 }

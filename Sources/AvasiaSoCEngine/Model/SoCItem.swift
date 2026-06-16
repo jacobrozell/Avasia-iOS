@@ -2,38 +2,45 @@ import Foundation
 
 public enum SoCItem: String, Codable, CaseIterable, Sendable {
     case potion
+    case fieldRations
     case smallFish
     case bigFish
     case crab
     case oldShoe
+    case bladeOfCourage
 
     public var displayName: String {
         switch self {
         case .potion: return "Potion"
+        case .fieldRations: return "Field Rations"
         case .smallFish: return "Small Fish"
         case .bigFish: return "Big Fish"
         case .crab: return "Crab"
         case .oldShoe: return "Old-shoe"
+        case .bladeOfCourage: return "Kaefden's Blade of Courage"
         }
     }
 
     public var healAmount: Int? {
         switch self {
         case .potion: return 10
+        case .fieldRations: return 8
         case .smallFish: return 5
         case .bigFish: return 10
         case .crab: return 15
-        case .oldShoe: return nil
+        case .oldShoe, .bladeOfCourage: return nil
         }
     }
 
     public var goldValue: Int {
         switch self {
         case .potion: return 25
+        case .fieldRations: return 15
         case .smallFish: return 5
         case .bigFish: return 10
         case .crab: return 15
         case .oldShoe: return 2
+        case .bladeOfCourage: return 0
         }
     }
 }
@@ -44,6 +51,9 @@ public enum SoCTrophy: String, Codable, CaseIterable, Sendable {
     case brother
     case oceandaleVictor
     case ageComplete
+    case returnedToAshes
+    case bladeBearer
+    case ofelosMarches
 
     public var title: String {
         switch self {
@@ -52,6 +62,9 @@ public enum SoCTrophy: String, Codable, CaseIterable, Sendable {
         case .brother: return "Brotherly Love"
         case .oceandaleVictor: return "Ridge Held"
         case .ageComplete: return "Age of Courage"
+        case .returnedToAshes: return "Returned to Ashes"
+        case .bladeBearer: return "Blade Bearer"
+        case .ofelosMarches: return "Neutrals United"
         }
     }
 
@@ -62,6 +75,9 @@ public enum SoCTrophy: String, Codable, CaseIterable, Sendable {
         case .brother: return "Let Ulric send you to fish with Doran."
         case .oceandaleVictor: return "Break the Agromanian line at Oceandale ridge."
         case .ageComplete: return "See the Age-era war to its end."
+        case .returnedToAshes: return "Return to Cataracta's ruins after victory."
+        case .bladeBearer: return "Lift Kaefden's Blade from Varatro Falls."
+        case .ofelosMarches: return "Win Ofelos to the coalition with the Blade."
         }
     }
 
@@ -71,15 +87,25 @@ public enum SoCTrophy: String, Codable, CaseIterable, Sendable {
         case .fished: return "Fish until you run out of bait."
         case .brother: return "Visit Ulric, then accept Doran's free rod."
         case .oceandaleVictor: return "Clear the Oceandale war front."
-        case .ageComplete: return "Finish Sword of Courage."
+        case .ageComplete: return "Finish Blade of Courage."
+        case .returnedToAshes: return "Visit the ruins from the epilogue."
+        case .bladeBearer: return "Clear Varatro Falls tomb."
+        case .ofelosMarches: return "Present the Blade before Ofelos."
         }
     }
+}
+
+public enum ThroneRecountStyle: String, Codable, Sendable {
+    case none
+    case honorDentros
+    case reportFacts
 }
 
 public enum ThronePhase: String, Codable, Sendable {
     case notStarted
     case atThrone
     case deliverVashirr
+    case recountChoice
     case classService
     case done
 }
@@ -112,6 +138,14 @@ public enum OceandaleFrontPhase: String, Codable, Sendable {
     case done
 }
 
+/// Class ingenuity spent on the Paladin before wave two begins.
+public enum OceandalePaladinAdvantage: String, Codable, Sendable {
+    case none
+    case scoutWardGap
+    case hunterOpening
+    case guardianBrace
+}
+
 public enum MageOutpostPhase: String, Codable, Sendable {
     case notStarted
     case approach
@@ -135,6 +169,32 @@ public enum AgeEpiloguePhase: String, Codable, Sendable {
     case notStarted
     case memorial
     case kaefdenSpeech
+    case done
+}
+
+public enum SilvariumEldersPhase: String, Codable, Sendable {
+    case notStarted
+    case arrived
+    case audience
+    case commission
+    case done
+}
+
+public enum VaratroFallsPhase: String, Codable, Sendable {
+    case notStarted
+    case approach
+    case tomb
+    case combat
+    case recovered
+    case done
+}
+
+public enum OfelosPhase: String, Codable, Sendable {
+    case notStarted
+    case gates
+    case council
+    case presentation
+    case alliance
     case done
 }
 

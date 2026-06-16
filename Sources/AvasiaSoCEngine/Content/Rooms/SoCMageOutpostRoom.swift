@@ -7,7 +7,6 @@ struct SoCMageOutpostRoom: SoCRoomScript {
     var parseMode: Parser.Mode { .raw }
 
     private let advanceTriggers = ["CONTINUE", "PROCEED", "INFILTRATE", "YES"]
-    private let stealthTriggers = ["SCOUT", "STEALTH", "SNEAK"]
 
     func onEnter(_ state: inout SoCGameState) -> [StyledLine]? {
         guard state.mageOutpostPhase == .notStarted else { return nil }
@@ -30,10 +29,11 @@ struct SoCMageOutpostRoom: SoCRoomScript {
         case .notStarted, .approach:
             return [.hint("CONTINUE toward the outpost.")]
         case .infiltration:
-            if state.playerClass == .scout {
-                return [.hint("SCOUT to slip past, or CONTINUE to assault the gate.")]
+            var hints: [StyledLine] = [.hint("CONTINUE to assault the gate.")]
+            if let bypass = SoCClassIngenuity.bypassHint(for: state) {
+                hints.insert(bypass, at: 0)
             }
-            return [.hint("CONTINUE to assault the gate.")]
+            return hints
         case .combat:
             return SoCCombat.statLines(state: state) + [.hint("ATTACK.")]
         case .intel:
@@ -56,9 +56,8 @@ struct SoCMageOutpostRoom: SoCRoomScript {
         }
 
         if state.mageOutpostPhase == .infiltration,
-           state.playerClass == .scout,
-           stealthTriggers.contains(where: { input.contains($0) }) {
-            return completeIntel(&state, stealth: true)
+           SoCClassIngenuity.matches(input, playerClass: state.playerClass) {
+            return completeIntel(&state)
         }
 
         if advances(input) {
@@ -92,12 +91,20 @@ struct SoCMageOutpostRoom: SoCRoomScript {
     }
 
     private func handleCombat(_ input: ParsedInput, _ state: inout SoCGameState) -> SoCTurnResult {
-        let (lines, died) = SoCCombat.handle(input, state: &state)
-        var output = SoCCombat.statLines(state: state) + lines
+        let result = SoCCombat.handle(input, state: &state)
+        var output = SoCCombat.statLines(state: state) + result.lines
 
-        if died {
+        if result.died {
             return SoCTurnResult(output, .stay, playerDied: true)
         }
+
+        if result.fled {
+            state.mageOutpostPhase = .intel
+            output.append(.body("You slip away with partial maps — enough to find Vashirr's redoubt."))
+            output.append(contentsOf: lieutenantFallsLines())
+            return SoCTurnResult(output)
+        }
+
         guard !state.inCombat else {
             return SoCTurnResult(output)
         }
@@ -107,22 +114,48 @@ struct SoCMageOutpostRoom: SoCRoomScript {
         return SoCTurnResult(output)
     }
 
-    private func completeIntel(_ state: inout SoCGameState, stealth: Bool) -> SoCTurnResult {
+    private func completeIntel(_ state: inout SoCGameState) -> SoCTurnResult {
         state.mageOutpostPhase = .done
         state.mageOutpostCleared = true
-        var lines = stealthIntelLines()
-        if stealth {
-            lines.insert(.body("You ghost between ward-stakes, copy the battle maps, and vanish before the guards turn."), at: 1)
-        }
+        var lines = intelIntroLines(state)
         lines.append(contentsOf: intelCompleteLines(state: &state))
         return SoCTurnResult(lines)
     }
 
+    private func intelIntroLines(_ state: SoCGameState) -> [StyledLine] {
+        switch state.playerClass {
+        case .scout:
+            return [
+                .title("Mage Outpost"),
+                .body("You ghost between ward-stakes, copy the battle maps, and vanish before the guards turn."),
+                .body("You slip back to the tree line undetected, maps folded against your chest."),
+                .speech("Coalition Sergeant: Fox work. Vashirr's redoubt — two leagues east on the shore.")
+            ]
+        case .hunter:
+            return [
+                .title("Mage Outpost"),
+                .body("You count patrol intervals from the treeline — third pass, gap."),
+                .body("Maps copied, ward-stakes at your back, you melt into the ferns unseen."),
+                .speech("Coalition Sergeant: Wolf patience. Redoubt's two leagues east on the shore.")
+            ]
+        case .guardian:
+            return [
+                .title("Mage Outpost"),
+                .body("You stride toward the gate alone — every flare finds your shield."),
+                .body("Behind you, coalition hands copy maps while the lieutenant's wards hammer your line."),
+                .speech("Coalition Sergeant: Bear bait. Worth it — redoubt two leagues east on the shore.")
+            ]
+        case .none:
+            return stealthIntelLines()
+        }
+    }
+
     private func beginLieutenant(state: inout SoCGameState) -> [StyledLine] {
         SoCCombat.begin(
-            enemy: SoCCombatant(name: "Mage Lieutenant", atk: 10, speed: 6, hp: 24, luck: 0),
+            enemy: SoCCombatant(name: "Mage Lieutenant", atk: 10, speed: 6, hp: 24, luck: 5),
             deathText: "The lieutenant's staff splits your ward and drops you to the mud.",
-            state: &state
+            state: &state,
+            allowsFlee: true
         )
         return SoCCombat.statLines(state: state) + [.hint("What do will you do?")]
     }
@@ -141,8 +174,8 @@ struct SoCMageOutpostRoom: SoCRoomScript {
             .blank,
             .body("You crawl through wet ferns toward the palisade gate.")
         ]
-        if state.playerClass == .scout {
-            lines.append(.hint("SCOUT to infiltrate silently, or CONTINUE to hit the gate."))
+        if let bypass = SoCClassIngenuity.bypassHint(for: state) {
+            lines.append(bypass)
         }
         return lines
     }
@@ -159,7 +192,10 @@ struct SoCMageOutpostRoom: SoCRoomScript {
         [
             .blank,
             .body("The lieutenant collapses. Ward-stakes flicker and die."),
-            .body("On the table: charcoal maps marking a shoreside redoubt — Vashirr's stand.")
+            .body("On the table: charcoal maps marking a shoreside redoubt — Vashirr's stand."),
+            .body("Beside them, a training sheet titled Many Hands — fuse ward-light into plate, bind chant to obedience."),
+            .body("A margin note in Vashirr's hand: Echo stacks. Rotate before the third binding."),
+            .speech("Coalition Sergeant: He thinks he's freeing magic. Looks like slavery with spell-light.")
         ]
     }
 

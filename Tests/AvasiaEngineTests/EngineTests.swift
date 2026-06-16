@@ -74,6 +74,19 @@ final class ProgressionTests: XCTestCase {
         XCTAssertEqual(engine.state.deathCount, 1)
     }
 
+    func testWinDoesNotRepeat() {
+        let engine = GameEngine()
+        engine.load(room: .ending)
+        let first = engine.submit("continue")
+        XCTAssertTrue(first.contains { $0.text.contains("Congratulations") })
+        XCTAssertTrue(engine.state.gameComplete)
+        XCTAssertTrue(engine.lastEvents.contains(.won))
+
+        let second = engine.submit("continue")
+        XCTAssertFalse(second.contains { $0.text.contains("Congratulations") })
+        XCTAssertFalse(engine.lastEvents.contains(.won))
+    }
+
     func testMagehouseWrongFactionDoesNotProgress() {
         let engine = GameEngine()
         engine.load(room: .magehouse)

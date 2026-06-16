@@ -44,18 +44,23 @@ final class ContentTests: XCTestCase {
     /// The complete critical path (see WORLD_MAP "Critical-path summary").
     func testFullPlaythroughReachesWin() {
         let engine = GameEngine()
+        engine.restart()
         func go(_ cmd: String) { _ = engine.submit(cmd) }
         func room(_ id: RoomID, _ msg: String = "") {
             XCTAssertEqual(engine.state.currentRoom, id, msg.isEmpty ? "expected \(id)" : msg)
         }
 
         // Oceandale: learn Levitate, take the sword.
+        room(.beach)
+        go("north"); room(.oceandale)
         go("west"); go("kaefden")
         XCTAssertTrue(engine.state.has(.levitate))
         go("north"); go("east"); go("take")
         XCTAssertTrue(engine.state.has(.sword))
 
-        // To the mountain via the bridge.
+        // To the mountain via the bridge — guard blocks north until you talk.
+        go("talk")
+        XCTAssertTrue(engine.state.gateGuardLoreHeard)
         go("north"); room(.splitpath)
         go("east"); go("levitate"); room(.mountain)
 
@@ -119,6 +124,28 @@ final class ContentTests: XCTestCase {
         let final = engine.submit("continue")
         XCTAssertTrue(final.contains { $0.text.contains("Congratulations") },
                       "ending should produce the win message")
+    }
+
+    func testNorthGateBlockedUntilGuardLore() {
+        let engine = GameEngine()
+        engine.load(room: .graveyard)
+        _ = engine.submit("north")
+        XCTAssertEqual(engine.state.currentRoom, .graveyard)
+        XCTAssertFalse(engine.state.gateGuardLoreHeard)
+        _ = engine.submit("talk")
+        XCTAssertTrue(engine.state.gateGuardLoreHeard)
+        _ = engine.submit("north")
+        XCTAssertEqual(engine.state.currentRoom, .splitpath)
+    }
+
+    func testBeachAwakeningSkippedWhenIntroAlreadyShown() {
+        var state = GameState()
+        state.beachIntroShown = true
+        state.currentRoom = .oceandale
+        let engine = GameEngine(state: state)
+        let output = engine.submit("south")
+        XCTAssertFalse(output.contains { $0.text == "The Shore" })
+        XCTAssertEqual(engine.state.currentRoom, .beach)
     }
 
     func testEveryRoomIDHasAScript() {

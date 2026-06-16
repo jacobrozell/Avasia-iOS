@@ -6,6 +6,12 @@ import AvasiaEngine
 struct SoCCataractaHousing: SoCRoomScript {
     let id: SoCRoomID = .cataractaHousing
 
+    func onEnter(_ state: inout SoCGameState) -> [StyledLine]? {
+        guard !state.actOneIntroShown else { return nil }
+        state.actOneIntroShown = true
+        return SoCCataractaFlavor.actOneOpeningLines(state)
+    }
+
     func describe(_ state: SoCGameState) -> [StyledLine] {
         [
             .title("Southwest Cataracta"),
@@ -13,6 +19,7 @@ struct SoCCataractaHousing: SoCRoomScript {
             .body("To the NORTH, a large, ornate wooden bridge leads across the beautiful Varatho river to the upper part of the town."),
             .body("To the WEST, is the Hunter's Path."),
             .body("To the EAST, is the shopping district of Cataracta."),
+            .hint("OBJECTIVES lists optional errands before the courtyard."),
             .hint("Which way would you like to investigate?")
         ]
     }
@@ -21,7 +28,13 @@ struct SoCCataractaHousing: SoCRoomScript {
         if state.courtyardComplete {
             return SoCTurnResult([.body("Your home is gone.")], .stay)
         }
-        if input.contains(Verb.north) { return SoCTurnResult([], .move(.cataractaNorth)) }
+        if input.contains(Verb.look) || input.contains("SEARCH") {
+            return SoCTurnResult(SoCCataractaFlavor.housingLookLines(state))
+        }
+        if input.contains(Verb.north) {
+            let lines = SoCCataractaFlavor.varathoCrossingLines(&state)
+            return SoCTurnResult(lines, .move(.cataractaNorth))
+        }
         if input.contains(Verb.west) { return SoCTurnResult([], .move(.cataractaHunterPath)) }
         if input.contains(Verb.east) { return SoCTurnResult([], .move(.cataractaShopping)) }
         return SoCTurnResult([.hint("You can go NORTH, WEST, or EAST.")])
@@ -53,7 +66,13 @@ struct SoCCataractaNorth: SoCRoomScript {
         if state.courtyardComplete {
             return SoCTurnResult([.body("Cataracta is in ashes.")], .move(.cataractaHousing))
         }
-        if input.contains(Verb.south) { return SoCTurnResult([], .move(.cataractaHousing)) }
+        if input.contains(Verb.look) || input.contains("SEARCH") {
+            return SoCTurnResult(SoCCataractaFlavor.northLookLines())
+        }
+        if input.contains(Verb.south) {
+            let lines = SoCCataractaFlavor.varathoCrossingLines(&state)
+            return SoCTurnResult(lines, .move(.cataractaHousing))
+        }
         if input.contains(Verb.north) { return SoCTurnResult([], .move(.cataractaGarden)) }
         if input.contains(Verb.east) { return SoCTurnResult([], .move(.cataractaCourtyard)) }
         if input.contains(Verb.west) { return SoCTurnResult([], .move(.cataractaBarracks)) }
@@ -80,6 +99,9 @@ struct SoCCataractaShopping: SoCRoomScript {
         if state.courtyardComplete {
             return SoCTurnResult([.body("The shops are burned out.")], .move(.cataractaHousing))
         }
+        if input.contains(Verb.look) || input.contains("SEARCH") {
+            return SoCTurnResult(SoCCataractaFlavor.shoppingLookLines())
+        }
         if input.contains(Verb.north) { return SoCTurnResult([], .move(.cataractaPier)) }
         if input.contains(Verb.south) { return SoCTurnResult([], .move(.cataractaAthalos)) }
         if input.contains(Verb.east) { return SoCTurnResult([], .move(.cataractaBlacksmith)) }
@@ -94,55 +116,119 @@ struct SoCCataractaWestHallway: SoCRoomScript {
     func describe(_ state: SoCGameState) -> [StyledLine] {
         [
             .title("West Castle Hallway"),
+            .body("Marble underfoot — Cataracta's druid craft meeting Nacastrum stone."),
             .body("To the NORTH is the Nacastrum Library."),
             .body("To the EAST is a grand luxurious door that is encrusted in jewels."),
             .body("To the WEST is the Cataractan portal room."),
-            .hint("Which way would you like to investigate?")
+            .hint("LOOK around, or choose a direction.")
         ]
     }
 
     func handle(_ input: ParsedInput, _ state: inout SoCGameState) -> SoCTurnResult {
+        if input.contains(Verb.look) || input.contains("SEARCH") {
+            return SoCTurnResult([
+                .body("North smells of parchment and cooling wards — Thekia's library, they say."),
+                .body("East, the throne door glitters with Sylvian blue. Kaefden's court is not this keep, but the jewelwork rhymes."),
+                .body("West, the portal room hums — an itch in your teeth, like lightning remembered."),
+                .body("You think of Kimious's rally and the fountain cracked in ash. Whatever lies west, it binds kingdoms.")
+            ])
+        }
         if input.contains(Verb.north) { return SoCTurnResult([], .move(.library)) }
         if input.contains(Verb.east) { return SoCTurnResult([], .move(.throneRoom)) }
         if input.contains(Verb.west) { return SoCTurnResult([], .move(.portalRoom)) }
-        return SoCTurnResult([.hint("You can go NORTH, EAST, or WEST.")])
+        return SoCTurnResult([.hint("You can go NORTH, EAST, or WEST — or LOOK.")])
     }
 }
 
-/// From `Avasia-SoC/Cataracta/Cataracta_Hunter_Path.py` — prints and immediately returns.
+/// From `Avasia-SoC/Cataracta/Cataracta_Hunter_Path.py` — expanded with wolf-trail lore.
 struct SoCCataractaHunterPath: SoCRoomScript {
     let id: SoCRoomID = .cataractaHunterPath
 
-    func autoReturnAfterEnter(_ state: SoCGameState) -> SoCRoomID? { .cataractaHousing }
+    func onEnter(_ state: inout SoCGameState) -> [StyledLine]? {
+        state.hunterPathVisited = true
+        return nil
+    }
 
     func describe(_ state: SoCGameState) -> [StyledLine] {
         [
-            .body("That's the trail hunters use to go hunt."),
-            .body("You should make your way to the courtyard.")
+            .title("Hunter's Path"),
+            .body("A worn trail climbs into the pines west of housing."),
+            .body("Wolf tracks mark the mud — spirit animals run ahead of the Legion here."),
+            .body("Dentros sends recruits this way on training days. The courtyard muster is east through town."),
+            .hint("LOOK at the tracks, or LEAVE to return home.")
         ]
     }
 
     func handle(_ input: ParsedInput, _ state: inout SoCGameState) -> SoCTurnResult {
-        SoCTurnResult([], .move(.cataractaHousing))
+        if let block = SoCCataractaGate.ashesBlock(state) { return block }
+        if input.contains(Verb.look) || input.contains("SEARCH") || input.contains("TRACK") {
+            var lines: [StyledLine] = [
+                .body("Fresh wolf sign leads into the forest."),
+                .body("Hunters train with their spirit animals out here — not on enlistment day.")
+            ]
+            switch state.playerClass {
+            case .hunter:
+                lines.append(.body("A wolf-cry answers from the treeline — spirit answering spirit. You almost know that voice."))
+            case .scout:
+                lines.append(.body("A red fox crosses the trail ahead — cherry fur, gone before you can call out. You almost know that gait."))
+            case .guardian:
+                lines.append(.body("The path is all switchbacks and mud. Bear recruits envy the courtyard's stone yard."))
+            case .none:
+                break
+            }
+            return SoCTurnResult(lines)
+        }
+        if input.contains("LEAVE") || input.contains("BACK") || input.contains(Verb.west) || input.contains(Verb.east) {
+            return SoCTurnResult([.body("You head back toward housing.")], .move(.cataractaHousing))
+        }
+        return SoCTurnResult([.hint("LOOK at the tracks, or LEAVE.")])
     }
 }
 
-/// From `Avasia-SoC/Cataracta/Cataracta_Barracks.py` — prints and immediately returns.
+/// Guard barracks — turned away, but guards share muster gossip.
 struct SoCCataractaBarracks: SoCRoomScript {
     let id: SoCRoomID = .cataractaBarracks
 
-    func autoReturnAfterEnter(_ state: SoCGameState) -> SoCRoomID? { .cataractaNorth }
-
     func describe(_ state: SoCGameState) -> [StyledLine] {
         [
-            .body("The guard barracks made of mostly stone brick."),
-            .body("Outside, the entrance is being guarded by two Cataractan Legionnaire"),
-            .body("It's safe to assume you won't be able to enter."),
-            .body("You head back to where you were.")
+            .title("Guard Barracks"),
+            .body("The guard barracks are built of stone brick."),
+            .body("Two Cataractan legionnaires block the entrance with crossed spears."),
+            .hint("TALK to the guards, LOOK around, or LEAVE.")
         ]
     }
 
     func handle(_ input: ParsedInput, _ state: inout SoCGameState) -> SoCTurnResult {
-        SoCTurnResult([], .move(.cataractaNorth))
+        if let block = SoCCataractaGate.ashesBlock(state) { return block }
+
+        if input.contains("TALK") || input.contains("SPEAK") || input.contains("GUARD") {
+            var lines: [StyledLine] = [
+                .speech("Legionnaire: Civilians aren't allowed inside."),
+                .speech("Legionnaire: Muster's at the courtyard. Your officer is Dentros."),
+                .speech("Legionnaire: King Kimious called up hidden reserves — something big is moving."),
+                .speech("Legionnaire: Quartermaster's weighing Anula again. Gift crystal, war ledger — same blue, different math.")
+            ]
+            if state.playerClass == .guardian {
+                lines.append(.speech("Legionnaire: Bear line trains in the yard at dawn. You look like you belong behind a shield, not on the street."))
+            }
+            if !state.barracksTalked {
+                state.barracksTalked = true
+                lines.append(contentsOf: SoCQuestProgress.grantQuestExp(8, state: &state))
+            }
+            return SoCTurnResult(lines)
+        }
+
+        if input.contains(Verb.look) || input.contains("SEARCH") {
+            return SoCTurnResult([
+                .body("Spear racks and practice dummies line the yard behind the guards."),
+                .body("You catch the scent of oil and iron — Cataracta preparing for war.")
+            ])
+        }
+
+        if input.contains("LEAVE") || input.contains("BACK") || input.contains(Verb.west) || input.contains(Verb.east) {
+            return SoCTurnResult([.body("You leave the barracks.")], .move(.cataractaNorth))
+        }
+
+        return SoCTurnResult([.hint("TALK to the guards, LOOK, or LEAVE.")])
     }
 }

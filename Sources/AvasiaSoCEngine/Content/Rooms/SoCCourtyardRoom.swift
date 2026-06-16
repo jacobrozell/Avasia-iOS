@@ -64,10 +64,10 @@ struct SoCCourtyardRoom: SoCRoomScript {
 
     private func handleCombat(_ input: ParsedInput, _ state: inout SoCGameState) -> SoCTurnResult {
         let phase = state.courtyardPhase
-        let (lines, died) = SoCCombat.handle(input, state: &state)
-        var output = SoCCombat.statLines(state: state) + lines
+        let result = SoCCombat.handle(input, state: &state)
+        var output = SoCCombat.statLines(state: state) + result.lines
 
-        if died {
+        if result.died {
             return SoCTurnResult(output, .stay, playerDied: true)
         }
 
@@ -98,16 +98,17 @@ struct SoCCourtyardRoom: SoCRoomScript {
 
     private func betweenCombatsLines() -> [StyledLine] {
         [
-            .body("You quickly dispatch the Agromanian and reassess the area around you."),
-            .body("Destros is lying on the floor and an Agromanian is charging toward him."),
-            .body("You swiftly position yourself in-between Destros and the Agromanian."),
-            .blank
+            .body("You dispatch the Agromanian and wheel back toward Dentros."),
+            .body("He lies where he fell, clutching the bolt-wound. Another warrior charges him."),
+            .body("You throw yourself between them."),
+            .blank,
+            .body("A Legion healer's hands flash over your ribs in the chaos — borrowed seconds, not mercy.")
         ]
     }
 
     private func beginCombat1(state: inout SoCGameState) -> [StyledLine] {
         SoCCombat.begin(
-            enemy: SoCCombatant(name: "Agromanian Grunt", atk: 5, speed: 5, hp: 15, luck: 0),
+            enemy: SoCCombatant(name: "Agromanian Grunt", atk: 5, speed: 5, hp: 15, luck: 3),
             deathText: "The Agromanian Grunt lays his mace into the side of your head.",
             state: &state
         )
@@ -116,7 +117,7 @@ struct SoCCourtyardRoom: SoCRoomScript {
 
     private func beginCombat2(state: inout SoCGameState) -> [StyledLine] {
         SoCCombat.begin(
-            enemy: SoCCombatant(name: "Agromanian Warrior", atk: 6, speed: 3, hp: 18, luck: 0),
+            enemy: SoCCombatant(name: "Agromanian Warrior", atk: 6, speed: 3, hp: 18, luck: 3),
             deathText: "The Agromanian Warrior's sword pierces your chest.",
             state: &state
         )
@@ -125,34 +126,31 @@ struct SoCCourtyardRoom: SoCRoomScript {
 
     private func afterCombat2() -> [StyledLine] {
         [
-            .body("Another Agromanian falls to their death."),
-            .body("You turn to help Destros, but it seems your efforts were in vain."),
-            .body("By the time you managed to get to his side, he had already passed."),
+            .body("Another Agromanian falls."),
+            .body("You turn to Dentros. His eyes find yours for a heartbeat — then close."),
+            .body("The bolt did its work. You were too slow."),
             .blank,
-            .body("Filled with rage, you turn to find another target,"),
-            .body("but you quickly realize that all of the fighting has come to a stand still."),
+            .body("Rage sends you hunting for another target, but the courtyard has gone still."),
             .blank,
-            .body("Countless Cataractan lie dead on the ground in pools of their own blood."),
-            .body("Any survivors are being held hostage by Agromanians around you."),
+            .body("Cataractan dead lie in their own blood. Survivors kneel under Agromanian blades."),
             .blank,
-            .body("It is in everyone's best interest if you stand still.")
+            .body("You freeze. Moving would only add your name to the count.")
         ]
     }
 
     private func introLines() -> [StyledLine] {
         [
             .title("Courtyard"),
-            .body("You enter the courtyard and see dozens of druids training."),
-            .body("Suddenly, another Druid appears next to you and speaks."),
+            .body("Dozens of druids drill in the yard — forms, footwork, spirit animals pacing the edges."),
+            .body("A red fox darts between recruits and resolves into Dentros at your shoulder."),
             .blank,
-            .speech("Nice of you to join us! My name is Dentros."),
+            .speech("Nice of you to join us. I'm Dentros."),
             .blank,
-            .body("You introduce yourself and tell Dentros that you're here to join the legion."),
+            .body("You give your name and say you've come to enlist."),
             .blank,
-            .speech("Well, let's not waste anytime then!."),
-            .speech("We have three spirit animals that are best known for their skill in combat."),
-            .speech("The Wolf, the Bear, and the Fox."),
-            .speech("Which are you?")
+            .speech("Then we won't waste time."),
+            .speech("Three spirit animals define our combat lines: Wolf, Bear, and Fox."),
+            .speech("Which walks with you?")
         ]
     }
 
@@ -161,24 +159,21 @@ struct SoCCourtyardRoom: SoCRoomScript {
         case .hunter:
             return [
                 .blank,
-                .speech("Ah, I could tell your spirit animal was the wolf when I saw you."),
-                .speech("The wolves are very formidable in battle."),
-                .speech("They hit hard and can take hits well too."),
+                .speech("Knew it — wolf in your stride."),
+                .speech("Hard hits, fast feet. Kimious will want you near the front."),
                 .blank
             ]
         case .guardian:
             return [
                 .blank,
-                .speech("Yes, the Bear. Bears are our front-line defense."),
-                .speech("They can take quite a beating before they're defeated."),
+                .speech("Bear line. Good — someone has to hold the gate when the rest of us break."),
                 .blank
             ]
         case .scout:
             return [
                 .blank,
-                .speech("Hm, yes a fox. My spirit animal is the fox as well."),
-                .speech("We are well known for our ability to move quickly and silently."),
-                .speech("Foxes make up most of our scouting force."),
+                .speech("Fox, then. Mine too."),
+                .speech("Quick and quiet — most of our scouts wear that shape."),
                 .blank
             ]
         case .none:
@@ -188,63 +183,67 @@ struct SoCCourtyardRoom: SoCRoomScript {
 
     private func kimiousLines() -> [StyledLine] {
         [
-            .body("You head further into the courtyard to see the king of Cataracta, Kimious, walk out of the Cataractan keep."),
-            .body("He speaks out to the druids in the courtyard as you make your way to the front to get a good view."),
+            .body("You press toward the keep as King Kimious steps onto the review stones."),
+            .body("He lifts his voice over the drilling recruits."),
             .blank,
             .speech("My friends! The time to fight is drawing near!"),
-            .speech("Our people are under constant threat of an Agromanian invasion."),
-            .speech("The attack on Oceandale was far too close to Cataracta."),
-            .speech("We can no longer rely on our hidden passages and the mountainess terrain to defend us."),
+            .speech("Our people live under constant threat of Agromanian invasion."),
+            .speech("Seven years after Oceandale, we still live in its shadow — and in that quiet, Vashirr bred Paladins in Agroman's forges."),
+            .speech("Sylvian envoys warn us: share Anula freely now, or Kaefden will requisition it when the war drums loud enough."),
+            .speech("They stride openly against us now. Hidden passes and mountain terrain will not be enough."),
             .speech("We must take the fight to them!"),
             .blank,
-            .body("The crowd roars in agreement."),
+            .body("The crowd roars."),
             .blank,
-            .speech("Your undying loyalty to our home speaks volumes an-"),
+            .speech("Your undying loyalty to our home speaks volumes an—"),
             .blank,
-            .body("Kimious is interrupted by a blinding flash of light, followed by a cascade of darkness."),
-            .body("The sky turns blood red as a dark portal forms at the entrance of the keep."),
-            .body("A man donned in a dark hooded robe, holding a gray wooden staff walks out of the portal."),
-            .body("From behind the man floods dozens of what brutish warriors."),
+            .body("Light blinds the yard — then darkness pours after it."),
+            .body("The sky turns blood red. A portal tears open at the keep gate."),
+            .body("A hooded man with a gray wooden staff steps through."),
+            .body("Behind him spill brutish warriors — some wrapped in spell-light, the Paladins Vashirr forged."),
             .blank,
-            .body("Dentros shouts out to you."),
+            .body("Dentros grabs your arm."),
             .blank,
-            .speech("Agromanians! They've found us! But how?!"),
+            .speech("Agromanians! They've found us — but how?!"),
             .blank,
-            .body("Guards rush to protect Kimious, but they're quickly outmatched by the Agromanians sheer numbers"),
-            .body("The hooded man points his staff to Kimious and blasts him with a bolt of dark energy."),
-            .body("Kimious falls to the floor, lifeless."),
+            .body("Guards rush Kimious and are swallowed by sheer numbers."),
+            .body("The hooded man levels his staff. Dark energy takes Kimious in the chest."),
+            .body("The king falls without a sound."),
             .blank,
-            .body("The Druids in the courtyard shout in horror and charge in to fight the oncoming Agromanians"),
-            .body("The hooded man points his staff toward you and unleashes another bolt of energy."),
-            .body("Before you can react, Dentros shoves you out of the line of fire and takes the hit."),
-            .body("As you stumble over, an Agromanian confronts you.")
+            .body("Druids scream and charge. The hooded man turns his staff on you."),
+            .body("Dentros shoves you aside — the bolt punches through his chest."),
+            .body("He drops in the churning yard, still breathing."),
+            .body("An Agromanian closes on you while the courtyard tears itself apart.")
         ]
     }
 
     private func vashirrLines() -> [StyledLine] {
         [
             .blank,
-            .body("From out of the crowd of Agromanians surrounding you, the hooded man comes."),
-            .body("He walks forward and is only a few feet in-front of you."),
-            .body("He removes his hood."),
-            .body("The man has a scar running across his left eye that continues to his chin."),
-            .body("He speaks to you in a deep, raspy voice."),
+            .body("The hooded man parts the Agromanian ring and stops a few feet from your face."),
+            .body("He drops his hood."),
+            .body("A scar cuts from his left eye to his chin."),
             .blank,
-            .speech("Listen to me, and listen carefully."),
-            .body("He places the tip of his staff to your head."),
-            .body("You can hear and feel the energy resonating from it."),
+            .speech("You rebuild what failed — a floating city, council whispers, a king who puts stones back in the sky."),
+            .speech("I scattered the mages so they would feel the ground again. I forged Paladins so magic would belong to every soldier — not a priesthood in blue robes."),
+            .speech("My king and I will knit this continent together. Kaefden's crown is the last stitch that will not hold."),
             .blank,
-            .speech("I have a message for you to deliver."),
-            .speech("Tell King Kaefden IV of the horrors his ignorance has brought."),
-            .speech("Tell him that Cataracta and its king have fallen."),
+            .speech("Listen carefully."),
+            .body("He sets his staff against your forehead. Energy hums through bone."),
+            .blank,
+            .speech("My king waited seven years while your boy-king rebuilt. Cataracta is the first lesson."),
+            .blank,
+            .speech("Deliver a message."),
+            .speech("Tell King Kaefden IV what his ignorance bought."),
+            .speech("Tell him Cataracta and its king have fallen."),
             .speech("Tell him that so long as he holds his unearned claim on this land..."),
             .blank,
             .speech("I will not stop."),
             .blank,
-            .body("Vashirr turns and with a snap, the Agromanians execute every Druid in their captivity."),
-            .body("You can only watch in horror as countless people are mercilessly massacred."),
-            .body("Vashirr returns through the dark portal and before you can do anything to stop the onslaught,"),
-            .body("An Agromanian bashes your head in with his axe, knocking you out cold.")
+            .body("Vashirr snaps his fingers. Agromanians cut down every captive druid."),
+            .body("You watch, helpless, as the courtyard becomes slaughter."),
+            .body("He steps back through the portal. Before you can move, an axe butt takes you behind the ear."),
+            .body("Darkness.")
         ]
     }
 
@@ -254,7 +253,12 @@ struct SoCCourtyardRoom: SoCRoomScript {
             .body("Time passes and you awaken alone in the same place you were before."),
             .body("You stumble up off the ground and immediately smell burning fires."),
             .body("You look to the Cataractan castle. Now in flames and rubble."),
-            .body("The entire city is in ashes.")
+            .body("The entire city is in ashes."),
+            .blank,
+            .body("A fallen Paladin lies near your boot — plate still humming a half-finished chant under the soot."),
+            .body("You do not know the words. Your skin remembers the rhythm anyway."),
+            .blank,
+            .body("Somewhere downhill, the garden fountain cracked. Anula dust in the mud where children used to toss coins for luck.")
         ]
     }
 }

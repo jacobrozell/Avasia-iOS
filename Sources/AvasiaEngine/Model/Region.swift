@@ -17,7 +17,7 @@ public enum Region: String, Codable, CaseIterable, Sendable {
     case shore         // western shoreside
     case nacastrum     // the floating city
     case aylova        // capital of Kaefden / endgame
-    case cataracta     // Sword of Courage — druid city
+    case cataracta     // Blade of Courage — druid city
 
     /// Regions reachable in King of Nacastrum (excludes sequel-only areas).
     public static var konPlayable: Set<Region> {

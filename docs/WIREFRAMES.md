@@ -190,4 +190,5 @@ ending text prints in the transcript, then offers Credits).
   cave, the great tree, the floating city) keyed to `RoomID`.
 - Blue-crystal accent everywhere a "true mage / Ring of Malkos" beat lands.
 - Optional ambient SFX per region (waves, dripping cave, wind on the bridge).
-- A subtle parchment paper texture behind the transcript.
+- A subtle parchment paper texture behind the transcript (see [`UI_POLISH.md`](UI_POLISH.md) §4.6).
+- Haptics, screen-enter motion, and region crossfade (see [`UI_POLISH.md`](UI_POLISH.md)).

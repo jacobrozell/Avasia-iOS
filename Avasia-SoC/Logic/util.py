@@ -29,7 +29,7 @@ def intro():
     set_color_to(config.base_color)
 
     decision = False
-    print("\nWelcome to Avasia: Sword of Courage!\n")
+    print("\nWelcome to Avasia: Blade of Courage!\n")
     load = ["LOAD"]
     while decision is False:
         ans = input("Would you like to load or start a new game?")
@@ -42,14 +42,14 @@ def intro():
                 decision = False
         else:
             decision = True
-            print("\n---------Avasia: Sword of Courage---------\n\n")
-            print("It has been six months since the Agromanian's, a viscious people of the northwest, attack on Oceandale."
-                  "\nNacastrum, the city of the Mage, is still being rebuilt under the diligent leadership of "
-                  "its new king."
-                  "\nRecently, news was brought to King Kaefden IV that Vashirr, the traitor ex-king of Nacastrum."
-                  " is teaching the Agromanians magic."
-                  "\nWith this knowledge, King Kaefden IV has begun to recruit an army to march on the Agromanians "
-                  "before they have a chance to muster."
+            print("\n---------Avasia: Blade of Courage---------\n\n")
+            print("It has been seven years since the fall of Oceandale and the crowning of King Kaefden IV."
+                  "\nIn all that time, no Agromanian army has crossed the border — yet the Kaefdens have not rested."
+                  "\nNacastrum rises again while legions train for the war everyone knows is coming."
+                  "\nRecently, word reached Aylova from Silvarium: Vashirr, the traitor ex-king of Nacastrum, "
+                  "stands at the Agromanian king's right hand — and teaches their warriors magic."
+                  "\nThey call these new soldiers Paladins."
+                  "\nKing Kaefden IV has begun recruiting in earnest before the northwest can muster."
                   "\n\nYou are a druid living in the peaceful city of Cataracta."
                   "\nCataracta has formed a pact with the people of Aylova to join the fight when the time comes."
                   "\nTh leader of Cataracta is drafting an army and you have decided to volunteer."

@@ -27,13 +27,15 @@ struct NacastrumRoom: RoomScript {
     }
 
     func handle(_ input: ParsedInput, _ state: inout GameState) -> TurnResult {
-        TurnResult([
+        state.metThekia = true
+        return TurnResult([
             .speech("When Vashirr became King, our power and influence waned."),
             .speech("Over the years, Vashirr ignored our advice and did what he wanted for his personal benefit."),
             .speech("He eventually exposed the High Mage's Council to the public and painted us as a corrupt group of petty politicians."),
             .speech("When the public spoke up against us, Vashirr eliminated the council and banished its members."),
             .speech("Without the High Mage's Council to stop Vashirr, the people of Nacastrum were left to his mercy."),
             .speech("Vashirr is a powerful mage and a formidable foe, but I know we can stop him."),
+            .speech("When he scattered us, power left the sky and bled into earth and flesh — you will see what that costs."),
             .speech("But first, we must return Nacastrum to its former glory. Come on, we don't have any time to waste.")
         ], .move(.aylova))
     }
@@ -50,8 +52,10 @@ struct AylovaRoom: RoomScript {
             .speech("This place is an absolute mess. We have a lot of work cut out for us. Luckily, I know where we can get some friends."),
             .body("Thekia heads into the courtyard and places the staff into its designated slot."),
             .body("Before she can activate the ring, you spot a body lying on the floor. Your heart sinks as you realise it is your father."),
+            .body("He died at the castle threshold when he ran for your mother. No one moved the body."),
             .body("Memories of him trying to stop the Agromanians from taking your mother return. You vow to avenge them both."),
-            .body("Light shines on a pendant around your fathers neck — one made of silver with a blue gemstone in the middle."),
+            .body("Light shines on a pendant around your fathers neck — earth-crystal in silver, the registered sky–earth key."),
+            .body("Not Aylova's crown — the anchor that kept the floating city honest. You will carry both kinds of anchor now."),
             .item("You take your father's pendant and place it around your neck."),
             .blank,
             .body("Thekia activates the Ring of Malkos and walks with you into the portal."),
@@ -62,12 +66,14 @@ struct AylovaRoom: RoomScript {
     }
 
     func handle(_ input: ParsedInput, _ state: inout GameState) -> TurnResult {
-        TurnResult([
+        state.aylovaRallySeen = true
+        return TurnResult([
             .body("Thekia walks past you and looks to the crowd."),
             .speech("People of Kaefden! We have come with terrible news."),
             .speech("Vashirr, the old king of Nacastrum, has joined the Agroman and wishes to destroy both of our people for his own gain."),
             .speech("Mages of Aylova! Come with me and rebuild the home that was unrightfully stolen from you!"),
             .speech("We will not rest until Vashirr and the Agroman are defeated and the people of Avasia live in peace!"),
+            .speech("Victory will not be cheap — every Ring we open, every shard we spend, every soldier we arm will be tallied."),
             .speech("We cannot force you to join us, but if you wish to help, come with us through the portal."),
             .body("Thekia turns and nods to you, and walks back into the portal. You follow her back to Nacastrum.")
         ], .move(.ending))
@@ -88,6 +94,8 @@ struct EndingRoom: RoomScript {
             .speech("Thank you, for all you have done."),
             .speech("None of this would have been possible without you."),
             .speech("But there is work to be done. We have just started."),
+            .speech("Nacastrum rises — yet power has scattered to earth, flesh, and market."),
+            .speech("Crowns do not end that. They only decide who pays first."),
             .speech("Let us go, my king."),
             .hint("CONTINUE.")
         ]

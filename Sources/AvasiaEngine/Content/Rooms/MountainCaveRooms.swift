@@ -67,6 +67,12 @@ struct DruidTalkRoom: RoomScript {
                 .body("Dentros returns to his fox form and leaps away.")
             ], .move(.mountain))
         }
+        if state.has(.lantern) && input.contains(["CATARACTA", "ANULA", "GATE"]) {
+            return TurnResult([
+                .speech("Our western gate shines with Sylvian Anula — gift, not trade."),
+                .speech("King Kimious fears spies since Oceandale. If you reach Cataracta someday, tell him a mage proved honest at the gate.")
+            ])
+        }
         return TurnResult([.hint("You can TALK or go BACK.")])
     }
 }
@@ -84,13 +90,19 @@ struct WestMountainRoom: RoomScript {
         }
         return [
             .body("You continue until the dirt path becomes stone and the chasm's roar becomes the chirps of birds."),
-            .body("Ahead you see a huge stone gate, enriched with blue crystal shards."),
+            .body("Ahead you see a huge stone gate, enriched with blue crystal shards — Anula, the druids say."),
             .body("You see a group of six men talking under the blue gleaming gate to the NORTH."),
-            .hint("Go NORTH to the gate, or BACK.")
+            .hint("Go NORTH to the gate, LOOK at the crystals, or BACK.")
         ]
     }
 
     func handle(_ input: ParsedInput, _ state: inout GameState) -> TurnResult {
+        if input.contains(["LOOK", "EXAMINE", "CRYSTAL", "ANULA"]) && !input.contains(Verb.north) {
+            return TurnResult([
+                .body("The shards are Anula — earth-crystal, cold to the touch even in sunlight."),
+                .body("Silvarium sends cartloads to Cataracta as gift. Here they guard the gate like teeth.")
+            ])
+        }
         if input.contains(Verb.north) && !state.cataractaGateDone {
             return TurnResult([], .move(.druidPath))
         }
@@ -147,11 +159,13 @@ struct DruidPathRoom: RoomScript {
             return TurnResult([.hint("You need to show them you're a mage. You can try talking to them.")])
         }
         state.cataractaGateDone = true
+        let events: [GameEvent] = input.contains(["EAR", "EARS"]) ? [.provedWithEars] : []
         return TurnResult(lead + [
             .body("The man that shouted, obviously the leader, begins to apologize."),
             .speech("Dreadfully sorry about that, Mage."),
             .speech("You can't be too careful around here, not with those cursed Agromanians lurking around."),
             .speech("We are a group of hunters. Our duty is to provide food for the people of Cataracta."),
+            .speech("The blue on our gate is Anula — Sylvian gift. We do not sell it. We guard it."),
             .speech("My name is Cellious. I'm the chief of that hunting pack."),
             .speech("I heard what happened to Nacastrum. Most mages went towards Aylova, the capital. But not you."),
             .speech("I'm afriad I can't let you into the city."),
@@ -159,7 +173,7 @@ struct DruidPathRoom: RoomScript {
             .speech("I wish you safe travels, Mage. And most of all, if you see any Agromanians..."),
             .body("Cellious roars ferociously showing his hatred."),
             .body("You make your way all the way back to where you crossed the bridge.")
-        ], .move(.mountain))
+        ], .move(.mountain), events: events)
     }
 }
 
@@ -179,6 +193,11 @@ struct CaveEntranceRoom: RoomScript {
     func handle(_ input: ParsedInput, _ state: inout GameState) -> TurnResult {
         if input.contains(Verb.back) || input.contains(Verb.south) {
             return TurnResult([], .move(.mountain))
+        }
+        if input.contains(Verb.look) || input.contains("SEARCH") || input.contains("HISTORY") {
+            return TurnResult([
+                .body("Scorch marks and old iron rings are bolted into the stone — this cave was a prison long before the mages hid their secrets here.")
+            ])
         }
         if input.contains(Flag.levitate.castSynonyms) && state.has(.levitate) {
             return TurnResult([
@@ -300,13 +319,13 @@ struct FireballRoom: RoomScript {
             return TurnResult([.body("You seriously have got to stop.")])
         }
         if input.contains(["LANTERN", "LIGHT"]) {
-            return TurnResult([.body("It's already lit fam.")])
+            return TurnResult([.body("It's already lit fam.")], events: [.relitLanternAtPedestal])
         }
         if input.contains(["NOIDEA"]) {
             return TurnResult([
                 .body("Thanks for your honesty."),
                 .body("I'm not going to give you the answer, however.")
-            ])
+            ], events: [.admittedNoIdea])
         }
         if input.normalized == state.symbolAnswer {
             state.gain(.fireball)

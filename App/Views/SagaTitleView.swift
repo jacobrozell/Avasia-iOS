@@ -1,7 +1,7 @@
 import SwiftUI
 import AvasiaEngine
 
-/// Saga hub — pick King of Nacastrum or Sword of Courage. Each game has its own
+/// Saga hub — pick King of Nacastrum or Blade of Courage. Each game has its own
 /// title screen, save slot, and engine.
 struct SagaTitleView: View {
     @EnvironmentObject var vm: GameViewModel
@@ -15,6 +15,7 @@ struct SagaTitleView: View {
                 VStack(spacing: metrics.isAccessibilityText ? 20 : 28) {
                     Spacer(minLength: metrics.isLandscape ? 8 : 24)
                     sagaHero
+                    chroniclerStrip
                     gamePicker
                     footerHint
                 }
@@ -49,21 +50,79 @@ struct SagaTitleView: View {
                 .foregroundColor(Theme.parchment.opacity(0.88))
             TitleOrnament(flipped: true)
         }
+        .accessibilityElement(children: .combine)
+    }
+
+    private var chroniclerStrip: some View {
+        let profile = vm.sagaProfile
+        let progress = ChroniclerRank.progressToNextRank(from: profile.sagaXP)
+        return Button {
+            vm.openChroniclerLedger(from: .saga)
+        } label: {
+            VStack(spacing: 8) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Chronicler · Rank \(profile.chroniclerRank)")
+                            .font(.system(.headline, design: .serif))
+                            .foregroundColor(Theme.parchment)
+                        Text(profile.chroniclerSubtitle)
+                            .font(.caption)
+                            .foregroundColor(Theme.parchment.opacity(0.65))
+                    }
+                    Spacer()
+                    Text("\(profile.sagaXP) XP")
+                        .font(.caption.weight(.semibold))
+                        .foregroundColor(Theme.accent)
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundColor(Theme.parchment.opacity(0.35))
+                }
+                ProgressBar(value: progress)
+            }
+            .padding(14)
+            .background(Theme.accent.opacity(0.10), in: RoundedRectangle(cornerRadius: 14))
+            .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.palette.cardStroke, lineWidth: 1))
+        }
+        .buttonStyle(PressScaleButtonStyle())
+        .accessibilityLabel("Chronicler rank \(profile.chroniclerRank), \(profile.sagaXP) experience")
     }
 
     private var gamePicker: some View {
         VStack(spacing: 14) {
-            ForEach(AvasiaProduct.allCases, id: \.self) { game in
-                MenuButton(title: game.menuTitle, systemImage: icon(for: game), style: .primary) {
-                    vm.openProduct(game)
+            if metrics.isRegularWidth {
+                LazyVGrid(
+                    columns: [GridItem(.flexible()), GridItem(.flexible())],
+                    spacing: 14
+                ) {
+                    ForEach(AvasiaProduct.allCases, id: \.self) { game in
+                        ChapterCard(
+                            product: game,
+                            systemImage: icon(for: game),
+                            hasSave: vm.hasSave(for: game),
+                            saveHint: vm.sagaSaveHint(for: game),
+                            completionCount: vm.sagaProfile.completions(for: game)
+                        ) {
+                            vm.openProduct(game)
+                        }
+                    }
                 }
-                Text(game.subtitle)
-                    .font(.footnote)
-                    .foregroundColor(Theme.parchment.opacity(0.62))
-                    .multilineTextAlignment(.center)
-                    .padding(.bottom, 4)
+            } else {
+                ForEach(AvasiaProduct.allCases, id: \.self) { game in
+                    ChapterCard(
+                        product: game,
+                        systemImage: icon(for: game),
+                        hasSave: vm.hasSave(for: game),
+                        saveHint: vm.sagaSaveHint(for: game),
+                        completionCount: vm.sagaProfile.completions(for: game)
+                    ) {
+                        vm.openProduct(game)
+                    }
+                }
             }
-            MenuButton(title: "Settings", systemImage: "gearshape") {
+            MenuButton(title: "Saga Timeline", systemImage: "clock.arrow.circlepath") {
+                vm.openTimeline(from: .saga)
+            }
+            MenuButton(title: "Settings", systemImage: "gearshape", accessibilityIdentifier: "saga-settings") {
                 vm.openSettings(from: .saga)
             }
             MenuButton(title: "Credits", systemImage: "scroll") {
@@ -76,6 +135,7 @@ struct SagaTitleView: View {
         switch product {
         case .kon: return "crown.fill"
         case .soc: return "shield.lefthalf.filled"
+        case .stories: return "book.fill"
         }
     }
 
@@ -93,9 +153,9 @@ struct TitleScreenBackground: View {
         ZStack {
             LinearGradient(
                 colors: [
-                    Color(red: 0.05, green: 0.07, blue: 0.12),
-                    Theme.night,
-                    Color(red: 0.04, green: 0.04, blue: 0.07)
+                    Theme.palette.backgroundGradientTop,
+                    Theme.palette.background,
+                    Theme.palette.backgroundGradientBottom
                 ],
                 startPoint: .top,
                 endPoint: .bottom

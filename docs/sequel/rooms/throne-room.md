@@ -20,13 +20,13 @@
 ## Story & purpose
 
 Druid survivor delivers Vashirr's threat to **King Kaefden IV** (KoN protagonist).
-Mobilization ordered; PC pledged by class. Act IV (war) hooks on `warCampBriefed`.
+Mobilization ordered; **Blade of Courage** quest seeded (Varatro Falls → Ofelos); PC pledged by class.
 
 ## Characters
 
 | Name | Role | Notes |
 |---|---|---|
-| **Kaefden IV** | King | Mage-blood, pointed ears, new crown, knows Vashirr |
+| **Kaefden IV** | King | Mage-blood; **seven years** on the throne; orders Blade quest + northern march |
 | **Thekia** | High Mage's Council | Library woman; vouches at gates |
 | Guards | Court | Challenge intruder |
 
@@ -49,7 +49,7 @@ Mobilization ordered; PC pledged by class. Act IV (war) hooks on `warCampBriefed
 | Input | Phase | Outcome |
 |---|---|---|
 | `CONTINUE`, `TALK`, `YES`, `PROCEED` | `atThrone` | Recount massacre |
-| same | `deliverVashirr` | Vashirr's message + Kaefden response |
+| same | `deliverVashirr` | Vashirr's message + Kaefden response (Paladins, Ofelos, Blade) |
 | same | `classService` | Class pledge + mobilization; **Act III complete** |
 | same | done | Epilogue hint (Act IV TBD) |
 

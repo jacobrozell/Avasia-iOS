@@ -23,6 +23,8 @@ struct SoCThroneRoom: SoCRoomScript {
         switch state.thronePhase {
         case .notStarted, .atThrone:
             return throneRoomLines() + [.hint("CONTINUE to speak before the king.")]
+        case .recountChoice:
+            return recountChoiceLines()
         case .deliverVashirr:
             return [.hint("CONTINUE to deliver Vashirr's message.")]
         case .classService:
@@ -42,12 +44,21 @@ struct SoCThroneRoom: SoCRoomScript {
             }
             return SoCTurnResult([.hint("MARCH to Aylova when you are ready.")])
         }
-        guard advances(input) else {
+        guard advances(input) || recountChoice(input) else {
             return SoCTurnResult([.hint("CONTINUE when you are ready.")])
         }
 
         switch state.thronePhase {
         case .notStarted, .atThrone:
+            state.thronePhase = .recountChoice
+            return SoCTurnResult(recountChoiceLines())
+
+        case .recountChoice:
+            if input.contains("DENTROS") || input.contains("HONOR") {
+                state.throneRecountStyle = .honorDentros
+            } else {
+                state.throneRecountStyle = .reportFacts
+            }
             state.thronePhase = .deliverVashirr
             return SoCTurnResult(recountLines(state))
 
@@ -61,7 +72,7 @@ struct SoCThroneRoom: SoCRoomScript {
             state.warCampBriefed = true
             var lines = classServiceLines(state) + mobilizationLines(state)
             lines.append(.title("Act III Complete"))
-            lines.append(.body("The Age-era campaign will continue when the war fronts are written."))
+            lines.append(.body("The coalition marches at dawn."))
             return SoCTurnResult(lines)
 
         case .done:
@@ -95,21 +106,52 @@ struct SoCThroneRoom: SoCRoomScript {
             .title("Nascastrum Throne Room"),
             .body("Blue crystal light washes the hall — the same hue as Anula's fountain, far away in Cataracta."),
             .body("Upon the dais sits King Kaefden IV."),
-            .body("His pointed ears mark him as mage-blood; the crown he wears is still new, but the grief in his eyes is not."),
+            .body("His pointed ears mark him as mage-blood; seven years of wearing the crown have not dulled the grief in his eyes."),
             .body("He studies you in silence. Thekia bows and withdraws to the council benches.")
+        ]
+    }
+
+    private func recountChoice(_ input: ParsedInput) -> Bool {
+        advances(input) || input.contains("DENTROS") || input.contains("HONOR")
+            || input.contains("FACTS") || input.contains("REPORT")
+    }
+
+    private func recountChoiceLines() -> [StyledLine] {
+        [
+            .speech("Kaefden IV: Before Vashirr's message — how do you carry Cataracta?"),
+            .hint("HONOR DENTROS for his sacrifice, or REPORT FACTS for a soldier's account.")
         ]
     }
 
     private func recountLines(_ state: SoCGameState) -> [StyledLine] {
         let name = state.playerName.isEmpty ? "You" : state.playerName
-        return [
+        var lines: [StyledLine] = [
             .speech("\(name), survivor of Cataracta. Tell us what happened."),
-            .blank,
+            .blank
+        ]
+        if state.throneRecountStyle == .honorDentros {
+            lines += [
+                .body("You speak of Dentros first — how he shoved you from Vashirr's bolt and died for it."),
+                .speech("Kaefden IV: ...I know that kind of sacrifice. Go on."),
+                .blank
+            ]
+        } else {
+            lines += [
+                .body("You give a soldier's report: timestamps, positions, enemy numbers."),
+                .speech("Kaefden IV: Clear. Continue."),
+                .blank
+            ]
+        }
+        lines += [
             .body("You tell them everything."),
-            .body("Kimious's speech. The portal. Vashirr's army. Dentros's death."),
+            .body("Kimious's speech. The portal. Vashirr's army."),
             .body("The executions. Waking alone in the ashes."),
             .body("Thekia's face has gone pale; Kaefden's jaw tightens with every word.")
         ]
+        if state.throneRecountStyle == .honorDentros {
+            lines.append(.speech("Kaefden IV: Dentros bought you time. I will not waste it."))
+        }
+        return lines
     }
 
     private func vashirrMessageLines() -> [StyledLine] {
@@ -117,6 +159,9 @@ struct SoCThroneRoom: SoCRoomScript {
             .speech("Kaefden IV: Then give me his words. Every one."),
             .blank,
             .body("You steady your voice and repeat what Vashirr forced upon you."),
+            .blank,
+            .body("You recount his sermon — Nacastrum a cage, the Many Hands doctrine, Paladins as honest soldiers."),
+            .body("You tell how he called Cataracta a lesson in necessity, not cruelty."),
             .blank,
             .speech("Tell King Kaefden IV of the horrors his ignorance has brought."),
             .speech("Tell him that Cataracta and its king have fallen."),
@@ -131,8 +176,18 @@ struct SoCThroneRoom: SoCRoomScript {
             .blank,
             .body("The throne room is utterly still."),
             .speech("Kaefden IV: ...Vashirr always did love his speeches."),
+            .speech("He preaches unity while burning cities. That is not philosophy — it is conquest wearing a sermon."),
+            .speech("I was his student. I believed the Many Hands doctrine once — until he put Agromanian steel behind it and called it progress."),
+            .speech("I wore this crown at Oceandale's ashes seven years ago. I will not let him salt another kingdom."),
             .speech("He mistakes rebuilding for weakness. He mistakes mercy for ignorance."),
-            .speech("Kimious is dead. Cataracta is ash. And still the traitor thinks he can frighten a crown I bled to earn."),
+            .speech("Kimious is dead. Cataracta is ash. And still he thinks one army and one law can be built on genocide."),
+            .blank,
+            .speech("The legions we raised in peace are not enough against Paladins alone."),
+            .speech("When we win, we will keep what works — Flesh-Wardens on the borders, Ring roads for the column, Sylvian crystal for the wards."),
+            .speech("We will use what we must and chain what we can. I will not pretend otherwise."),
+            .speech("We must win Ofelos — the neutral city — and the Sylvian elders will not bend without a symbol."),
+            .speech("Kaefden's Blade of Courage, buried at Varatro Falls with the first king of our bloodline."),
+            .speech("Envoys ride for Silvarium even as we speak. You will march north with the army — this war has two fronts."),
             .blank,
             .speech("The coalition marches. Aylova will not wait for another city to burn."),
             .speech("I will not let Nacastrum fall twice.")

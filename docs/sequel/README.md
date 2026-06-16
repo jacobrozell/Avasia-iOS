@@ -1,12 +1,12 @@
-# Avasia: Sword of Courage — Design Docs
+# Avasia: Blade of Courage — Design Docs
 
-Design documentation for **Avasia: Sword of Courage** (*Avasia #2*). The Python
+Design documentation for **Avasia: Blade of Courage** (*Avasia #2*). The Python
 prototype lives in [`Avasia-SoC/`](../../Avasia-SoC/) — **original source only**,
 no content invented in this repo beyond docs and iOS wiring.
 
 **iOS:** separate chapter on the saga home screen; engine in `Sources/AvasiaSoCEngine/`.
 
-Saga vision: [`../SAGA.md`](../SAGA.md)
+Saga vision: [`../SAGA.md`](../SAGA.md) · Developer onboarding: [`../DEVELOPERS.md`](../DEVELOPERS.md)
 
 ## Documents
 
@@ -17,6 +17,7 @@ Saga vision: [`../SAGA.md`](../SAGA.md)
 | [`WORLD_MAP.md`](WORLD_MAP.md) | Room graph from the **original** prototype. |
 | [`CONTENT_MANIFEST.md`](CONTENT_MANIFEST.md) | Python room IDs → Swift `SoCRoomID` map. |
 | [`ROADMAP.md`](ROADMAP.md) | Port plan — fidelity first, then new writing. |
+| [`GAME3_OPENING.md`](GAME3_OPENING.md) | **Future** — Commodity Era opening town sketch (Splitpath Station). |
 | [`SET_PIECES.md`](SET_PIECES.md) | Scene notes for **source** set pieces only. |
 | [`STATUS.md`](STATUS.md) | **Living checklist** — port status, gaps, next steps. |
 | [`rooms/`](rooms/) | **Per-room specs** — story, NPCs, options, items, flags, port status. |
@@ -34,6 +35,6 @@ Saga vision: [`../SAGA.md`](../SAGA.md)
 
 ## App integration
 
-- Saga picker → **King of Nacastrum** or **Sword of Courage**
+- Saga picker → **King of Nacastrum** or **Blade of Courage**
 - Saves: `AvasiaKoN/` vs `AvasiaSoC/` (Application Support)
 - Achievements: KoN only (for now)
