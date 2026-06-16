@@ -74,6 +74,15 @@ match wins). Base names only — no extension in code.
 | `.death` | `sfx_death` | the red "You have died." banner |
 | `.win` | `sfx_win` | the canonical ending |
 | `.move` | `sfx_move` | any room transition (footstep) |
+| `.hit` | `sfx_hit` | combat damage line completes |
+| `.miss` | `sfx_miss` | combat miss line completes |
+| `.block` | `sfx_block` | guardian block absorbs a hit |
+| `.heal` | `sfx_heal` | potion / heal line completes |
+| `.combatStart` | `sfx_combat_start` | combat begins |
+| `.victory` | `sfx_victory` | enemy killed / arena foe falls |
+
+Placeholder combat WAVs ship from `scripts/generate_combat_sfx.py` (procedural tones).
+Replace with final art when ready — same base names, any supported extension.
 
 ## Adding assets — checklist
 
