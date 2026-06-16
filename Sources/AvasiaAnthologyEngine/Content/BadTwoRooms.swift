@@ -8,15 +8,27 @@ struct BadTwoPeripheryRoom: AnthologyRoomScript {
     private let advance = ["CONTINUE", "GO", "CLIMB"]
 
     func describe(_ state: AnthologyGameState) -> [StyledLine] {
-        [
+        var lines: [StyledLine] = [
             .title("Cataracta Foothills"),
-            .body("The druid city sits in its mountain bowl — peaceful from a distance, which is the lie."),
-            .body("Vashirr's officer points: map the gates, the garden paths, the courtyard where legions enlist."),
-            .hint("CONTINUE to the overlook.")
+            .body("The druid city sits in its mountain bowl — Varatho mist on the lower gardens, peace from a distance, which is the lie that keeps recruits enlistment."),
+            .body("Vashirr's officer points without ceremony: map the gates, the garden paths, the courtyard where legions enlist.")
         ]
+        if state.badOneTruthfulRecon {
+            lines.append(.body("He trusts your ridge honesty. This map will be worse — closer, named, irreversible."))
+        } else {
+            lines.append(.body("He almost smiled at your softened ridge map. Cataracta will not get the same mercy."))
+        }
+        lines.append(.hint("CONTINUE to the overlook · LOOK at the city."))
+        return lines
     }
 
     func handle(_ input: ParsedInput, _ state: inout AnthologyGameState) -> AnthologyTurnResult {
+        if input.contains("LOOK") || input.contains("CITY") || input.contains("CATARACTA") {
+            return AnthologyTurnResult([
+                .body("Anula blue on the garden gates — earth-anchor crystal Sylvians gift, not sell. SoC's courtyard is down there, unaware."),
+                .hint("CONTINUE to the overlook.")
+            ])
+        }
         guard advance.contains(where: { input.contains($0) }) else {
             return AnthologyTurnResult([.hint("CONTINUE.")])
         }
@@ -31,13 +43,21 @@ struct BadTwoOverlookRoom: AnthologyRoomScript {
     func describe(_ state: AnthologyGameState) -> [StyledLine] {
         [
             .title("Courtyard Overlook"),
-            .body("Wolf, Bear, Fox — recruits choose names before they choose war."),
+            .body("Wolf, Bear, Fox — recruits choose class names before they choose war. Dentros will one day assign them in SoC's courtyard. Kimious will one day die in the massacre you are mapping."),
+            .body("Fountain coin toss — a recruit throws copper, nothing happens. The joke SoC tells before the burn."),
             .body("You remember Scout Patrol's valley. This city does not know yet."),
-            .hint("CONTINUE to the briefing.")
+            .hint("CONTINUE to the briefing · LOOK at the courtyard.")
         ]
     }
 
     func handle(_ input: ParsedInput, _ state: inout AnthologyGameState) -> AnthologyTurnResult {
+        if input.contains("LOOK") || input.contains("COURTYARD") || input.contains("FOUNTAIN") {
+            return AnthologyTurnResult([
+                .body("Fox scouts practice silent movement. Bear guardians stack shields. Wolf hunters watch the gates — discipline without Paladin binding yet."),
+                .body("If you SANITIZE the map, one of them may find your warning. If you FULL map, they will learn too late."),
+                .hint("CONTINUE to the briefing.")
+            ])
+        }
         guard advance.contains(where: { input.contains($0) }) else {
             return AnthologyTurnResult([.hint("CONTINUE.")])
         }
