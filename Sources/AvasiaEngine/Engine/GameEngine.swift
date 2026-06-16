@@ -35,7 +35,11 @@ public final class GameEngine {
 
     /// The current room's description — call when entering a room or on demand.
     public func describeCurrent() -> [StyledLine] {
-        currentRoom.describe(state)
+        if state.currentRoom == .beach && !state.beachIntroShown && !state.escortActive {
+            state.beachIntroShown = true
+            return KoNBeachFlavor.awakeningLines() + currentRoom.describe(state)
+        }
+        return currentRoom.describe(state)
     }
 
     /// Process one line of player input and return what to display. Side effects
@@ -102,7 +106,7 @@ public final class GameEngine {
     public func restart() {
         let delay = state.textDelay
         state = GameState()
-        state.currentRoom = .oceandale
+        state.currentRoom = .beach
         state.textDelay = delay
     }
 
