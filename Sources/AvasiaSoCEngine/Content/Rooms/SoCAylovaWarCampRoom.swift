@@ -130,6 +130,7 @@ struct SoCAylovaWarCampRoom: SoCRoomScript {
         [
             .title("Aylova War Camp"),
             .body("Smiths hammer at field forges. Nacastrum mages trace wards along the supply wagons."),
+            .body("Crates stamped COALITION REQUISITION — ANULA — SYLVIAN STOCK line the supply road."),
             .body("Aylovan officers bark orders in a tongue you almost understand."),
             .body("Your unit's sergeant waves you toward the command pavilion.")
         ]
@@ -152,6 +153,7 @@ struct SoCAylovaWarCampRoom: SoCRoomScript {
             .speech("Oceandale ridge is the next push. Hold the high ground and we keep their army out of Aylova's throat."),
             .blank,
             .speech("Before the northern front: Silvarium's elders, Varatro Falls, and Kaefden's Blade of Courage — Ofelos won't march without that symbol."),
+            .speech("Elders warn the requisition ledgers will outlive the war. Win first — argue about crystal prices after."),
             .speech("You ride east to Silvarium first. When Ofelos joins, your \(unit) deploys at first light."),
             .speech("Thekia's tent is east of the cookfires. Don't report to the front empty-handed.")
         ]

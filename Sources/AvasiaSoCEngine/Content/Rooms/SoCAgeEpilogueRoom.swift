@@ -82,8 +82,11 @@ struct SoCAgeEpilogueRoom: SoCRoomScript {
         [
             .blank,
             .body("In the square, a new stone lists the fallen of Cataracta — Kimious, Dentros, and thousands without names."),
+            .body("A memorial vendor chips Anula shavings into pouches for donors. \"For the coalition,\" she says. \"Every grain counts.\""),
             .body("Thekia lights a blue crystal at the base. You stand with the handful who survived the courtyard."),
             .speech("Thekia: We carry them forward. All of them."),
+            .blank,
+            .body("Near the dais, a garrison chaplain murmurs to a fresh Warden: \"The chant stays in the plate when you take it off. Remember that.\""),
             .blank,
             .body("Kaefden IV takes the dais. He looks older than the throne room, and more certain.")
         ]
@@ -94,6 +97,8 @@ struct SoCAgeEpilogueRoom: SoCRoomScript {
         var lines: [StyledLine] = [
             .speech("Kaefden IV: Cataracta burned so this coalition could learn the cost of delay."),
             .speech("Vashirr's portals are shattered. His Paladins scatter. He will answer to Kaefden law."),
+            .speech("We will use what we must — Paladin craft, open Ring roads, Sylvian crystal — and chain what we can."),
+            .speech("Coalition debt is real. Western pits and elder stocks will be tallied in Anula, not speeches."),
             .blank,
             .speech("\(name) — you delivered his threat to my throne, and you held Oceandale when I asked."),
             .speech("Envoys brought the Blade from Varatro Falls — Ofelos marched beside us. This victory will mean something lasting."),
@@ -103,6 +108,8 @@ struct SoCAgeEpilogueRoom: SoCRoomScript {
         }
         lines += [
             .speech("The Druid Legion of Cataracta is not ended. It is reborn in those who lived."),
+            .blank,
+            .body("A veteran near the crowd spits into the gutter. \"Honor doesn't grade Anula,\" he mutters — loud enough for you to hear."),
             .blank,
             .body("The crowd erupts. You feel Dentros's sacrifice, Kimious's speech, and the ashes — all carried to this moment."),
             .blank,

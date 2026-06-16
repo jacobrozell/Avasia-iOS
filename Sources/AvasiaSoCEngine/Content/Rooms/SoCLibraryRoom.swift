@@ -33,7 +33,8 @@ struct SoCLibraryRoom: SoCRoomScript {
                 .blank,
                 .body("One shelf holds a cracked pamphlet — Vashirr's address when he disbanded the High Mage's Council."),
                 .speech("...Magic hoarded in towers did not save Oceandale. The Many Hands doctrine: power for every soldier who bleeds for Avasia."),
-                .body("Someone else's hand has underlined the last line twice.")
+                .body("Someone else's hand has underlined the last line twice."),
+                .body("A margin scribble in Thekia's script: *Binding without consent leaves echo — Vashirr knew.*")
             ]
             if !state.libraryLooked {
                 state.libraryLooked = true

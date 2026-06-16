@@ -107,7 +107,7 @@ struct SoCVashirrStandRoom: SoCRoomScript {
 
     private func beginWarMage(state: inout SoCGameState) -> [StyledLine] {
         SoCCombat.begin(
-            enemy: SoCCombatant(name: "Vashirr's War Mage", atk: 11, speed: 8, hp: 28, luck: 0),
+            enemy: SoCCombatant(name: "Vashirr's War Mage", atk: 11, speed: 8, hp: 28, luck: 6),
             deathText: "The war mage's bolt tears through your line.",
             state: &state
         )
@@ -174,6 +174,7 @@ struct SoCVashirrStandRoom: SoCRoomScript {
             .body("Vashirr struggles, then the gray wood splinters. Dark energy recoils into the portal and collapses it."),
             .body("Vashirr drops to his knees in the surf, powerless."),
             .speech("Kaefden IV: The Age ends your treachery here. Agromanian armies scatter without his portals."),
+            .speech("Kaefden IV: You will answer to Kaefden law — bound, not butchered. We will use what we must. We will chain what we can."),
             .speech("Vashirr: Then bury your united Avasia in blue crystal. History will know I tried to end the schism."),
             .speech("Vashirr: This land will forget you too, Kaefden."),
             .body("Guards bind Vashirr. The coalition cheers along the shore — ragged, exhausted, real.")
@@ -191,6 +192,9 @@ struct SoCVashirrStandRoom: SoCRoomScript {
     }
 
     private func homewardLines() -> [StyledLine] {
-        [.body("The column turns homeward. The war is over.")]
+        [
+            .body("The column turns homeward. The war is over."),
+            .body("Somewhere ahead, ledgers open — crystal, plate, and the price of peace.")
+        ]
     }
 }

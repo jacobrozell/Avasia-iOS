@@ -103,6 +103,7 @@ struct SoCSilvariumEldersRoom: SoCRoomScript {
             .speech("Elder Venna: We heard the Agromanian defector from Silvarium's border. Paladins in the northwest — we believe it."),
             .speech("Elder Venna: Ofelos will not march for banners alone. They want proof Kaefden still honors the old compact."),
             .speech("Elder Venna: Bring Kaefden's Blade of Courage from Varatro Falls, where the first king of the bloodline sleeps."),
+            .speech("Elder Venna: The Blade is civic anchor — honor made steel. Ofelos trusts oaths, not towers."),
             .blank,
             .speech("Elder: Thekia's letter names you. We trust her word — not yet yours."),
             .speech("Marksman: They survived Cataracta's courtyard. That is proof enough for me.")
@@ -112,6 +113,7 @@ struct SoCSilvariumEldersRoom: SoCRoomScript {
     private func commissionLines() -> [StyledLine] {
         [
             .speech("Elder Venna: Varatro is warded. Agromanian scouts watch the falls since the Paladins rose."),
+            .speech("Elder Venna: If Kaefden wins, do not let Aylova grade our Anula like ore. Gift becomes goods once, and never returns."),
             .speech("Elder Venna: Vashirr waited seven years to strike — he will not let the Blade reach Ofelos without a fight."),
             .speech("Elder: Return with the sword, and we will speak for Ofelos in the coalition council."),
             .blank,

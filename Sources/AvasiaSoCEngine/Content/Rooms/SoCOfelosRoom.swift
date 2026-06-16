@@ -129,7 +129,8 @@ struct SoCOfelosRoom: SoCRoomScript {
             .blank,
             .speech("Council Speaker Maelen: ...That is the sword from the first king's tomb."),
             .speech("Elder Venna: Kaefden IV rebuilds Nacastrum. Cataracta burned. The coalition fights — but it needs Ofelos."),
-            .speech("Council Speaker Maelen: When Oceandale fell, we stayed out. We will not march for revenge alone — but we will march for this symbol.")
+            .speech("Council Speaker Maelen: When Oceandale fell, we stayed out. We will not march for revenge alone — but we will march for this symbol."),
+            .speech("Council Speaker Maelen: Neutrality kept us alive. This pact will cost us — in crystal, in sons, in ledger lines we cannot unread.")
         ]
     }
 

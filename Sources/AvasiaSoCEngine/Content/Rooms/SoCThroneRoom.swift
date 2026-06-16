@@ -183,6 +183,8 @@ struct SoCThroneRoom: SoCRoomScript {
             .speech("Kimious is dead. Cataracta is ash. And still he thinks one army and one law can be built on genocide."),
             .blank,
             .speech("The legions we raised in peace are not enough against Paladins alone."),
+            .speech("When we win, we will keep what works — Flesh-Wardens on the borders, Ring roads for the column, Sylvian crystal for the wards."),
+            .speech("We will use what we must and chain what we can. I will not pretend otherwise."),
             .speech("We must win Ofelos — the neutral city — and the Sylvian elders will not bend without a symbol."),
             .speech("Kaefden's Blade of Courage, buried at Varatro Falls with the first king of our bloodline."),
             .speech("Envoys ride for Silvarium even as we speak. You will march north with the army — this war has two fronts."),
