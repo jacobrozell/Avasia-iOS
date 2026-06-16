@@ -284,3 +284,23 @@ and scene checklist.
 knows from KoN — pointed ears, shared history with Vashirr, weight of the crown.
 The Druid PC may not know his full story; the *player* does. Kaefden must **engage
 Vashirr's ideology**, not only his crimes.
+
+---
+
+## 11. Saga integration (Commodity Era handoff)
+
+SoC must **close the Age-era war** and **plant the next era** per [`../SAGA.md`](../SAGA.md) §0.
+
+| Pillar | SoC beats (implemented) |
+|---|---|
+| **Many Hands** | Courtyard sermon; library pamphlet; mage outpost sheet; Vashirr stand debate |
+| **Flesh-anchor / echo** | Fallen Paladin chant; warden loop; outpost *echo stacks* note; ridge helm |
+| **Anula / commodity** | Garden requisition dispatch; war-camp crates; elders' ledger warning; epilogue vendor |
+| **Civic Blade** | Silvarium commission; Varatro tomb; Ofelos presentation |
+| **Kaefden's compromise** | Throne *use what we must*; Vashirr stand *chain what we can*; epilogue debt |
+| **Survivor's legend** | Named honor at epilogue; ruins pilgrimage; veteran *honor doesn't grade Anula* |
+
+**Epilogue requirement:** victory + memorial + structural cost (debt, garrisons, myth).
+Game 3 inherits this status quo — see [`GAME3_OPENING.md`](GAME3_OPENING.md).
+
+Full room map: [`../FORESHADOWING.md`](../FORESHADOWING.md).

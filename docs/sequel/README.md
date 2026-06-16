@@ -17,6 +17,7 @@ Saga vision: [`../SAGA.md`](../SAGA.md) · Developer onboarding: [`../DEVELOPERS
 | [`WORLD_MAP.md`](WORLD_MAP.md) | Room graph from the **original** prototype. |
 | [`CONTENT_MANIFEST.md`](CONTENT_MANIFEST.md) | Python room IDs → Swift `SoCRoomID` map. |
 | [`ROADMAP.md`](ROADMAP.md) | Port plan — fidelity first, then new writing. |
+| [`GAME3_OPENING.md`](GAME3_OPENING.md) | **Future** — Commodity Era opening town sketch (Splitpath Station). |
 | [`SET_PIECES.md`](SET_PIECES.md) | Scene notes for **source** set pieces only. |
 | [`STATUS.md`](STATUS.md) | **Living checklist** — port status, gaps, next steps. |
 | [`rooms/`](rooms/) | **Per-room specs** — story, NPCs, options, items, flags, port status. |
