@@ -9,7 +9,9 @@ import AvasiaAnthologyEngine
 struct GameView: View {
     @EnvironmentObject var vm: GameViewModel
     @Environment(\.layoutMetrics) private var metrics
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @FocusState private var inputFocused: Bool
+    @State private var playEntered = false
 
     private let defaultQuickVerbs = [
         "North", "East", "South", "West", "Up", "Down",
@@ -90,7 +92,11 @@ struct GameView: View {
         if vm.socIsConfirmingName { return ["Yes", "No"] }
         if vm.socIsNaming { return [] }
         if vm.socState.inCombat {
-            return ["Attack", "Eat Potion", "Inventory"]
+            var verbs = ["Attack", "Eat Potion", "Objectives", "Inventory"]
+            if vm.socState.combatAllowsFlee || vm.socState.playerClass == .scout {
+                verbs.insert("Flee", at: 2)
+            }
+            return verbs
         }
         switch vm.socState.currentRoom {
         case .oceandaleFront where vm.socState.oceandaleFrontCleared:
@@ -103,8 +109,12 @@ struct GameView: View {
         case .ageEpilogue where vm.socState.gameComplete && !vm.socState.ruinsVisited:
             return ["Visit Ruins", "Continue", "Inventory"]
         case .aylovaWarCamp, .silvariumElders, .varatroFalls, .ofelos,
-             .northernMarch, .mageOutpost, .vashirrStand, .ageEpilogue:
-            return ["March", "Continue", "Inventory", "Look"]
+             .northernMarch, .oceandaleFront, .mageOutpost, .vashirrStand, .ageEpilogue:
+            var verbs = ["March", "Continue", "Inventory", "Look"]
+            if let ingenuity = SoCClassIngenuity.quickVerb(for: vm.socState) {
+                verbs.insert(ingenuity, at: 1)
+            }
+            return verbs
         case .cataractaHousing, .cataractaNorth, .cataractaShopping, .cataractaGarden,
              .cataractaBarracks, .cataractaHunterPath:
             return ["North", "East", "South", "West", "Look", "Continue", "Inventory", "Objectives"]
@@ -129,6 +139,11 @@ struct GameView: View {
             StoryPickerView()
                 .environmentObject(vm)
         }
+        .onChange(of: vm.screen) { screen in
+            if screen != .game {
+                playEntered = false
+            }
+        }
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
@@ -148,12 +163,13 @@ struct GameView: View {
 
     private func stackedLayout(_ metrics: LayoutMetrics) -> some View {
         VStack(spacing: 0) {
-            RegionIllustration(media: vm.media, height: metrics.illustrationHeight)
-            statusStrip(metrics)
+            regionIllustration(metrics)
+            statusArea(metrics)
             Divider().background(Theme.accent.opacity(0.4))
             transcript
                 .layoutPriority(1)
                 .background(transcriptBackground)
+                .playScreenEnter($playEntered)
             quickActions(metrics)
             inputBar(metrics)
         }
@@ -162,8 +178,8 @@ struct GameView: View {
     private func splitLayout(_ metrics: LayoutMetrics) -> some View {
         HStack(spacing: 0) {
             VStack(spacing: 0) {
-                RegionIllustration(media: vm.media, height: metrics.illustrationHeight)
-                statusStrip(metrics, vertical: true)
+                regionIllustration(metrics)
+                statusArea(metrics, vertical: true)
                 Spacer(minLength: 0)
             }
             .frame(width: metrics.gameSidebarWidth)
@@ -174,6 +190,7 @@ struct GameView: View {
                 transcript
                     .layoutPriority(1)
                     .background(transcriptBackground)
+                    .playScreenEnter($playEntered)
                 quickActions(metrics)
                 inputBar(metrics)
             }
@@ -183,7 +200,50 @@ struct GameView: View {
         .frame(maxWidth: .infinity)
     }
 
+    private func regionIllustration(_ metrics: LayoutMetrics) -> some View {
+        RegionIllustration(media: vm.media, height: metrics.illustrationHeight)
+            .offset(y: playEntered || reduceMotion ? 0 : -8)
+            .animation(Motion.accessible(.easeOut(duration: 0.28), reduceMotion: reduceMotion), value: playEntered)
+    }
+
     // MARK: - Status strip
+
+    private var showsCombatEnemyRow: Bool {
+        vm.combatStripVisible && !vm.displayedEnemyName.isEmpty
+    }
+
+    private var combatInteractionLocked: Bool {
+        vm.isCombatBusy && (
+            (vm.product == .soc && vm.socState.inCombat)
+                || (vm.product == .stories && vm.anthologyState.arenaInCombat)
+        )
+    }
+
+    private func statusArea(_ metrics: LayoutMetrics, vertical: Bool = false) -> some View {
+        VStack(spacing: 6) {
+            statusStrip(metrics, vertical: vertical)
+            if showsCombatEnemyRow {
+                combatEnemyRow(metrics)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+        .overlay {
+            if vm.lowHpVignette {
+                Color.red.opacity(0.12)
+                    .allowsHitTesting(false)
+            }
+        }
+        .animation(.easeOut(duration: 0.28), value: vm.combatStripVisible)
+    }
+
+    private func combatEnemyRow(_ metrics: LayoutMetrics) -> some View {
+        CombatEnemyStatus(
+            name: vm.displayedEnemyName,
+            hp: vm.displayedEnemyHp,
+            maxHp: max(vm.displayedEnemyMaxHp, 1)
+        )
+        .padding(.horizontal, metrics.horizontalPadding)
+    }
 
     private func statusStrip(_ metrics: LayoutMetrics, vertical: Bool = false) -> some View {
         Group {
@@ -221,6 +281,22 @@ struct GameView: View {
             }
             .accessibilityLabel("Main menu")
 
+            if AppSettings.chroniclerShowThisRunXP, vm.sagaProfile.currentRunXP > 0 {
+                Button { vm.openChroniclerLedger(from: .game) } label: {
+                    Text("This run: +\(vm.sagaProfile.currentRunXP) XP")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundColor(Theme.accent)
+                }
+                .accessibilityLabel("This run chronicler experience \(vm.sagaProfile.currentRunXP)")
+            }
+
+            if vm.product == .kon || vm.product == .soc {
+                Button { vm.openCodex(from: .game) } label: {
+                    Image(systemName: "book.closed.fill").foregroundColor(Theme.accent)
+                }
+                .accessibilityLabel("Journal")
+            }
+
             Button {
                 switch vm.product {
                 case .kon: vm.openAchievements(from: .game)
@@ -257,8 +333,15 @@ struct GameView: View {
                 .disabled(!vm.anthologyState.storyZeroComplete)
             }
 
-            if vm.product == .soc, vm.socState.inCombat {
+            if vm.product == .soc, vm.socState.inCombat || vm.combatStripVisible {
                 StatusBadge(title: "Combat", systemImage: "bolt.fill", tint: .red)
+                    .scaleEffect(vm.combatStripVisible ? 1 : 0.9)
+                    .animation(.spring(response: 0.32), value: vm.combatStripVisible)
+            }
+            if vm.product == .stories, vm.anthologyState.arenaInCombat || vm.combatStripVisible {
+                StatusBadge(title: "Arena", systemImage: "figure.fencing", tint: .red)
+                    .scaleEffect(vm.combatStripVisible ? 1 : 0.9)
+                    .animation(.spring(response: 0.32), value: vm.combatStripVisible)
             }
         }
     }
@@ -286,24 +369,43 @@ struct GameView: View {
                             .font(.caption2)
                             .foregroundColor(Theme.accent)
                             .accessibilityLabel("Level \(vm.socState.playerLevel)")
-                        Label("\(vm.socState.playerHp)/\(vm.socState.playerMaxHp)", systemImage: "heart.fill")
-                            .font(.caption2)
-                            .foregroundColor(Theme.parchment)
+                        AnimatedHealthBar(
+                            value: vm.displayedPlayerHp,
+                            max: vm.socState.playerMaxHp,
+                            flash: vm.healthBarFlash
+                        )
                     }
-                    Label("\(vm.socState.gold)", systemImage: "circle.fill")
-                        .font(.caption2)
-                        .foregroundColor(Theme.accent)
-                        .accessibilityLabel("Gold \(vm.socState.gold)")
+                    AnimatedGoldLabel(
+                        value: vm.displayedGold,
+                        floatDelta: vm.goldFloatDelta
+                    )
                     ForEach(socItems, id: \.self) { item in
-                        Image(systemName: socIcon(for: item))
-                            .foregroundColor(Theme.parchment)
-                            .accessibilityLabel(item.displayName)
+                        ItemBounceIcon(
+                            systemImage: socIcon(for: item),
+                            bounce: vm.bouncingSocItems.contains(item)
+                        )
+                        .accessibilityLabel(item.displayName)
                     }
                 }
-            } else if vm.product == .stories, vm.anthologyState.alignment != .none {
-                Label(vm.anthologyState.alignment.rawValue, systemImage: "flag.fill")
-                    .font(.caption2)
-                    .foregroundColor(Theme.accent)
+            } else if vm.product == .stories {
+                HStack(spacing: 14) {
+                    if vm.anthologyState.arenaRunActive || vm.anthologyState.arenaInCombat {
+                        AnimatedHealthBar(
+                            value: vm.displayedPlayerHp,
+                            max: vm.anthologyState.arenaMaxHp,
+                            flash: vm.healthBarFlash
+                        )
+                        AnimatedGoldLabel(
+                            value: vm.displayedGold,
+                            floatDelta: vm.goldFloatDelta
+                        )
+                    }
+                    if vm.anthologyState.alignment != .none {
+                        Label(vm.anthologyState.alignment.rawValue, systemImage: "flag.fill")
+                            .font(.caption2)
+                            .foregroundColor(Theme.accent)
+                    }
+                }
             }
         }
     }
@@ -337,7 +439,9 @@ struct GameView: View {
                         LineView(
                             line: entry.line,
                             partialLength: entry.partialLength,
-                            showsCursor: entry.showsCursor
+                            showsCursor: entry.showsCursor,
+                            emphasis: entry.emphasis,
+                            playReveal: entry.playReveal
                         )
                         .id(entry.id)
                     }
@@ -428,6 +532,7 @@ struct GameView: View {
     private func quickActionButton(_ verb: String, metrics: LayoutMetrics) -> some View {
         Button(verb) {
             dismissKeyboard()
+            HapticManager.shared.play(.tap)
             vm.quickAction(verb)
         }
             .font(metrics.isAccessibilityText ? .body : .caption)
@@ -442,6 +547,8 @@ struct GameView: View {
             .overlay(Capsule().stroke(Theme.accent.opacity(0.22), lineWidth: 1))
             .foregroundColor(Theme.parchment)
             .buttonStyle(PressScaleButtonStyle())
+            .disabled(combatInteractionLocked)
+            .opacity(combatInteractionLocked ? 0.5 : 1)
             .accessibilityLabel(verb)
             .accessibilityHint("Submit \(verb.lowercased()) command")
     }
@@ -453,29 +560,33 @@ struct GameView: View {
                 .autocorrectionDisabled()
                 .focused($inputFocused)
                 .submitLabel(.send)
-                .onSubmit { vm.submit() }
+                .onSubmit { vm.submit(playHaptic: true) }
+                .disabled(combatInteractionLocked)
                 .padding(10)
                 .frame(minHeight: 44)
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10))
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
-                        .stroke(Theme.accent.opacity(0.2), lineWidth: 1)
+                        .stroke(Theme.accent.opacity(inputFocused ? 0.45 : 0.2), lineWidth: 1)
                 )
                 .foregroundColor(Theme.parchment)
                 .accessibilityLabel("Command input")
 
-            Button { vm.submit() } label: {
+            Button { vm.submit(playHaptic: true) } label: {
                 Image(systemName: "arrow.up.circle.fill")
                     .font(.title2)
                     .foregroundColor(Theme.accent)
                     .frame(width: 44, height: 44)
             }
             .buttonStyle(PressScaleButtonStyle())
+            .disabled(combatInteractionLocked)
+            .opacity(combatInteractionLocked ? 0.5 : 1)
             .accessibilityLabel("Send command")
         }
         .padding(metrics.horizontalPadding)
         .padding(.vertical, 8)
         .background(Theme.background.opacity(0.35))
+        .opacity(combatInteractionLocked ? 0.85 : 1)
     }
 
     // MARK: - Death overlay
@@ -500,10 +611,7 @@ struct GameView: View {
 
             ScrollView {
                 VStack(spacing: 16) {
-                    Image(systemName: "skull")
-                        .font(.system(size: 44))
-                        .foregroundColor(.red.opacity(0.9))
-                        .accessibilityHidden(true)
+                    DeathSkullIcon()
 
                     Text(title)
                         .font(.system(.largeTitle, design: .serif).bold())
@@ -530,6 +638,7 @@ struct GameView: View {
                 .padding(28)
                 .frame(maxWidth: metrics.contentMaxWidth)
                 .frame(maxWidth: .infinity)
+                .celebrationModalEnter()
             }
         }
         .transition(.opacity)
@@ -542,9 +651,7 @@ struct GameView: View {
         return ZStack {
             Color.black.opacity(0.55).ignoresSafeArea()
             VStack(spacing: 16) {
-                Image(systemName: "arrow.up.circle.fill")
-                    .font(.system(size: 48))
-                    .foregroundColor(Theme.accent)
+                LevelUpStarIcon()
                 Text("Level Up!")
                     .font(.system(.title, design: .serif).bold())
                     .foregroundColor(Theme.parchment)
@@ -560,6 +667,7 @@ struct GameView: View {
             .frame(maxWidth: metrics.contentMaxWidth)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
             .padding(metrics.horizontalPadding)
+            .celebrationModalEnter()
         }
         .transition(.opacity)
     }
@@ -568,16 +676,43 @@ struct GameView: View {
 
     private func toastOverlay(_ metrics: LayoutMetrics) -> some View {
         VStack(spacing: 8) {
+            chroniclerXPToasts(metrics)
             achievementToasts(metrics)
             trophyToasts(metrics)
         }
+    }
+
+    private func chroniclerXPToasts(_ metrics: LayoutMetrics) -> some View {
+        VStack(spacing: 8) {
+            ForEach(vm.recentChroniclerXP) { entry in
+                HStack(spacing: 10) {
+                    Image(systemName: "sparkles")
+                        .foregroundColor(Theme.accent)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Chronicler XP")
+                            .font(.caption2).foregroundColor(Theme.parchment.opacity(0.6))
+                        Text("+\(entry.amount) · \(entry.label)")
+                            .font(.system(.caption, design: .serif).weight(.semibold))
+                            .foregroundColor(Theme.parchment)
+                            .lineLimit(2)
+                    }
+                    Spacer(minLength: 0)
+                }
+                .padding(.horizontal, 14).padding(.vertical, 10)
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Theme.accent.opacity(0.35)))
+                .padding(.horizontal, metrics.horizontalPadding)
+                .transition(.move(edge: .top).combined(with: .opacity))
+            }
+        }
+        .animation(.spring(response: 0.4), value: vm.recentChroniclerXP.map(\.id))
     }
 
     private func trophyToasts(_ metrics: LayoutMetrics) -> some View {
         VStack(spacing: 8) {
             ForEach(vm.recentlyUnlockedTrophies, id: \.self) { trophy in
                 HStack(spacing: 10) {
-                    Image(systemName: "trophy.fill").foregroundColor(.yellow)
+                    ToastTrophyIcon(trigger: trophy)
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Trophy Unlocked")
                             .font(.caption2).foregroundColor(Theme.parchment.opacity(0.6))
@@ -604,7 +739,7 @@ struct GameView: View {
         VStack(spacing: 8) {
             ForEach(vm.recentlyUnlocked, id: \.self) { ach in
                 HStack(spacing: 10) {
-                    Image(systemName: "trophy.fill").foregroundColor(.yellow)
+                    ToastTrophyIcon(trigger: ach)
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Achievement Unlocked")
                             .font(.caption2).foregroundColor(Theme.parchment.opacity(0.6))
