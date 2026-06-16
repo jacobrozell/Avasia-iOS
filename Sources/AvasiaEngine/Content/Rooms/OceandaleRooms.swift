@@ -30,9 +30,23 @@ struct OceandaleRoom: RoomScript {
 
     func handle(_ input: ParsedInput, _ state: inout GameState) -> TurnResult {
         if input.contains(Verb.north) { return TurnResult([.body("You venture NORTH into the outskirts of the city.")], .move(.graveyard)) }
-        if input.contains(Verb.south) { return TurnResult([.body("You venture SOUTH to the beach.")], .move(.beach)) }
+        if input.contains(Verb.south) {
+            var lines: [StyledLine] = [.body("You venture SOUTH to the beach.")]
+            if !state.beachIntroShown && !state.escortActive {
+                state.beachIntroShown = true
+                lines += KoNBeachFlavor.awakeningLines()
+            }
+            return TurnResult(lines, .move(.beach))
+        }
         if state.escortActive {
             return TurnResult([.hint("Head NORTH towards Nacastrum, or SOUTH to the beach.")])
+        }
+        if input.contains(Verb.look) {
+            return TurnResult([
+                .body("Oceandale was a fishing colony before it was a faction city — open coast, easy strike."),
+                .body("Agromanian raiders knew that. The blood on the northern road is newer than the schism, but born from the same wound."),
+                .body("Ash stops in a clean arc west of the magehouse, as if the air itself refuses the burn.")
+            ])
         }
         if input.contains(Verb.east) { return TurnResult([], .move(.tradingPost)) }
         if input.contains(Verb.west) { return TurnResult([], .move(.magehouse)) }
@@ -54,6 +68,8 @@ struct BeachRoom: RoomScript {
                 .speech("I think I've been waiting... Well."),
                 .speech("I've been waiting for someone like you to come along."),
                 .speech("Who thought when I did finally go back, I would be assisting such an important cause."),
+                .speech("When the war ends, they will open the Rings to more than mages — I am sure of it."),
+                .speech("Power tied to stone travels. Power left loose starts wars."),
                 .speech("We'd best get to it."),
                 .hint("Head BACK to Oceandale.")
             ]
@@ -61,10 +77,10 @@ struct BeachRoom: RoomScript {
         return [
             .body("You stand along the beach, gazing outward."),
             .body("Distant ships sit along the horizon, fishing."),
-            .body("The sea breeze is very calming."),
+            .body("The sea breeze is very calming. To the NORTH, smoke rises beyond what might have been a city gate."),
             state.has(.rod)
-                ? .hint("You could FISH here, or LEAVE and return to Oceandale.")
-                : .hint("This would be a great place to do some stretching. Or LEAVE.")
+                ? .hint("You could FISH, do some YOGA, LOOK at the shore, or walk NORTH.")
+                : .hint("You could STRETCH or do some YOGA, LOOK at the shore, or walk NORTH.")
         ]
     }
 
@@ -73,7 +89,7 @@ struct BeachRoom: RoomScript {
             return TurnResult([.body("You and the Old Mage go back into Oceandale.")], .move(.oceandale))
         }
         if input.contains(Verb.back) || input.contains(Verb.north) {
-            return TurnResult([.body("You leave and return to Oceandale.")], .move(.oceandale))
+            return TurnResult([.body("You walk north along the shore road into what's left of Oceandale.")], .move(.oceandale))
         }
         if input.contains("FISH") {
             guard state.has(.rod) else {
@@ -82,17 +98,12 @@ struct BeachRoom: RoomScript {
             return Fishing.cast(&state)
         }
         if input.contains("STRETCH") || input.contains("YOGA") {
-            return TurnResult([
-                .body("You take a deep breath and do some yoga moves."),
-                .blank,
-                .body("A couple of back bends."),
-                .body("A few Eagles."),
-                .body("Even a Crow Pose."),
-                .blank,
-                .body("Both your body and mind feel revitalized.")
-            ])
+            return TurnResult(KoNBeachFlavor.yogaLines(), events: [.didBeachYoga])
         }
-        return TurnResult([.hint("You can FISH, STRETCH, or LEAVE.")])
+        if input.contains(Verb.look) || input.contains(["SAND", "WAVES", "SHORE"]) {
+            return TurnResult(KoNBeachFlavor.lookLines())
+        }
+        return TurnResult([.hint("You can STRETCH, do YOGA, LOOK at the shore, or walk NORTH.")])
     }
 }
 
@@ -121,11 +132,12 @@ struct TradingPostRoom: RoomScript {
                 .speech("They showed up in the middle of the night, the cowards!"),
                 .speech("My wife, they took my wife!"),
                 .speech("I swear those bastards will get what's coming to them."),
+                .speech("And now the crown talks of requisition — Sylvian Anula for the legions, they say. As if crystal could buy her back."),
                 .speech("I.. I need to be alone now."),
                 .blank,
                 .body("There's no other reason for you to continue loitering around here."),
                 .body("You leave the trading post.")
-            ], .move(.oceandale))
+            ], .move(.oceandale), events: [.heardTradingPostGrief])
         }
         if input.contains(["LEAVE", "BACK", "EXIT", "RETURN"]) {
             return TurnResult([.body("You leave the trading post.")], .move(.oceandale))
@@ -142,6 +154,7 @@ struct MagehouseRoom: RoomScript {
     func describe(_ state: GameState) -> [StyledLine] {
         if !state.has(.levitate) {
             return [
+                .body("The ward still hums at the threshold — old Levitate magic, patient, yours almost by inheritance."),
                 .body("You draw nearer to the house, when the door bursts open, pages"),
                 .body("of books fly in every direction. The sudden gust of wind startles you."),
                 .blank,
@@ -176,6 +189,8 @@ struct MagehouseRoom: RoomScript {
                 .speech("I've been waiting for you."),
                 .body("She gets up, leads you to a basement table, and reveals a six-foot silver staff topped with a blue gemstone."),
                 .speech("The Rings of Malkos are teleporters, named after our first king."),
+                .speech("Malkos taught that power must be tied to a place — or it drifts into war."),
+                .speech("These rings are anchors fixed in the earth. Step on one, and the world rearranges around you."),
                 .speech("This staff acts as a key to the Rings of Malkos."),
                 .speech("You know what we must do next. Let us not waste any time. Our home awaits."),
                 .hint("\"But before we go, are you sure you're ready?\"")
@@ -199,6 +214,8 @@ struct MagehouseRoom: RoomScript {
                 state.magehouseLocked = true
                 return TurnResult([
                     .speech("Glad you know the simplest of things about our people."),
+                    .speech("The Council required sky-heirs to keep roots on the ground — your father held that oath in Oceandale."),
+                    .speech("Vashirr shattered sky and earth on purpose. That is why your mother was taken."),
                     .speech("Vashirr, the king of the mages, used his power to teleport Nacastrum's citizens."),
                     .speech("After the fall of Oceandale, Vashirr heard of rumors from the druids."),
                     .speech("Nacastrum was to be attacked by the full force of the barbarians of the north."),
@@ -253,16 +270,34 @@ struct GraveyardRoom: RoomScript {
         return [
             .body("The northern outskirts. To the EAST lies a graveyard — a six-feet-tall, near-endless stack of bodies."),
             .body("To the WEST stands a burned-out rustic church. To the NORTH, the broken gate leads out of the city."),
+            state.gateGuardLoreHeard
+                ? .blank
+                : .body("An old man in common-wear leans on a broken spear at the north gate, watching the road."),
             .hint("Where would you like to go? (NORTH, EAST, WEST, or SOUTH)")
         ]
     }
 
     func handle(_ input: ParsedInput, _ state: inout GameState) -> TurnResult {
-        if input.contains(Verb.north) { return TurnResult([.body("You pass through the broken gate.")], .move(.splitpath)) }
+        if input.contains(Verb.north) {
+            if !state.escortActive && !state.gateGuardLoreHeard {
+                return TurnResult(KoNGateGuardLore.northGateBlockedLines())
+            }
+            return TurnResult([.body("You pass through the broken gate.")], .move(.splitpath))
+        }
         if state.escortActive { return TurnResult([.hint("Head NORTH.")]) }
+        if input.contains(["TALK", "GUARD", "ASK"]) {
+            if state.gateGuardLoreHeard {
+                return TurnResult([
+                    .speech("The old guard leans on his broken spear."),
+                    .speech("Same schism, boy. Crown or brotherhood — pick your anchor and pray it holds.")
+                ])
+            }
+            state.gateGuardLoreHeard = true
+            return TurnResult(KoNGateGuardLore.fullEncounter(), events: [.heardGateGuardLore])
+        }
         if input.contains(Verb.west) { return TurnResult([], .move(.church)) }
         if input.contains(Verb.south) { return TurnResult([], .move(.oceandale)) }
-        if input.contains(Verb.east) || input.contains(Verb.look) || input.contains(Verb.take) {
+        if input.contains(Verb.east) || input.contains(Verb.take) {
             if state.has(.sword) {
                 return TurnResult([.body("You have already looted what you could from the dead. Best not to linger.")])
             }
@@ -273,6 +308,12 @@ struct GraveyardRoom: RoomScript {
             return TurnResult([
                 .body("Among the bodies, a soldier still clutches a long sword."),
                 .hint("You could TAKE it.")
+            ])
+        }
+        if input.contains(Verb.look) {
+            return TurnResult([
+                .body("Kaefden blue beside Agromanian black. Mages beside fishers. The stack has no order — only weight."),
+                .body("The schism did not invent this graveyard. Oceandale's colony history made it easy to strike.")
             ])
         }
         return TurnResult([.hint("You can go NORTH, EAST (graveyard), WEST (church), or SOUTH.")])
@@ -287,11 +328,25 @@ struct ChurchRoom: RoomScript {
         [
             .body("A rustic church, dedicated to the matron God of the Ocean — now blackened and roofless."),
             .body("There is nothing to be found here but ash and quiet grief."),
-            .hint("Head BACK.")
+            .hint("LOOK at the shrine, ASK about the matron, or go BACK.")
         ]
     }
 
     func handle(_ input: ParsedInput, _ state: inout GameState) -> TurnResult {
-        TurnResult([], .move(.graveyard))
+        if input.contains(["LOOK", "EXAMINE", "SHRINE"]) {
+            return TurnResult([
+                .body("The matron's statue lies cracked on its side — hands outstretched to the sea, not the sky."),
+                .body("Oceandale prayed to tides and harvest long before Nacastrum floated overhead."),
+                .body("Civic faith, not tower magic. The Agromanians burned that too.")
+            ])
+        }
+        if input.contains(["ASK", "MATRON", "OCEAN", "GOD"]) {
+            return TurnResult([
+                .speech("A mourner kneeling in the ash: She kept the fishing fleets. She did not keep the raiders."),
+                .speech("They say Kaefden mages heal with blue gems. We lit candles to the matron."),
+                .speech("Maybe both are anchors. Maybe that is why the schism never ends.")
+            ])
+        }
+        return TurnResult([], .move(.graveyard))
     }
 }
