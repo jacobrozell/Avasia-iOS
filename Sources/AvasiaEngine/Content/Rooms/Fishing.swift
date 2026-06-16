@@ -30,7 +30,7 @@ enum Fishing {
                     .body("Fortunately, you draw your sword and slay the beast before it can attack."),
                     .body("Looks like you'll be eating crab for dinner!")
                 ]
-                return TurnResult(lines)
+                return TurnResult(lines, events: [.survivedFishingCrab])
             }
             if state.has(.fireball) {
                 lines += [
@@ -38,7 +38,7 @@ enum Fishing {
                     .body("The smell of cooked crab fills the air."),
                     .body("Delicious.")
                 ]
-                return TurnResult(lines)
+                return TurnResult(lines, events: [.survivedFishingCrab])
             }
             lines += [
                 .body("The beast lunges forward and snaps at you!"),
@@ -53,7 +53,7 @@ enum Fishing {
                 .body("Minutes after casting your line into the ocean you feel the weight of the fishing rod become slightly heavier."),
                 .body("You assume that you've got a bite so you reel in the line only to discover an old shoe."),
                 .body("How disappointing.")
-            ])
+            ], events: [.caughtOldShoe])
         case 10...11:
             return TurnResult(open + [
                 .body("A few minutes pass and you feel a bite on the line!"),
