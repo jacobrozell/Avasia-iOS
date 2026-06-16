@@ -26,7 +26,8 @@ struct PrivacyPolicyView: View {
                     policySection(
                         title: "Data stored on your device",
                         body: """
-                        The app saves game progress, achievements, trophies, and settings locally on your \
+                        The app saves game progress, achievements, trophies, Chronicler rank and XP ledger, \
+                        and settings locally on your \
                         iPhone or iPad using standard iOS storage. This data is not transmitted to us.
                         """
                     )
