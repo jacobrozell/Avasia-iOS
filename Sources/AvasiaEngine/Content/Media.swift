@@ -48,4 +48,10 @@ public enum SoundCue: String, Sendable, CaseIterable {
     case win = "sfx_win"             // the canonical ending
     case move = "sfx_move"           // room transition footstep
     case titleTheme = "music_title"  // title-screen music loop
+    case hit = "sfx_hit"
+    case miss = "sfx_miss"
+    case block = "sfx_block"
+    case heal = "sfx_heal"
+    case combatStart = "sfx_combat_start"
+    case victory = "sfx_victory"
 }
