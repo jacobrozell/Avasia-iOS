@@ -17,10 +17,12 @@ struct SettingsView: View {
 
                     appearanceSection
                     soundSection
+                    hapticsSection
                     supportLegalSection
                     pacingSection
                     speedSection
                     cursorSection
+                    chroniclerSection
 
                     MenuButton(title: "Back", accessibilityIdentifier: "settings-back") {
                         vm.screen = vm.menuReturn
@@ -140,6 +142,70 @@ struct SettingsView: View {
             }
             .tint(Theme.accent)
         }
+    }
+
+    private var hapticsSection: some View {
+        SettingsCard {
+            Toggle(isOn: Binding(
+                get: { AppSettings.hapticsEnabled },
+                set: { AppSettings.hapticsEnabled = $0 }
+            )) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Haptic feedback")
+                        .font(.headline)
+                        .foregroundColor(Theme.parchment)
+                    Text("Light taps on buttons and story moments.")
+                        .font(.caption)
+                        .foregroundColor(Theme.parchment.opacity(0.6))
+                }
+            }
+            .tint(Theme.accent)
+        }
+    }
+
+    private var chroniclerSection: some View {
+        SettingsCard {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Chronicler")
+                    .font(.headline)
+                    .foregroundColor(Theme.parchment)
+                Text("Saga-wide rank and XP ledger across all chapters.")
+                    .font(.caption)
+                    .foregroundColor(Theme.parchment.opacity(0.6))
+                    .fixedSize(horizontal: false, vertical: true)
+                Toggle("Show XP gain toasts", isOn: chroniclerToastBinding)
+                Toggle("Show this-run XP in game menu", isOn: chroniclerThisRunBinding)
+                Toggle("Claim achievement XP automatically", isOn: chroniclerAutoClaimBinding)
+                MenuButton(title: "Open Chronicler's Ledger", systemImage: "book.pages") {
+                    vm.openChroniclerLedger(from: .settings)
+                }
+                MenuButton(title: "Reset Chronicler progress", systemImage: "arrow.counterclockwise") {
+                    vm.resetChroniclerProgress()
+                }
+            }
+            .tint(Theme.accent)
+        }
+    }
+
+    private var chroniclerToastBinding: Binding<Bool> {
+        Binding(
+            get: { AppSettings.chroniclerShowXPToasts },
+            set: { AppSettings.chroniclerShowXPToasts = $0 }
+        )
+    }
+
+    private var chroniclerThisRunBinding: Binding<Bool> {
+        Binding(
+            get: { AppSettings.chroniclerShowThisRunXP },
+            set: { AppSettings.chroniclerShowThisRunXP = $0 }
+        )
+    }
+
+    private var chroniclerAutoClaimBinding: Binding<Bool> {
+        Binding(
+            get: { AppSettings.chroniclerAutoClaimAchievements },
+            set: { AppSettings.chroniclerAutoClaimAchievements = $0 }
+        )
     }
 
     private var supportLegalSection: some View {
