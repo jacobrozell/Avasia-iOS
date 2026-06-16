@@ -11,38 +11,43 @@ struct AchievementsView: View {
     var body: some View {
         ZStack {
             Theme.night.ignoresSafeArea()
-            VStack(spacing: 0) {
+            CatalogScreenChrome(backTitle: "Back", onBack: { vm.screen = vm.achievementsReturn }) {
                 header
-                ScrollView {
-                    LazyVStack(spacing: 10) {
-                        ForEach(Achievement.allCases, id: \.self) { ach in
-                            row(ach, unlocked: vm.achievements.has(ach))
-                        }
-                        if !vm.chroniclerPendingClaims.isEmpty {
-                            Text("Tap Claim to add achievement XP to your Chronicler rank.")
-                                .font(.caption)
-                                .foregroundColor(Theme.parchment.opacity(0.5))
-                                .padding(.top, 4)
-                        }
-                    }
-                    .padding(.horizontal, metrics.horizontalPadding)
-                    .padding(.bottom, 8)
-                    .frame(maxWidth: metrics.contentMaxWidth)
-                    .frame(maxWidth: .infinity)
-                }
-                MenuButton(title: "Back") { vm.screen = vm.achievementsReturn }
-                    .padding(.horizontal, metrics.horizontalPadding)
-                    .padding(.bottom, 12)
+            } accessory: {
+                EmptyView()
+            } content: {
+                achievementList
             }
+        }
+    }
+
+    private var achievementList: some View {
+        ScrollView {
+            LazyVStack(spacing: 10) {
+                ForEach(Achievement.allCases, id: \.self) { ach in
+                    row(ach, unlocked: vm.achievements.has(ach))
+                }
+                if !vm.chroniclerPendingClaims.isEmpty {
+                    Text("Tap Claim to add achievement XP to your Chronicler rank.")
+                        .font(.caption)
+                        .foregroundColor(Theme.parchment.opacity(0.5))
+                        .padding(.top, 4)
+                        .accessibilityAddTraits(.isStaticText)
+                }
+            }
+            .padding(.horizontal, metrics.horizontalPadding)
+            .padding(.bottom, 8)
+            .frame(maxWidth: metrics.contentMaxWidth)
+            .frame(maxWidth: .infinity)
         }
     }
 
     private var header: some View {
         let p = vm.achievements
         let progress = p.total > 0 ? Double(p.unlockedCount) / Double(p.total) : 0
-        return VStack(spacing: 8) {
+        return VStack(spacing: metrics.isLandscape ? 4 : 8) {
             Text("Achievements")
-                .font(.system(.largeTitle, design: .serif).bold())
+                .font(.system(metrics.isLandscape ? .title : .largeTitle, design: .serif).bold())
                 .foregroundColor(Theme.accent)
                 .accessibilityAddTraits(.isHeader)
             Text("\(p.unlockedCount) / \(p.total) unlocked")
@@ -60,9 +65,13 @@ struct AchievementsView: View {
                     .foregroundColor(Theme.accent.opacity(0.85))
             }
         }
-        .padding(.top, 24)
+        .padding(.top, metrics.menuHeaderTopPadding)
         .padding(.horizontal, metrics.horizontalPadding)
-        .padding(.bottom, 8)
+        .padding(.bottom, metrics.menuHeaderBottomPadding)
+        .frame(maxWidth: metrics.contentMaxWidth)
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Achievements, \(p.unlockedCount) of \(p.total) unlocked")
     }
 
     private func row(_ ach: Achievement, unlocked: Bool) -> some View {
@@ -91,10 +100,11 @@ struct AchievementsView: View {
                 }
                 .font(.caption.weight(.semibold))
                 .foregroundColor(Theme.accent)
+                .accessibilityLabel("Claim \(SagaXPTracker.xpForAchievement(ach)) chronicler experience for \(ach.title)")
             } else if unlocked, !vm.sagaProfile.canClaimAchievement(ach) {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundColor(Theme.accent.opacity(0.6))
-                    .accessibilityLabel("XP claimed")
+                    .accessibilityLabel("Experience claimed")
             }
         }
         .padding(14)
@@ -102,8 +112,9 @@ struct AchievementsView: View {
             .fill(unlocked ? Theme.accent.opacity(0.12) : Theme.palette.cardFill))
         .overlay(RoundedRectangle(cornerRadius: 12)
             .stroke(unlocked ? Theme.accent.opacity(0.5) : Theme.palette.cardStroke.opacity(0.5)))
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .contain)
         .accessibilityLabel(masked ? "Secret achievement, locked" : ach.title)
         .accessibilityValue(unlocked ? "Unlocked" : "Locked")
+        .accessibilityHint(masked ? "Discover in play" : ach.detail)
     }
 }

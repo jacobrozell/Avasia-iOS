@@ -205,7 +205,7 @@ struct MenuButton: View {
             .foregroundColor(style == .primary ? Theme.onAccent : Theme.parchment)
             .padding(.horizontal, 18)
             .padding(.vertical, 14)
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, minHeight: 44)
             .background(buttonBackground, in: RoundedRectangle(cornerRadius: 12))
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
@@ -373,6 +373,7 @@ struct StatusBadge: View {
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
             .background(tint.opacity(0.14), in: Capsule())
+            .accessibilityLabel("\(title) active")
     }
 }
 
@@ -397,5 +398,7 @@ struct SettingsLinkRow: View {
             }
             .padding(.vertical, 4)
         }
+        .accessibilityLabel(title)
+        .accessibilityHint("Opens in browser")
     }
 }

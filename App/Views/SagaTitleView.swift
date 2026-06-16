@@ -50,6 +50,7 @@ struct SagaTitleView: View {
                 .foregroundColor(Theme.parchment.opacity(0.88))
             TitleOrnament(flipped: true)
         }
+        .accessibilityElement(children: .combine)
     }
 
     private var chroniclerStrip: some View {
@@ -88,15 +89,34 @@ struct SagaTitleView: View {
 
     private var gamePicker: some View {
         VStack(spacing: 14) {
-            ForEach(AvasiaProduct.allCases, id: \.self) { game in
-                ChapterCard(
-                    product: game,
-                    systemImage: icon(for: game),
-                    hasSave: vm.hasSave(for: game),
-                    saveHint: vm.sagaSaveHint(for: game),
-                    completionCount: vm.sagaProfile.completions(for: game)
+            if metrics.isRegularWidth {
+                LazyVGrid(
+                    columns: [GridItem(.flexible()), GridItem(.flexible())],
+                    spacing: 14
                 ) {
-                    vm.openProduct(game)
+                    ForEach(AvasiaProduct.allCases, id: \.self) { game in
+                        ChapterCard(
+                            product: game,
+                            systemImage: icon(for: game),
+                            hasSave: vm.hasSave(for: game),
+                            saveHint: vm.sagaSaveHint(for: game),
+                            completionCount: vm.sagaProfile.completions(for: game)
+                        ) {
+                            vm.openProduct(game)
+                        }
+                    }
+                }
+            } else {
+                ForEach(AvasiaProduct.allCases, id: \.self) { game in
+                    ChapterCard(
+                        product: game,
+                        systemImage: icon(for: game),
+                        hasSave: vm.hasSave(for: game),
+                        saveHint: vm.sagaSaveHint(for: game),
+                        completionCount: vm.sagaProfile.completions(for: game)
+                    ) {
+                        vm.openProduct(game)
+                    }
                 }
             }
             MenuButton(title: "Saga Timeline", systemImage: "clock.arrow.circlepath") {

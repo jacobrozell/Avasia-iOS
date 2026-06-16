@@ -50,7 +50,10 @@
 | **III-M07** | *Crystal Line Down* | volume-iii |
 | **III-M08** | *Kaefden on the Shard* | volume-iii |
 | **III-M09** | *Thekia on Spell-Glass* | volume-iii |
-| **W-01–W-11** | Geography & anchor myths | [`../WORLD_BUILDING.md`](../WORLD_BUILDING.md) |
+| **W-01–W-12** | Geography & anchor myths | [`../WORLD_BUILDING.md`](../WORLD_BUILDING.md) |
+| — | **Ofelos city bible** | [`../OFKELOS.md`](../OFKELOS.md) |
+
+**Totals:** 36 margin specs + 12 world/geography specs + numbered spine (Stories 1–20, 2b, 4b, 9b) + Thekia pack.
 
 ---
 

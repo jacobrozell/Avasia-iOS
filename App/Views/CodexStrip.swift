@@ -16,6 +16,7 @@ struct CodexStrip: View {
                 Button("See all", action: onOpenJournal)
                     .font(.caption.weight(.semibold))
                     .foregroundColor(Theme.parchment.opacity(0.75))
+                    .accessibilityLabel("See all journal entries")
             }
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
@@ -36,6 +37,8 @@ struct CodexStrip: View {
                             }
                         }
                         .buttonStyle(.plain)
+                        .accessibilityLabel(entry.title)
+                        .accessibilityHint("Shows journal detail")
                     }
                 }
                 .padding(.vertical, 2)

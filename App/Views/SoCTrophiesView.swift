@@ -9,23 +9,27 @@ struct SoCTrophiesView: View {
     var body: some View {
         ZStack {
             Theme.night.ignoresSafeArea()
-            VStack(spacing: 0) {
+            CatalogScreenChrome(backTitle: "Back", onBack: { vm.screen = vm.trophiesReturn }) {
                 header
-                ScrollView {
-                    LazyVStack(spacing: 10) {
-                        ForEach(SoCTrophy.allCases, id: \.self) { trophy in
-                            row(trophy, unlocked: vm.socState.trophies.contains(trophy))
-                        }
-                    }
-                    .padding(.horizontal, metrics.horizontalPadding)
-                    .padding(.bottom, 8)
-                    .frame(maxWidth: metrics.contentMaxWidth)
-                    .frame(maxWidth: .infinity)
-                }
-                MenuButton(title: "Back") { vm.screen = vm.trophiesReturn }
-                    .padding(.horizontal, metrics.horizontalPadding)
-                    .padding(.bottom, 12)
+            } accessory: {
+                EmptyView()
+            } content: {
+                trophyList
             }
+        }
+    }
+
+    private var trophyList: some View {
+        ScrollView {
+            LazyVStack(spacing: 10) {
+                ForEach(SoCTrophy.allCases, id: \.self) { trophy in
+                    row(trophy, unlocked: vm.socState.trophies.contains(trophy))
+                }
+            }
+            .padding(.horizontal, metrics.horizontalPadding)
+            .padding(.bottom, 8)
+            .frame(maxWidth: metrics.contentMaxWidth)
+            .frame(maxWidth: .infinity)
         }
     }
 
@@ -33,9 +37,9 @@ struct SoCTrophiesView: View {
         let unlocked = vm.socState.trophies.count
         let total = SoCTrophy.allCases.count
         let progress = total > 0 ? Double(unlocked) / Double(total) : 0
-        return VStack(spacing: 8) {
+        return VStack(spacing: metrics.isLandscape ? 4 : 8) {
             Text("Trophies")
-                .font(.system(.largeTitle, design: .serif).bold())
+                .font(.system(metrics.isLandscape ? .title : .largeTitle, design: .serif).bold())
                 .foregroundColor(Theme.accent)
                 .accessibilityAddTraits(.isHeader)
             Text("\(unlocked) / \(total) unlocked")
@@ -49,9 +53,13 @@ struct SoCTrophiesView: View {
                     .foregroundColor(Theme.parchment.opacity(0.4))
             }
         }
-        .padding(.top, 24)
+        .padding(.top, metrics.menuHeaderTopPadding)
         .padding(.horizontal, metrics.horizontalPadding)
-        .padding(.bottom, 8)
+        .padding(.bottom, metrics.menuHeaderBottomPadding)
+        .frame(maxWidth: metrics.contentMaxWidth)
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Trophies, \(unlocked) of \(total) unlocked")
     }
 
     private func row(_ trophy: SoCTrophy, unlocked: Bool) -> some View {
@@ -81,5 +89,6 @@ struct SoCTrophiesView: View {
         .accessibilityElement(children: .combine)
         .accessibilityLabel(trophy.title)
         .accessibilityValue(unlocked ? "Unlocked" : "Locked")
+        .accessibilityHint(unlocked ? trophy.detail : trophy.unlockHint)
     }
 }

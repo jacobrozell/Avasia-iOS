@@ -121,3 +121,155 @@ footer {
   color: var(--text-muted);
   font-size: 0.85rem;
 }
+
+/* ——— Fiction / prose pages ——— */
+
+main.prose {
+  max-width: 48rem;
+}
+
+.breadcrumb {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.breadcrumb a {
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.prose article h1 {
+  text-align: left;
+  font-size: 1.75rem;
+  margin-top: 0;
+}
+
+.prose article h2 {
+  color: var(--accent);
+  font-size: 1.35rem;
+  margin: 2rem 0 0.75rem;
+  font-family: var(--font-serif);
+}
+
+.prose article h3 {
+  color: var(--text);
+  font-size: 1.1rem;
+  margin: 1.5rem 0 0.5rem;
+  font-family: var(--font-serif);
+}
+
+.prose article h4 {
+  font-size: 1rem;
+  margin: 1.25rem 0 0.4rem;
+  color: var(--text-muted);
+}
+
+.prose article p,
+.prose article li {
+  margin: 0.5rem 0;
+}
+
+.prose article ul,
+.prose article ol {
+  padding-left: 1.35rem;
+}
+
+.prose article blockquote {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid var(--accent);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.prose article pre {
+  overflow-x: auto;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.prose article code {
+  font-size: 0.9em;
+}
+
+.prose article table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.92rem;
+}
+
+.prose article th,
+.prose article td {
+  border: 1px solid var(--border);
+  padding: 0.45rem 0.6rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.prose article th {
+  background: var(--bg-card);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.prose article hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
+}
+
+.prose article em {
+  font-style: italic;
+}
+
+.prose article strong {
+  font-weight: 600;
+}
+
+.catalog-section .section-note {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin: 0 0 0.75rem;
+}
+
+ul.story-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+ul.story-list li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+ul.story-list li:last-child {
+  border-bottom: none;
+}
+
+ul.story-list a {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+ul.story-list a:hover {
+  text-decoration: underline;
+}
+
+ul.story-list .desc {
+  display: block;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-top: 0.15rem;
+}

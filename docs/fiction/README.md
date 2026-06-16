@@ -17,8 +17,11 @@
 |---|---|
 | [`CHARACTERS.md`](CHARACTERS.md) | Key cast — wants, wounds, voice, relationships, story hooks |
 | [`SHORT_STORY_SERIES.md`](SHORT_STORY_SERIES.md) | Full saga as a numbered anthology: one spec per story |
-| [`STORY_BRAINSTORM.md`](STORY_BRAINSTORM.md) | **Future beats backlog** — anthology ideas, world-building, game 3 seeds (not canon until drafted) |
-| [`THEKIA_GROUND_HOUSE.md`](THEKIA_GROUND_HOUSE.md) | **Thekia bible** — origin, Oceandale exile, post-KoN arc; Stories 2b, 4b, 9b + prose draft |
+| [`STORY_BRAINSTORM.md`](STORY_BRAINSTORM.md) | **Index** to all supplemental specs (codes I-M01 … III-M09, W-01–W-12) |
+| [`specs/`](specs/README.md) | **36 margin story specs** — synopsis, beats, dialogue by volume |
+| [`WORLD_BUILDING.md`](WORLD_BUILDING.md) | Institutions, cultures, economy, geography stories W-01–W-12 |
+| [`OFKELOS.md`](OFKELOS.md) | Neutral city bible — districts, Blade clause, observer corps |
+| [`THEKIA_GROUND_HOUSE.md`](THEKIA_GROUND_HOUSE.md) | **Thekia bible** — Stories 2b, 4b, 9b + prose draft |
 | [`STORY_ZERO_SCOUT_PATROL.md`](STORY_ZERO_SCOUT_PATROL.md) | **Story #0** — alignment fork, Vashirr first contact (future anthology) |
 
 ---
@@ -57,3 +60,20 @@ text wins.
 
 **Age era only** — *King of Nacastrum* and *Blade of Courage*. Game 3 (first 2D
 title, post–Age era) is noted in the series index as **Volume III — TBD**.
+
+---
+
+## GitHub Pages (fiction site)
+
+HTML pages for sharing are generated from the markdown sources in this folder.
+
+| URL (after Pages is enabled) | Content |
+|---|---|
+| `/fiction/story-brief.html` | Collaborator overview |
+| `/fiction/index.html` | Full catalog — spine, margin, world stories |
+| `/fiction/spine/` | Stories 1–20 (+ 2b, 4b, 9b) |
+| `/fiction/margin-i/` · `margin-ii/` · `bridge/` · `commodity/` · `world/` | Supplemental specs |
+
+**Build:** from repo root, `python3 scripts/build-fiction-site.py` (requires `pip install markdown`).
+
+**Enable Pages:** GitHub repo → Settings → Pages → Source: **Deploy from branch** → branch `main` (or your default) → folder **`/docs`**. The site root is `docs/index.html`; fiction lives under `docs/fiction/`.

@@ -35,34 +35,40 @@ struct ChroniclerLedgerView: View {
     var body: some View {
         ZStack {
             Theme.night.ignoresSafeArea()
-            VStack(spacing: 0) {
+            CatalogScreenChrome(backTitle: "Back", onBack: { vm.screen = vm.chroniclerReturn }) {
                 header
-                filterPicker
-                if !vm.chroniclerPendingClaims.isEmpty {
-                    pendingClaims
-                }
-                ScrollView {
-                    LazyVStack(spacing: 8) {
-                        if filteredEntries.isEmpty {
-                            Text(emptyMessage)
-                                .font(.subheadline)
-                                .foregroundColor(Theme.parchment.opacity(0.55))
-                                .padding(.top, 24)
-                        } else {
-                            ForEach(filteredEntries) { entry in
-                                ledgerRow(entry)
-                            }
-                        }
+            } accessory: {
+                VStack(spacing: 0) {
+                    filterPicker
+                    if !vm.chroniclerPendingClaims.isEmpty {
+                        pendingClaims
                     }
-                    .padding(.horizontal, metrics.horizontalPadding)
-                    .padding(.bottom, 8)
-                    .frame(maxWidth: metrics.contentMaxWidth)
-                    .frame(maxWidth: .infinity)
                 }
-                MenuButton(title: "Back") { vm.screen = vm.chroniclerReturn }
-                    .padding(.horizontal, metrics.horizontalPadding)
-                    .padding(.bottom, 12)
+            } content: {
+                ledgerList
             }
+        }
+    }
+
+    private var ledgerList: some View {
+        ScrollView {
+            LazyVStack(spacing: 8) {
+                if filteredEntries.isEmpty {
+                    Text(emptyMessage)
+                        .font(.subheadline)
+                        .foregroundColor(Theme.parchment.opacity(0.55))
+                        .padding(.top, 24)
+                        .accessibilityAddTraits(.isStaticText)
+                } else {
+                    ForEach(filteredEntries) { entry in
+                        ledgerRow(entry)
+                    }
+                }
+            }
+            .padding(.horizontal, metrics.horizontalPadding)
+            .padding(.bottom, 8)
+            .frame(maxWidth: metrics.contentMaxWidth)
+            .frame(maxWidth: .infinity)
         }
     }
 
@@ -76,17 +82,19 @@ struct ChroniclerLedgerView: View {
     private var header: some View {
         let rank = profile.chroniclerRank
         let progress = ChroniclerRank.progressToNextRank(from: profile.sagaXP)
-        return VStack(spacing: 8) {
+        return VStack(spacing: metrics.isLandscape ? 4 : 8) {
             Text("The Chronicler's Ledger")
-                .font(.system(.largeTitle, design: .serif).bold())
+                .font(.system(metrics.isLandscape ? .title : .largeTitle, design: .serif).bold())
                 .foregroundColor(Theme.accent)
                 .accessibilityAddTraits(.isHeader)
             Text("Chronicler · Rank \(rank)")
                 .font(.headline)
                 .foregroundColor(Theme.parchment)
-            Text(profile.chroniclerSubtitle)
-                .font(.subheadline)
-                .foregroundColor(Theme.parchment.opacity(0.7))
+            if !metrics.isLandscape {
+                Text(profile.chroniclerSubtitle)
+                    .font(.subheadline)
+                    .foregroundColor(Theme.parchment.opacity(0.7))
+            }
             Text("\(profile.sagaXP) XP · \(ChroniclerRank.xpToNextRank(from: profile.sagaXP)) to next rank")
                 .font(.caption)
                 .foregroundColor(Theme.parchment.opacity(0.55))
@@ -100,38 +108,69 @@ struct ChroniclerLedgerView: View {
             .font(.caption2)
             .padding(.top, 4)
         }
-        .padding(.top, 24)
+        .padding(.top, metrics.menuHeaderTopPadding)
         .padding(.horizontal, metrics.horizontalPadding)
-        .padding(.bottom, 8)
+        .padding(.bottom, metrics.menuHeaderBottomPadding)
+        .frame(maxWidth: metrics.contentMaxWidth)
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Chronicler ledger, rank \(rank), \(profile.sagaXP) experience")
     }
 
     private func statPill(_ label: String, count: Int) -> some View {
         Text("\(label) \(count)×")
             .foregroundColor(Theme.parchment.opacity(0.65))
+            .accessibilityLabel("\(label), \(count) completions")
     }
 
     private var filterPicker: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                ForEach(LedgerFilter.allCases) { item in
-                    Button {
-                        filter = item
-                    } label: {
-                        Text(item.rawValue)
-                            .font(.caption.weight(.semibold))
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(
-                                filter == item ? Theme.accent.opacity(0.25) : Theme.palette.cardFill,
-                                in: Capsule()
-                            )
-                            .foregroundColor(filter == item ? Theme.accent : Theme.parchment.opacity(0.75))
+        Group {
+            if metrics.isLandscape || metrics.isAccessibilityText {
+                LazyVGrid(
+                    columns: [GridItem(.adaptive(minimum: 88, maximum: 120), spacing: 8)],
+                    spacing: 8
+                ) {
+                    ForEach(LedgerFilter.allCases) { item in
+                        filterButton(item)
                     }
                 }
+                .padding(.horizontal, metrics.horizontalPadding)
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(LedgerFilter.allCases) { item in
+                            filterButton(item)
+                        }
+                    }
+                    .padding(.horizontal, metrics.horizontalPadding)
+                }
             }
-            .padding(.horizontal, metrics.horizontalPadding)
         }
         .padding(.bottom, 8)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Ledger filter")
+    }
+
+    private func filterButton(_ item: LedgerFilter) -> some View {
+        Button {
+            filter = item
+        } label: {
+            Text(item.rawValue)
+                .font(.caption.weight(.semibold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.85)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .frame(minHeight: 44)
+                .frame(maxWidth: .infinity)
+                .background(
+                    filter == item ? Theme.accent.opacity(0.25) : Theme.palette.cardFill,
+                    in: Capsule()
+                )
+                .foregroundColor(filter == item ? Theme.accent : Theme.parchment.opacity(0.75))
+        }
+        .accessibilityLabel(item.rawValue)
+        .accessibilityAddTraits(filter == item ? .isSelected : [])
     }
 
     private var pendingClaims: some View {
@@ -139,6 +178,7 @@ struct ChroniclerLedgerView: View {
             Text("Pending claims")
                 .font(.caption.weight(.semibold))
                 .foregroundColor(Theme.parchment.opacity(0.6))
+                .accessibilityAddTraits(.isHeader)
             ForEach(vm.chroniclerPendingClaims, id: \.self) { ach in
                 HStack {
                     Text(ach.title)
@@ -150,9 +190,11 @@ struct ChroniclerLedgerView: View {
                     }
                     .font(.caption.weight(.semibold))
                     .foregroundColor(Theme.accent)
+                    .accessibilityLabel("Claim \(SagaXPTracker.xpForAchievement(ach)) experience for \(ach.title)")
                 }
                 .padding(10)
                 .background(Theme.palette.cardFill, in: RoundedRectangle(cornerRadius: 10))
+                .accessibilityElement(children: .contain)
             }
         }
         .padding(.horizontal, metrics.horizontalPadding)
@@ -167,6 +209,7 @@ struct ChroniclerLedgerView: View {
                 .font(.system(.subheadline, design: .monospaced).weight(.semibold))
                 .foregroundColor(entry.amount > 0 ? Theme.accent : Theme.parchment.opacity(0.4))
                 .frame(width: 44, alignment: .trailing)
+                .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text(entry.label)
                     .font(.subheadline)
@@ -183,5 +226,14 @@ struct ChroniclerLedgerView: View {
         .padding(12)
         .background(Theme.palette.cardFill, in: RoundedRectangle(cornerRadius: 10))
         .accessibilityElement(children: .combine)
+        .accessibilityLabel(ledgerAccessibilityLabel(entry))
+    }
+
+    private func ledgerAccessibilityLabel(_ entry: SagaXPEntry) -> String {
+        let amount = entry.amount > 0 ? "plus \(entry.amount) experience" : "no experience change"
+        if let note = entry.modifierNote {
+            return "\(entry.label), \(amount), \(note)"
+        }
+        return "\(entry.label), \(amount)"
     }
 }

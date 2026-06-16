@@ -303,6 +303,15 @@ struct AnimatedHealthBar: View {
 
     private var shownHp: Int { Int(displayed.rounded()) }
 
+    private var healthAccessibilityValue: String {
+        let base = "\(value) of \(maxHp)"
+        switch flash {
+        case .damage: return "\(base), took damage"
+        case .heal: return "\(base), healed"
+        case nil: return base
+        }
+    }
+
     private var fillColor: Color {
         let ratio = maxHp > 0 ? Double(value) / Double(maxHp) : 1
         if ratio <= 0.25 { return .red }
@@ -348,7 +357,7 @@ struct AnimatedHealthBar: View {
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Health")
-        .accessibilityValue("\(value) of \(maxHp)")
+        .accessibilityValue(healthAccessibilityValue)
         .onAppear { syncDisplayed(animated: false) }
         .onChange(of: value) { _ in syncDisplayed(animated: true) }
         .onChange(of: flash) { newFlash in

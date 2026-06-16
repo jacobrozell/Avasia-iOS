@@ -49,6 +49,8 @@ struct TimelineEventRow: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(event.unlocked ? event.title : "Locked timeline event")
+        .accessibilityValue(event.dateLabel)
+        .accessibilityHint(event.unlocked ? "Shows timeline detail" : event.lockedHint)
     }
 
     private var timelineRail: some View {
@@ -70,6 +72,7 @@ struct TimelineEventRow: View {
             }
         }
         .frame(width: 36)
+        .accessibilityHidden(true)
     }
 }
 
@@ -78,39 +81,47 @@ struct SagaTimelineDetailSheet: View {
     let event: SagaTimelineEvent
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    Text(event.dateLabel)
-                        .font(.caption.weight(.semibold))
-                        .foregroundColor(Theme.accent)
-                    HStack(spacing: 14) {
-                        Image(systemName: event.unlocked ? event.symbolName : "questionmark")
-                            .font(.largeTitle)
-                            .foregroundColor(event.unlocked ? Theme.accent : Theme.parchment.opacity(0.4))
-                        Text(event.unlocked ? event.title : "Undiscovered")
-                            .font(.system(.title2, design: .serif).bold())
-                            .foregroundColor(Theme.parchment)
+        LayoutMetricsReader { metrics in
+            NavigationStack {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text(event.dateLabel)
+                            .font(.caption.weight(.semibold))
+                            .foregroundColor(Theme.accent)
+                        HStack(spacing: 14) {
+                            Image(systemName: event.unlocked ? event.symbolName : "questionmark")
+                                .font(.largeTitle)
+                                .foregroundColor(event.unlocked ? Theme.accent : Theme.parchment.opacity(0.4))
+                                .accessibilityHidden(true)
+                            Text(event.unlocked ? event.title : "Undiscovered")
+                                .font(.system(.title2, design: .serif).bold())
+                                .foregroundColor(Theme.parchment)
+                                .accessibilityAddTraits(.isHeader)
+                        }
+                        Text(event.era.title)
+                            .font(.subheadline)
+                            .foregroundColor(Theme.parchment.opacity(0.6))
+                        Text(event.unlocked ? event.summary : event.lockedHint)
+                            .font(.body)
+                            .foregroundColor(Theme.parchment.opacity(0.85))
+                            .fixedSize(horizontal: false, vertical: true)
                     }
-                    Text(event.era.title)
-                        .font(.subheadline)
-                        .foregroundColor(Theme.parchment.opacity(0.6))
-                    Text(event.unlocked ? event.summary : event.lockedHint)
-                        .font(.body)
-                        .foregroundColor(Theme.parchment.opacity(0.85))
-                        .fixedSize(horizontal: false, vertical: true)
+                    .padding(24)
+                    .frame(maxWidth: metrics.contentMaxWidth)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .padding(24)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .background(Theme.night.ignoresSafeArea())
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }
+                .background(Theme.night.ignoresSafeArea())
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Done") { dismiss() }
+                            .accessibilityLabel("Done")
+                    }
                 }
             }
+            .presentationDetents([.medium, .large])
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel(event.unlocked ? event.title : "Undiscovered timeline event")
         }
-        .presentationDetents([.medium, .large])
     }
 }

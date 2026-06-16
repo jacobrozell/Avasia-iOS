@@ -17,33 +17,37 @@ struct SagaTimelineView: View {
     var body: some View {
         ZStack {
             Theme.night.ignoresSafeArea()
-            VStack(spacing: 0) {
+            CatalogScreenChrome(backTitle: "Back", onBack: { vm.screen = vm.timelineReturn }) {
                 header
-                ScrollView {
-                    LazyVStack(spacing: 10) {
-                        ForEach(Array(events.enumerated()), id: \.element.id) { index, event in
-                            if shouldShowEraHeader(at: index) {
-                                eraHeader(event.era)
-                            }
-                            TimelineEventRow(
-                                event: event,
-                                isLast: index == events.count - 1,
-                                onSelect: { selected = event }
-                            )
-                        }
-                    }
-                    .padding(.horizontal, metrics.horizontalPadding)
-                    .padding(.bottom, 8)
-                    .frame(maxWidth: metrics.contentMaxWidth)
-                    .frame(maxWidth: .infinity)
-                }
-                MenuButton(title: "Back") { vm.screen = vm.timelineReturn }
-                    .padding(.horizontal, metrics.horizontalPadding)
-                    .padding(.bottom, 12)
+            } accessory: {
+                EmptyView()
+            } content: {
+                timelineList
             }
         }
         .sheet(item: $selected) { event in
             SagaTimelineDetailSheet(event: event)
+        }
+    }
+
+    private var timelineList: some View {
+        ScrollView {
+            LazyVStack(spacing: 10) {
+                ForEach(Array(events.enumerated()), id: \.element.id) { index, event in
+                    if shouldShowEraHeader(at: index) {
+                        eraHeader(event.era)
+                    }
+                    TimelineEventRow(
+                        event: event,
+                        isLast: index == events.count - 1,
+                        onSelect: { selected = event }
+                    )
+                }
+            }
+            .padding(.horizontal, metrics.horizontalPadding)
+            .padding(.bottom, 8)
+            .frame(maxWidth: metrics.contentMaxWidth)
+            .frame(maxWidth: .infinity)
         }
     }
 
@@ -55,9 +59,9 @@ struct SagaTimelineView: View {
         )
         let total = SagaTimelineCatalog.totalCount
         let progress = total > 0 ? Double(unlocked) / Double(total) : 0
-        return VStack(spacing: 8) {
+        return VStack(spacing: metrics.isLandscape ? 4 : 8) {
             Text("Saga Timeline")
-                .font(.system(.largeTitle, design: .serif).bold())
+                .font(.system(metrics.isLandscape ? .title : .largeTitle, design: .serif).bold())
                 .foregroundColor(Theme.accent)
                 .accessibilityAddTraits(.isHeader)
             Text("\(unlocked) / \(total) eras discovered")
@@ -66,9 +70,13 @@ struct SagaTimelineView: View {
             ProgressBar(value: progress)
                 .padding(.horizontal, 8)
         }
-        .padding(.top, 24)
+        .padding(.top, metrics.menuHeaderTopPadding)
         .padding(.horizontal, metrics.horizontalPadding)
-        .padding(.bottom, 8)
+        .padding(.bottom, metrics.menuHeaderBottomPadding)
+        .frame(maxWidth: metrics.contentMaxWidth)
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Saga timeline, \(unlocked) of \(total) eras discovered")
     }
 
     private func shouldShowEraHeader(at index: Int) -> Bool {
@@ -86,5 +94,6 @@ struct SagaTimelineView: View {
         }
         .padding(.top, 8)
         .padding(.bottom, 2)
+        .accessibilityAddTraits(.isHeader)
     }
 }

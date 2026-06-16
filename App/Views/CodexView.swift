@@ -29,17 +29,16 @@ struct CodexView: View {
     var body: some View {
         ZStack {
             Theme.night.ignoresSafeArea()
-            VStack(spacing: 0) {
+            CatalogScreenChrome(backTitle: "Back", onBack: { vm.screen = vm.codexReturn }) {
                 header
+            } accessory: {
                 categoryPicker
+            } content: {
                 if category == .timeline {
                     timelineList
                 } else {
                     entryGrid
                 }
-                MenuButton(title: "Back") { vm.screen = vm.codexReturn }
-                    .padding(.horizontal, metrics.horizontalPadding)
-                    .padding(.bottom, 12)
             }
         }
         .sheet(item: $selected) { entry in
@@ -53,7 +52,15 @@ struct CodexView: View {
     private var entryGrid: some View {
         ScrollView {
             LazyVGrid(
-                columns: [GridItem(.adaptive(minimum: 88, maximum: 110), spacing: 12)],
+                columns: [
+                    GridItem(
+                        .adaptive(
+                            minimum: metrics.catalogGridMinimum,
+                            maximum: metrics.catalogGridMaximum
+                        ),
+                        spacing: 12
+                    )
+                ],
                 spacing: 12
             ) {
                 ForEach(entries) { entry in
@@ -93,9 +100,9 @@ struct CodexView: View {
         )
         let total = JournalCatalog.totalCount(for: vm.product)
         let progress = total > 0 ? Double(unlocked) / Double(total) : 0
-        return VStack(spacing: 8) {
+        return VStack(spacing: metrics.isLandscape ? 4 : 8) {
             Text("Journal")
-                .font(.system(.largeTitle, design: .serif).bold())
+                .font(.system(metrics.isLandscape ? .title : .largeTitle, design: .serif).bold())
                 .foregroundColor(Theme.accent)
                 .accessibilityAddTraits(.isHeader)
             Text("\(unlocked) / \(total) discovered")
@@ -104,9 +111,13 @@ struct CodexView: View {
             ProgressBar(value: progress)
                 .padding(.horizontal, 8)
         }
-        .padding(.top, 24)
+        .padding(.top, metrics.menuHeaderTopPadding)
         .padding(.horizontal, metrics.horizontalPadding)
-        .padding(.bottom, 8)
+        .padding(.bottom, metrics.menuHeaderBottomPadding)
+        .frame(maxWidth: metrics.contentMaxWidth)
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Journal, \(unlocked) of \(total) discovered")
     }
 
     private var categoryPicker: some View {
@@ -117,9 +128,10 @@ struct CodexView: View {
         }
         .pickerStyle(.segmented)
         .padding(.horizontal, metrics.horizontalPadding)
-        .padding(.bottom, 12)
+        .padding(.bottom, metrics.isLandscape ? 8 : 12)
         .frame(maxWidth: metrics.contentMaxWidth)
         .frame(maxWidth: .infinity)
+        .accessibilityLabel("Journal category")
     }
 
     private var availableCategories: [JournalCategory] {
@@ -154,7 +166,7 @@ struct CodexView: View {
                     .minimumScaleFactor(0.8)
             }
             .padding(.vertical, 8)
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, minHeight: 44)
         }
         .buttonStyle(.plain)
         .accessibilityLabel(entry.unlocked ? entry.title : "Undiscovered entry")

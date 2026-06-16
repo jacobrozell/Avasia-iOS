@@ -782,9 +782,7 @@ game 3 setup.
 
 ## Appendix — Optional standalone spinoffs
 
-> **Full backlog:** [`STORY_BRAINSTORM.md`](STORY_BRAINSTORM.md) — 40+ ideas with priority,
-> pillars, and world-building buckets. Entries below are the original short list;
-> several are expanded there.
+> **Full backlog:** [`STORY_BRAINSTORM.md`](STORY_BRAINSTORM.md) (index) · [`specs/`](specs/README.md) (36 full margin specs) · [`WORLD_BUILDING.md`](WORLD_BUILDING.md) (W-01–W-12) · [`OFKELOS.md`](OFKELOS.md)
 
 | Title | Hook |
 |---|---|

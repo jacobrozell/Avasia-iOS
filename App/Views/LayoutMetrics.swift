@@ -12,14 +12,19 @@ struct LayoutMetrics: Equatable {
     var isRegularWidth: Bool { horizontalSizeClass == .regular }
     var isAccessibilityText: Bool { dynamicTypeSize.isAccessibilitySize }
 
-    /// Two-column game layout on iPad or very wide landscape (not iPhone landscape).
+    /// Two-column game layout on iPad or landscape phones with enough width.
     var usesSplitGameLayout: Bool {
-        isRegularWidth || (isLandscape && size.width >= 900)
+        isRegularWidth || (isLandscape && size.width >= 700)
+    }
+
+    /// Stacked layout in landscape — vertical status avoids a horizontal scroller.
+    var usesCompactStatusStrip: Bool {
+        isLandscape && !usesSplitGameLayout
     }
 
     var illustrationHeight: CGFloat {
         if usesSplitGameLayout { return min(size.height * 0.38, 240) }
-        if isLandscape { return isAccessibilityText ? 52 : 68 }
+        if isLandscape { return isAccessibilityText ? 40 : 52 }
         return isAccessibilityText ? 72 : 96
     }
 
@@ -41,7 +46,34 @@ struct LayoutMetrics: Equatable {
     var usesWrappedQuickActions: Bool {
         isAccessibilityText
             || usesSplitGameLayout
-            || (isLandscape && !usesSplitGameLayout && size.height < 420)
+            || isLandscape
+    }
+
+    /// Caps quick-action area height so the transcript keeps room in landscape.
+    var quickActionsMaxHeight: CGFloat? {
+        if isLandscape && !usesSplitGameLayout { return isAccessibilityText ? 140 : 108 }
+        if isAccessibilityText { return 180 }
+        return nil
+    }
+
+    // MARK: - Catalog screens (journal, achievements, timeline, ledger)
+
+    var menuHeaderTopPadding: CGFloat { isLandscape ? 8 : 24 }
+    var menuHeaderBottomPadding: CGFloat { isLandscape ? 4 : 8 }
+
+    /// Landscape catalog screens use a toolbar back button to preserve scroll height.
+    var usesToolbarBackButton: Bool { isLandscape }
+
+    var catalogGridMinimum: CGFloat {
+        if isRegularWidth { return 96 }
+        if isLandscape { return 72 }
+        return 88
+    }
+
+    var catalogGridMaximum: CGFloat {
+        if isRegularWidth { return 140 }
+        if isLandscape { return 100 }
+        return 110
     }
 }
 
@@ -93,5 +125,40 @@ struct CenteredPanel<Content: View>: View {
             .frame(maxWidth: metrics.contentMaxWidth)
             .frame(maxWidth: .infinity)
             .padding(.horizontal, metrics.horizontalPadding)
+    }
+}
+
+/// Shared chrome for journal, achievements, trophies, timeline, and ledger screens.
+struct CatalogScreenChrome<Header: View, Accessory: View, Content: View>: View {
+    @Environment(\.layoutMetrics) private var metrics
+    let backTitle: String
+    let onBack: () -> Void
+    @ViewBuilder let header: () -> Header
+    @ViewBuilder let accessory: () -> Accessory
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        VStack(spacing: 0) {
+            header()
+            accessory()
+            content()
+                .layoutPriority(1)
+            if !metrics.usesToolbarBackButton {
+                MenuButton(title: backTitle, action: onBack)
+                    .padding(.horizontal, metrics.horizontalPadding)
+                    .padding(.bottom, 12)
+            }
+        }
+        .toolbar {
+            if metrics.usesToolbarBackButton {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(action: onBack) {
+                        Label(backTitle, systemImage: "chevron.backward")
+                            .foregroundColor(Theme.accent)
+                    }
+                    .accessibilityLabel(backTitle)
+                }
+            }
+        }
     }
 }

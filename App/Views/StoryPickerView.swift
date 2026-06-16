@@ -145,6 +145,9 @@ struct StoryPickerView: View {
         }
         .buttonStyle(PressScaleButtonStyle())
         .disabled(!allowed && !done)
+        .accessibilityLabel(meta.title)
+        .accessibilityValue(done ? "Completed" : (allowed ? costLabel : "Locked"))
+        .accessibilityHint(meta.subtitle)
         .accessibilityIdentifier("story-\(meta.id.rawValue)")
     }
 
@@ -191,6 +194,9 @@ struct StoryPickerView: View {
         }
         .buttonStyle(PressScaleButtonStyle())
         .disabled(!unlocked)
+        .accessibilityLabel(AnthologyCatalog.arenaTitle)
+        .accessibilityHint(AnthologyCatalog.arenaSubtitle)
+        .accessibilityValue(unlocked ? "Available" : "Locked")
         .accessibilityIdentifier("story-arena")
     }
 
@@ -239,6 +245,9 @@ struct StoryPickerView: View {
         }
         .buttonStyle(PressScaleButtonStyle())
         .disabled(!unlocked)
+        .accessibilityLabel(AnthologyCatalog.shopTitle)
+        .accessibilityHint(AnthologyCatalog.shopSubtitle)
+        .accessibilityValue(unlocked ? "Available" : "Locked")
         .accessibilityIdentifier("story-shop")
     }
 }

@@ -163,8 +163,10 @@ struct GameView: View {
 
     private func stackedLayout(_ metrics: LayoutMetrics) -> some View {
         VStack(spacing: 0) {
-            regionIllustration(metrics)
-            statusArea(metrics)
+            if !metrics.usesCompactStatusStrip {
+                regionIllustration(metrics)
+            }
+            statusArea(metrics, vertical: metrics.usesCompactStatusStrip)
             Divider().background(Theme.accent.opacity(0.4))
             transcript
                 .layoutPriority(1)
@@ -249,8 +251,10 @@ struct GameView: View {
         Group {
             if vertical {
                 VStack(alignment: .leading, spacing: 10) {
-                    statusControls
+                    statusControls(compact: true)
+                    Divider().background(Theme.accent.opacity(0.25))
                     statusInventory
+                    Divider().background(Theme.accent.opacity(0.25))
                     Text("☠ \(vm.displayDeathCount)")
                         .font(.caption2)
                         .foregroundColor(Theme.parchment.opacity(0.6))
@@ -259,7 +263,7 @@ struct GameView: View {
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 14) {
-                        statusControls
+                        statusControls(compact: false)
                         statusInventory
                         Text("☠ \(vm.displayDeathCount)")
                             .font(.caption2)
@@ -270,11 +274,29 @@ struct GameView: View {
                 }
             }
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, vertical ? 6 : 8)
         .padding(.horizontal, vertical ? metrics.horizontalPadding : 0)
     }
 
-    private var statusControls: some View {
+    private func statusControls(compact: Bool) -> some View {
+        Group {
+            if compact {
+                VStack(alignment: .leading, spacing: 8) {
+                    statusControlButtons
+                    anthologyHubButtons
+                    combatBadges
+                }
+            } else {
+                HStack(spacing: 14) {
+                    statusControlButtons
+                    anthologyHubButtons
+                    combatBadges
+                }
+            }
+        }
+    }
+
+    private var statusControlButtons: some View {
         HStack(spacing: 14) {
             Button { vm.screen = .title } label: {
                 Image(systemName: "list.bullet").foregroundColor(Theme.accent)
@@ -309,20 +331,28 @@ struct GameView: View {
             .accessibilityLabel(vm.product == .kon ? "Achievements" : "Trophies")
             .opacity(vm.product == .stories ? 0.35 : 1)
             .disabled(vm.product == .stories)
+            .accessibilityHidden(vm.product == .stories)
+        }
+    }
 
-            if vm.product == .stories, vm.anthologyState.currentRoom == .storyHub {
+    @ViewBuilder
+    private var anthologyHubButtons: some View {
+        if vm.product == .stories, vm.anthologyState.currentRoom == .storyHub {
+            HStack(spacing: 10) {
                 Button { vm.openStoryPicker() } label: {
                     Label("Stories", systemImage: "book.fill")
                         .font(.caption.weight(.semibold))
                         .foregroundColor(Theme.accent)
                 }
                 .accessibilityIdentifier("anthology-choose-story")
+                .accessibilityLabel("Choose story")
                 Button { vm.launchArena() } label: {
                     Label("Arena", systemImage: "figure.fencing")
                         .font(.caption.weight(.semibold))
                         .foregroundColor(Theme.accent)
                 }
                 .accessibilityIdentifier("anthology-arena")
+                .accessibilityLabel("Arena")
                 .disabled(!vm.anthologyState.storyZeroComplete)
                 Button { vm.openTrainingShop() } label: {
                     Label("Shop", systemImage: "bag.fill")
@@ -330,19 +360,23 @@ struct GameView: View {
                         .foregroundColor(Theme.accent)
                 }
                 .accessibilityIdentifier("anthology-shop")
+                .accessibilityLabel("Shop")
                 .disabled(!vm.anthologyState.storyZeroComplete)
             }
+        }
+    }
 
-            if vm.product == .soc, vm.socState.inCombat || vm.combatStripVisible {
-                StatusBadge(title: "Combat", systemImage: "bolt.fill", tint: .red)
-                    .scaleEffect(vm.combatStripVisible ? 1 : 0.9)
-                    .animation(.spring(response: 0.32), value: vm.combatStripVisible)
-            }
-            if vm.product == .stories, vm.anthologyState.arenaInCombat || vm.combatStripVisible {
-                StatusBadge(title: "Arena", systemImage: "figure.fencing", tint: .red)
-                    .scaleEffect(vm.combatStripVisible ? 1 : 0.9)
-                    .animation(.spring(response: 0.32), value: vm.combatStripVisible)
-            }
+    @ViewBuilder
+    private var combatBadges: some View {
+        if vm.product == .soc, vm.socState.inCombat || vm.combatStripVisible {
+            StatusBadge(title: "Combat", systemImage: "bolt.fill", tint: .red)
+                .scaleEffect(vm.combatStripVisible ? 1 : 0.9)
+                .animation(.spring(response: 0.32), value: vm.combatStripVisible)
+        }
+        if vm.product == .stories, vm.anthologyState.arenaInCombat || vm.combatStripVisible {
+            StatusBadge(title: "Arena", systemImage: "figure.fencing", tint: .red)
+                .scaleEffect(vm.combatStripVisible ? 1 : 0.9)
+                .animation(.spring(response: 0.32), value: vm.combatStripVisible)
         }
     }
 
@@ -404,6 +438,7 @@ struct GameView: View {
                         Label(vm.anthologyState.alignment.rawValue, systemImage: "flag.fill")
                             .font(.caption2)
                             .foregroundColor(Theme.accent)
+                            .accessibilityLabel("Alignment \(vm.anthologyState.alignment.rawValue)")
                     }
                 }
             }
@@ -456,6 +491,9 @@ struct GameView: View {
                                 .italic()
                         }
                         .id("pacing-hint")
+                        .accessibilityElement(children: .combine)
+                        .accessibilityLabel("Tap to continue")
+                        .accessibilityAddTraits(.isButton)
                     }
                 }
                 .padding()
@@ -491,14 +529,16 @@ struct GameView: View {
             if quickVerbs.isEmpty {
                 EmptyView()
             } else if metrics.usesWrappedQuickActions {
-                if metrics.isAccessibilityText {
-                    ScrollView {
+                Group {
+                    if let maxHeight = metrics.quickActionsMaxHeight {
+                        ScrollView {
+                            quickActionsGrid(metrics)
+                        }
+                        .scrollDismissesKeyboard(.interactively)
+                        .frame(maxHeight: maxHeight)
+                    } else {
                         quickActionsGrid(metrics)
                     }
-                    .scrollDismissesKeyboard(.interactively)
-                    .frame(maxHeight: 180)
-                } else {
-                    quickActionsGrid(metrics)
                 }
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -670,6 +710,8 @@ struct GameView: View {
             .celebrationModalEnter()
         }
         .transition(.opacity)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Level up")
     }
 
     // MARK: - Toasts
@@ -703,6 +745,7 @@ struct GameView: View {
                 .overlay(RoundedRectangle(cornerRadius: 12).stroke(Theme.accent.opacity(0.35)))
                 .padding(.horizontal, metrics.horizontalPadding)
                 .transition(.move(edge: .top).combined(with: .opacity))
+                .accessibilityLabel("Chronicler experience plus \(entry.amount), \(entry.label)")
             }
         }
         .animation(.spring(response: 0.4), value: vm.recentChroniclerXP.map(\.id))
