@@ -129,23 +129,48 @@ to end the schism."*
 | **First appearance** | KoN — Old Mage in Oceandale magehouse |
 | **Reveal** | KoN endgame — council identity; SoC — Nacastrum library |
 | **Physical** | Elderly brunette mage; purple robes in SoC |
+| **Age (approx.)** | ~72 at KoN; ~79 at SoC |
+| **Lineage** | Malkos-adjacent council blood — Ring-literate, not crown heir |
 
-**Wound:** Watched Vashirr disband the council and scatter her people; lived in
-exile while Nacastrum floated empty.
+**Wound:** She helped build the system Vashirr broke — ground houses, sky-heir
+compromises, councils that preached restraint while Nacastrum floated above the
+war. Watched scatter from Oceandale in a scrying basin; could not reach the tower
+in time because she had **chosen the ground**.
 
-**Want:** See the Nacastrum of her childhood restored before she dies; place the
-right king on the throne.
+**Want:** See the Nacastrum of her childhood restored before she dies; place a
+king who **earned** the crown on the throne.
 
 **Voice:** Fluent, sharp, maternal without softness. Delivers lore like someone
-who has told this story too many times and still cares. Final KoN line — *"Let us
-go, my king"* — is the emotional thesis of game 1.
+who has told this story too many times and still cares. Never performs grief;
+**acts** on it. Final KoN line — *"Let us go, my king"* — is the emotional
+thesis of game 1.
+
+**Origin (author lock):** Voted for the Council's ground-house compromise and
+signed **Oceandale** into the anchor registry for the Restoration heir's family.
+Left Nacastrum **voluntarily** soon after Vashirr's coronation — not banished.
+Descended to the shore magehouse, bound a **Levitate ward** to wait for the heir
+who would wash ashore. Did **not** know Kaefden at the Academy; knew the registry
+and Vashirr's star pupil by reputation. Full timeline: [`THEKIA_GROUND_HOUSE.md`](THEKIA_GROUND_HOUSE.md).
+
+**Post-KoN arc:** Restoration architect (library, lean public council) → king's
+counterweight (refuses throne seat; tallies Ring costs) → coalition quartermaster
+(war camp) → witness rail (anthology couriers, vouches for SoC druid). After the
+Age: Chronicler-emeritus at Nacastrum — spell-glass sessions, too old to march.
 
 **Author notes:** She is the saga's constant. KoN: quest-giver. SoC: witness,
 escort, quartermaster. Same woman, different war. Blue crystal motif ties her to
-Malkos lineage and the Rings.
+Malkos lineage and the Rings. **Thesis:** left the sky on purpose so someone else
+could learn to walk the ground.
 
-**Relationships:** Kaefden IV (protégé → king); Vashirr (enemy); SoC protagonist
-(brief ally); Sylvian elders (professional respect).
+**Relationships:** Kaefden IV (protégé → king); Vashirr (enemy; debated him when
+he was a teacher); SoC protagonist (brief ally); Sylvian elders (professional
+respect).
+
+**Story hooks:** Council vote on ground houses · ward binding on descent · basin
+night of scatter · ledger handed to Kaefden after crowning · margin note in Many
+Hands pamphlet · game 3 spell-glass council.
+
+**Fiction specs:** Stories 2b, 4b, 9b in [`THEKIA_GROUND_HOUSE.md`](THEKIA_GROUND_HOUSE.md).
 
 ---
 
@@ -362,16 +387,17 @@ marksman/butcher tension from game 1.
 
 ---
 
-## The Player's Family *(KoN memory reveal)*
+## The player's family *(KoN memory reveal)*
 
 | | |
 |---|---|
-| **Mother** | Abducted through Vashirr's portal during banishment |
-| **Father** | Murdered by Vashirr defending her; corpse in Nacastrum courtyard |
+| **Father** | **Ground-anchor bearer** — Council-required rooted kin for sky-lineage heirs; pendant registered the sky–earth bond. Murdered by Vashirr in the castle courtyard when he ran to save the mother. Corpse in Nacastrum King's Castle. |
+| **Mother** | Held the **earth-side oath** tying the bloodline to Oceandale's civic shore. Abducted through Agromanian portals during scatter — anchor-pairs broken by design (see [`../NARRATIVE_LOGIC.md`](../NARRATIVE_LOGIC.md) #8). |
 
 **Author notes:** Appear only in memory sequence and pendant beat. Do not revive
 without saga-level justification. The pendant (silver, blue gemstone) links to
-staff, dagger, and Rings motif.
+staff, dagger, and Rings motif — **earth-crystal in silver**, the ground half of
+Malkos-lineage anchoring.
 
 ---
 
