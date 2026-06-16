@@ -123,6 +123,11 @@ struct StoryPickerView: View {
                         .font(.subheadline)
                         .foregroundColor(Theme.parchment.opacity(allowed || done ? 0.72 : 0.4))
                         .fixedSize(horizontal: false, vertical: true)
+                    Text(meta.synopsis)
+                        .font(.caption)
+                        .foregroundColor(Theme.parchment.opacity(allowed || done ? 0.55 : 0.32))
+                        .fixedSize(horizontal: false, vertical: true)
+                        .lineLimit(4)
                     if let reason, !allowed, !done {
                         Text(reason)
                             .font(.caption)

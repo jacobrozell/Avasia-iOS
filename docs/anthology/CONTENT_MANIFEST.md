@@ -2,27 +2,37 @@
 
 ## Stories
 
-| Story ID | Starting room | Complete flag | FP cost | FP reward | Alignment |
-|---|---|---|---:|---:|---|
-| `storyZero` | `patrolCamp` (via hub) | `storyZeroComplete` | 0 | 500 | sets fork |
-| `goodOne` | `goodOneSilvarium` | `goodOneComplete` | 500 | 500 | loyalist |
-| `badOne` | `badOneColumn` | `badOneComplete` | 500 | 500 | agroman |
-| `elkFeast` | `elkSplitpath` | `elkFeastComplete` | 250 | 250 | neutral |
-| `caveRecord` | `caveRecordTrail` | `caveRecordComplete` | 500 | 500 | neutral (after Elk) |
-| `goodTwo` | `goodTwoSilvarium` | `goodTwoComplete` | 1,000 | 1,000 | loyalist |
-| `badTwo` | `badTwoPeriphery` | `badTwoComplete` | 1,000 | 1,000 | agroman |
-| `goodThree` | `goodThreeLanding` | `goodThreeComplete` | 2,500 | 2,500 | loyalist |
-| `badThree` | `badThreeMarch` | `badThreeComplete` | 2,500 | 2,500 | agroman |
-| `neutralThree` | `neutralThreeMarket` | `neutralThreeComplete` | 2,500 | 2,500 | neutral |
-| `goodFour` | `goodFourMobilizationCamp` | `goodFourComplete` | 5,000 | 5,000 | loyalist |
-| `badFour` | `badFourApproach` | `badFourComplete` | 5,000 | 5,000 | agroman |
-| `neutralFour` | `neutralFourKaefdenRoad` | `neutralFourComplete` | 5,000 | 5,000 | neutral |
-| `goodFive` | `goodFiveSilvarium` | `goodFiveComplete` | 10,000 | 10,000 | loyalist capstone |
-| `badFive` | `badFiveCamp` | `badFiveComplete` | 10,000 | 10,000 | agroman capstone |
-| `neutralFive` | `neutralFiveSplitpath` | `neutralFiveComplete` | 10,000 | 10,000 | neutral capstone |
-| `goodSix` | `goodSixAccordHall` | `goodSixComplete` | 17,500 | 17,500 | loyalist finale |
-| `badSix` | `badSixOccupiedHall` | `badSixComplete` | 17,500 | 17,500 | agroman finale |
-| `neutralSix` | `neutralSixArchive` | `neutralSixComplete` | 17,500 | 17,500 | neutral finale |
+| Story ID | Starting room | Complete flag | FP cost | FP reward | Alignment | 1.0.0 |
+|---|---|---|---:|---:|---|:---:|
+| `storyZero` | `patrolCamp` (via hub) | `storyZeroComplete` | 0 | 500 | sets fork | ✅ |
+| `goodOne` | `goodOneSilvarium` | `goodOneComplete` | 500 | 500 | loyalist | ✅ |
+| `badOne` | `badOneColumn` | `badOneComplete` | 500 | 500 | agroman | ✅ |
+| `elkFeast` | `elkSplitpath` | `elkFeastComplete` | 250 | 250 | neutral | ✅ |
+| `caveRecord` | `caveRecordTrail` | `caveRecordComplete` | 500 | 500 | neutral (after Elk) | |
+| `goodTwo` | `goodTwoSilvarium` | `goodTwoComplete` | 1,000 | 1,000 | loyalist | |
+| `badTwo` | `badTwoPeriphery` | `badTwoComplete` | 1,000 | 1,000 | agroman | |
+| `goodThree` | `goodThreeLanding` | `goodThreeComplete` | 2,500 | 2,500 | loyalist | |
+| `badThree` | `badThreeMarch` | `badThreeComplete` | 2,500 | 2,500 | agroman | |
+| `neutralThree` | `neutralThreeMarket` | `neutralThreeComplete` | 2,500 | 2,500 | neutral | |
+| `goodFour` | `goodFourMobilizationCamp` | `goodFourComplete` | 5,000 | 5,000 | loyalist | |
+| `badFour` | `badFourApproach` | `badFourComplete` | 5,000 | 5,000 | agroman | |
+| `neutralFour` | `neutralFourKaefdenRoad` | `neutralFourComplete` | 5,000 | 5,000 | neutral | |
+| `goodFive` | `goodFiveSilvarium` | `goodFiveComplete` | 10,000 | 10,000 | loyalist capstone | |
+| `badFive` | `badFiveCamp` | `badFiveComplete` | 10,000 | 10,000 | agroman capstone | |
+| `neutralFive` | `neutralFiveSplitpath` | `neutralFiveComplete` | 10,000 | 10,000 | neutral capstone | |
+| `goodSix` | `goodSixAccordHall` | `goodSixComplete` | 17,500 | 17,500 | loyalist finale | |
+| `badSix` | `badSixOccupiedHall` | `badSixComplete` | 17,500 | 17,500 | agroman finale | |
+| `neutralSix` | `neutralSixArchive` | `neutralSixComplete` | 17,500 | 17,500 | neutral finale | |
+
+### Lean 1.0.0 ship scope
+
+**Ships:** Scout Patrol + tier-1 alignment forks (Good #1, Bad #1, Elk Feast) + hub, arena, shop.
+
+**Content-ready post-1.0:** tiers 2–6 remain in engine and docs; enable via update when FP pacing and Chronicler gates are tuned ([`META_PROGRESSION.md`](../META_PROGRESSION.md) §13).
+
+**Player promise at launch:** one free alignment fork, three first-path stories (~30–45 min), training arena for gold. Full six-story paths unlock in a later release without rewriting prose.
+
+**Catalog flag:** `AnthologyStoryMeta.shipsIn100` · `AnthologyCatalog.shipsIn100`
 
 **Hub:** `storyHub` — story launchers + `PLAY ARENA` · `SHOP` · `LIST` · daily ring pass
 

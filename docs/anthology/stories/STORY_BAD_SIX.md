@@ -1,19 +1,32 @@
 # Bad #6 — Western Throne (spec)
 
-> **Requires:** Western Command · **Cost:** 17,500 FP · **Alignment:** agroman · **Path finale**
+> **Requires:** Western Command · **Cost:** 17,500 FP · **Alignment:** agroman finale
+> **Status:** ✅ Playable in `BadSixRooms.swift`
 
-## Arc
+---
 
-| Room | ID | Notes |
-|---|---|---|
-| Occupied Hall | `badSixOccupiedHall` | Entry · callbacks to tier-4 breach |
-| Occupied Streets | `badSixOccupiedStreet` | City under Paladin occupation |
-| Officers' Circle | `badSixOfficersCircle` | Debate governance · callbacks to tier-5 command |
-| Western Seat | `badSixThroneRoom` | **RULE** / **YIELD** |
-| Hall Aftermath | `badSixAftermath` | Branch-specific Vashirr reaction |
-| Occupied Dawn | `badSixEpilogue` | Path completion celebration if 6/6 |
+## Logline
 
-## Branch
+Occupied **Cataracta** — Agroman banners where druid sigils grew. **RULE** the
+western seat or **YIELD** and stay Vashirr's knife (`badSixAcceptedRule`).
 
-- **RULE** — take the western seat in occupied Cataracta
-- **YIELD** — stay scout, refuse the crown
+## Cast
+
+| Name | Role |
+|---|---|
+| PC | Scout → governor or shadow |
+| **Vashirr** | Crown vs knife philosophy |
+| Paladin officers | Occupation law debate |
+| Cataracta shopkeepers | Watch boots pass |
+
+## Beats
+
+1. **Occupied hall** — breach callbacks.
+2. **Occupied streets** — `badFiveAcceptedCommand` salute or scout path.
+3. **Officers' circle** — occupation law.
+4. **Western seat** — RULE vs YIELD branch.
+5. **Aftermath + close** — path complete celebration.
+
+## Links
+
+[Bad #5](STORY_BAD_FIVE.md) · [Vashirr's Redoubt parallel](../../fiction/spine/19-vashirr-s-redoubt.html)

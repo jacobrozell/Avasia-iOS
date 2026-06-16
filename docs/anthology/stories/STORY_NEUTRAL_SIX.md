@@ -1,19 +1,41 @@
 # Neutral #6 — The Open Ledger (spec)
 
-> **Requires:** The Unmarked Road · **Cost:** 17,500 FP · **Alignment:** neutral · **Path finale**
+> **Requires:** The Unmarked Road · **Cost:** 17,500 FP · **Alignment:** neutral finale
+> **Status:** ✅ Playable in `NeutralSixRooms.swift`
 
-## Arc
+---
 
-| Room | ID | Notes |
-|---|---|---|
-| Splitpath Archive | `neutralSixArchive` | Entry · callbacks to unmarked road |
-| Record Hall | `neutralSixRecordHall` | Cave/gate/market records merged |
-| Witness Table | `neutralSixWitnessTable` | Suformin/Cellious debate · callbacks to gate/market |
-| Binding Room | `neutralSixBindingRoom` | **PUBLISH** / **SEAL** |
-| Archive Aftermath | `neutralSixAftermath` | Branch-specific courier/custody reaction |
-| Archive Quiet | `neutralSixEpilogue` | Path completion celebration if 6/6 |
+## Logline
 
-## Branch
+**Suformin** and **Cellious** compile cave copies, gate ledgers, and market truce
+maps into one record. **PUBLISH** the open ledger or **SEAL** it hidden
+(`neutralSixPublishedLedger`).
 
-- **PUBLISH** — open ledger to all factions
-- **SEAL** — keep archive in neutral custody
+## Cast
+
+| Name | Role |
+|---|---|
+| PC | Broker → archivist witness |
+| **Suformin** | Cave record keeper |
+| **Cellious** | Gate ledger keeper |
+| Scribes | Copy neutral ink |
+
+## Beats
+
+1. **Splitpath archive** — stacks merge; `neutralFiveStayedOnRoad` callback.
+2. **Record hall** — cross-check deserters vs truce maps.
+3. **Witness table** — publish vs seal debate.
+4. **Binding room** — PUBLISH vs SEAL branch.
+5. **Aftermath + close** — path complete celebration.
+
+## Prior callbacks (stack)
+
+| Flag | Effect |
+|---|---|
+| `neutralFourStayedWitness` | Cellious: signature in master index |
+| `neutralThreeBrokersPeace` | Truce map on top of stack |
+| `neutralFiveStayedOnRoad` | Suformin trusts you to finish |
+
+## Links
+
+[Neutral #5](STORY_NEUTRAL_FIVE.md) · [Cave Record](STORY_CAVE_RECORD.md) · [Chronicler ranks](../../META_PROGRESSION.md)
