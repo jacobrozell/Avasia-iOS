@@ -14,6 +14,8 @@ public struct SoCCombatResult: Sendable {
 }
 
 public enum SoCCombat {
+    private static let hitRollRange = 0...10
+
     public static func begin(
         enemy: SoCCombatant,
         deathText: String,
@@ -36,17 +38,17 @@ public enum SoCCombat {
         state.combatAllowsFlee = false
     }
 
-  public static func handle(_ input: ParsedInput, state: inout SoCGameState) -> SoCCombatResult {
+    public static func handle(_ input: ParsedInput, state: inout SoCGameState) -> SoCCombatResult {
         guard state.inCombat, var enemy = state.enemy else {
             return SoCCombatResult([.hint("You are not in combat.")])
         }
 
         if input.contains("HELP") || input.contains("COMMANDS") {
-            var cmds = ["ATTACK", "EAT POTION", "FLEE (optional fights)", "OBJECTIVES"]
-            if state.playerClass == .guardian {
-                cmds.append("Guardian: first enemy hit blocked once")
-            }
-            return SoCCombatResult(cmds.map { .body($0) })
+            return SoCCombatResult(helpLines(state: state))
+        }
+
+        if SoCGlobalCommands.objectiveTriggers.contains(where: { input.contains($0) }) {
+            return SoCCombatResult(SoCJournal.objectiveLines(for: state))
         }
 
         if input.contains("FLEE") || input.contains("RETREAT") || input.contains("ESCAPE") {
@@ -54,17 +56,27 @@ public enum SoCCombat {
         }
 
         if SoCGlobalCommands.isEatCommand(input) {
-            return SoCCombatResult(SoCGlobalCommands.eatInCombat(input, state: &state))
+            return handleEat(input, state: &state, enemy: &enemy)
         }
 
         let attack = ["ATTACK", "STRIKE", "FIGHT"]
         guard attack.contains(where: { input.contains($0) }) else {
-            return SoCCombatResult([.hint("ATTACK, EAT POTION, or FLEE (if allowed).")])
+            return SoCCombatResult([.hint("ATTACK, EAT POTION, OBJECTIVES, or FLEE (if allowed).")])
         }
 
-        var lines: [StyledLine] = []
-        state.neededLuckToHit = Int.random(in: 0...11)
+        var lines = exchangeAttacks(state: &state, enemy: &enemy)
+        state.enemy = enemy
+        return resolveAfterExchange(lines: &lines, enemy: enemy, state: &state)
+    }
+
+    // MARK: - Turn resolution
+
+    private static func exchangeAttacks(
+        state: inout SoCGameState,
+        enemy: inout SoCCombatant
+    ) -> [StyledLine] {
         state.playerAttacksFirst = state.isFasterThanEnemy()
+        var lines: [StyledLine] = []
 
         if state.playerAttacksFirst {
             lines.append(contentsOf: playerAttack(state: &state, enemy: &enemy))
@@ -78,8 +90,16 @@ public enum SoCCombat {
             }
         }
 
-        state.enemy = enemy
+        lines.append(contentsOf: turnStatus(state: state, enemy: enemy))
+        lines.append(contentsOf: lowHpWarning(state: state))
+        return lines
+    }
 
+    private static func resolveAfterExchange(
+        lines: inout [StyledLine],
+        enemy: SoCCombatant,
+        state: inout SoCGameState
+    ) -> SoCCombatResult {
         if state.playerHp <= 0 {
             lines.append(.body(state.enemyDeathText))
             lines.append(.body("You have died."))
@@ -95,6 +115,25 @@ public enum SoCCombat {
         }
 
         return SoCCombatResult(lines)
+    }
+
+    private static func handleEat(
+        _ input: ParsedInput,
+        state: inout SoCGameState,
+        enemy: inout SoCCombatant
+    ) -> SoCCombatResult {
+        var lines = SoCGlobalCommands.eatInCombat(input, state: &state)
+        guard state.inCombat, state.playerHp > 0, !enemy.isDead else {
+            state.enemy = enemy
+            return SoCCombatResult(lines)
+        }
+
+        lines.append(.body("You gulp it down — the enemy does not wait."))
+        lines.append(contentsOf: enemyAttack(state: &state, enemy: &enemy))
+        lines.append(contentsOf: turnStatus(state: state, enemy: enemy))
+        lines.append(contentsOf: lowHpWarning(state: state))
+        state.enemy = enemy
+        return resolveAfterExchange(lines: &lines, enemy: enemy, state: &state)
     }
 
     private static func handleFlee(state: inout SoCGameState) -> SoCCombatResult {
@@ -117,32 +156,38 @@ public enum SoCCombat {
         return SoCCombatResult(lines, fled: true)
     }
 
+    // MARK: - Attacks
+
     private static func playerAttack(state: inout SoCGameState, enemy: inout SoCCombatant) -> [StyledLine] {
-        var luckThreshold = state.neededLuckToHit
+        var luck = effectivePlayerLuck(state)
         if state.playerClass == .scout, !state.combatScoutEdgeUsed {
-            luckThreshold = max(0, luckThreshold - 2)
+            luck += 2
             state.combatScoutEdgeUsed = true
         }
 
-        let hits = state.playerLuck >= luckThreshold
-        guard hits else { return [.body("You miss!")] }
+        guard rollsHit(attackerLuck: luck, roll: &state.neededLuckToHit) else {
+            return [.body(playerMissLine(enemyName: enemy.name))]
+        }
 
         var damage = state.playerAtk
+        var bonusNote: String?
+
         if state.playerClass == .hunter, !state.combatHunterStrikeUsed {
             damage += 3
             state.combatHunterStrikeUsed = true
-            enemy.hp -= damage
-            return [
-                .body("You attack \(enemy.name)!"),
-                .body("Your wolf spirit drives the first blow — \(damage) damage!")
-            ]
+            bonusNote = "Your wolf spirit drives the first blow"
+        } else if state.playerClass == .hunter, enemy.hp <= enemy.maxHp / 2 {
+            damage += 2
+            bonusNote = "You press the wounded prey"
         }
 
-        enemy.hp -= damage
-        return [
-            .body("You attack \(enemy.name)!"),
-            .body("You deal \(damage) damage!")
-        ]
+        enemy.hp = max(0, enemy.hp - damage)
+        var lines: [StyledLine] = [.body("You strike \(enemy.name) for \(damage) damage!")]
+        if let bonusNote {
+            lines.insert(.body(bonusNote + " —"), at: 0)
+        }
+        lines.append(.body(enemyHpLine(enemy)))
+        return lines
     }
 
     private static func enemyAttack(state: inout SoCGameState, enemy: inout SoCCombatant) -> [StyledLine] {
@@ -154,29 +199,110 @@ public enum SoCCombat {
             ]
         }
 
-        if state.enemyLuckBeatsRoll() {
-            state.playerHp -= enemy.atk
-            return [
-                .body("\(enemy.name) attacks you!"),
-                .body("You take \(enemy.atk) damage!")
-            ]
+        guard rollsHit(attackerLuck: enemy.luck, roll: &state.neededLuckToHit) else {
+            return [.body(enemyMissLine(enemyName: enemy.name))]
         }
-        return [.body("\(enemy.name) misses!")]
+
+        var damage = enemy.atk
+        if state.playerClass == .guardian {
+            damage = max(1, damage - 1)
+        }
+        state.playerHp = max(0, state.playerHp - damage)
+        return [
+            .body("\(enemy.name) hits you for \(damage) damage!"),
+            .body(playerHpLine(state))
+        ]
     }
+
+    // MARK: - Hit math
+
+    /// Attacker hits when luck meets or beats a d11 roll (0...10).
+    static func hits(attackerLuck: Int, roll: Int) -> Bool {
+        attackerLuck >= roll
+    }
+
+    static func rollsHit(attackerLuck: Int, roll: inout Int) -> Bool {
+        roll = Int.random(in: hitRollRange)
+        return hits(attackerLuck: attackerLuck, roll: roll)
+    }
+
+    static func effectivePlayerLuck(_ state: SoCGameState) -> Int {
+        state.playerLuck + max(0, state.playerLevel - 1)
+    }
+
+    // MARK: - Display
 
     public static func statLines(state: SoCGameState) -> [StyledLine] {
         var lines: [StyledLine] = []
         if let enemy = state.enemy {
-            lines.append(.body("\(enemy.name):\n\t HEALTH: \(enemy.hp)\n\t ATTACK: \(enemy.atk)\n\t SPEED: \(enemy.speed)"))
+            lines.append(.body("\(enemy.name):\n\t HEALTH: \(enemy.hp)/\(enemy.maxHp)\n\t ATTACK: \(enemy.atk)\n\t SPEED: \(enemy.speed)\n\t LUCK: \(enemy.luck)"))
         }
         let classNote: String
         switch state.playerClass {
-        case .hunter: classNote = "hunter (first strike +3)"
-        case .guardian: classNote = "guardian (block 1 hit)"
-        case .scout: classNote = "scout (edge + flee)"
+        case .hunter: classNote = "hunter (first strike +3, wounded +2)"
+        case .guardian: classNote = "guardian (block 1 hit, −1 damage)"
+        case .scout: classNote = "scout (+2 first hit, flee)"
         case .none: classNote = "none"
         }
-        lines.append(.body("\(state.playerName.isEmpty ? "You" : state.playerName):\n\t HEALTH: \(state.playerHp)\n\t ATTACK: \(state.playerAtk)\n\t SPEED: \(state.playerSpeed)\n\t CLASS: \(classNote)"))
+        let luck = effectivePlayerLuck(state)
+        lines.append(.body("\(state.playerName.isEmpty ? "You" : state.playerName):\n\t HEALTH: \(state.playerHp)/\(state.playerMaxHp)\n\t ATTACK: \(state.playerAtk)\n\t SPEED: \(state.playerSpeed)\n\t LUCK: \(luck)\n\t CLASS: \(classNote)"))
         return lines
+    }
+
+    private static func turnStatus(state: SoCGameState, enemy: SoCCombatant) -> [StyledLine] {
+        [.body("— \(playerHpLine(state)) · \(enemyHpLine(enemy))")]
+    }
+
+    private static func playerHpLine(_ state: SoCGameState) -> String {
+        "You \(state.playerHp)/\(state.playerMaxHp) HP"
+    }
+
+    private static func enemyHpLine(_ enemy: SoCCombatant) -> String {
+        "\(enemy.name) \(enemy.hp)/\(enemy.maxHp) HP"
+    }
+
+    private static func lowHpWarning(state: SoCGameState) -> [StyledLine] {
+        guard state.playerMaxHp > 0,
+              state.playerHp > 0,
+              state.playerHp <= state.playerMaxHp / 4 else { return [] }
+        return [.body("Blood runs hot — you're close to breaking.")]
+    }
+
+    private static func helpLines(state: SoCGameState) -> [StyledLine] {
+        var cmds = [
+            "ATTACK",
+            "EAT POTION (enemy strikes after)",
+            "OBJECTIVES",
+            "FLEE (optional fights)"
+        ]
+        switch state.playerClass {
+        case .guardian:
+            cmds.append("Guardian: block first hit, take −1 damage")
+        case .hunter:
+            cmds.append("Hunter: +3 first strike, +2 vs wounded foes")
+        case .scout:
+            cmds.append("Scout: +2 on first hit, can flee most fights")
+        case .none:
+            break
+        }
+        return cmds.map { .body($0) }
+    }
+
+    // MARK: - Flavor
+
+    private static func playerMissLine(enemyName: String) -> String {
+        [
+            "Your blade cuts air — \(enemyName) slips the blow.",
+            "You swing wide and \(enemyName) is already gone.",
+            "A feint throws your timing off. Miss."
+        ].randomElement()!
+    }
+
+    private static func enemyMissLine(enemyName: String) -> String {
+        [
+            "\(enemyName) lunges — you turn the blow aside.",
+            "\(enemyName)'s strike glances off your guard.",
+            "\(enemyName) overcommits and you dodge clear."
+        ].randomElement()!
     }
 }
