@@ -187,7 +187,7 @@ struct TitleView: View {
                         .font(.caption)
                         .foregroundColor(Theme.accent.opacity(0.8))
                         .accessibilityHidden(true)
-                    Text("Story hub — PLAY SCOUT first, then spend FP on your alignment path.")
+                    Text("Story hub — finish Scout Patrol, then spend FP on your alignment story.")
                         .font(.footnote)
                         .foregroundColor(Theme.parchment.opacity(0.62))
                         .multilineTextAlignment(.leading)

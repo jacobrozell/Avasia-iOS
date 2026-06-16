@@ -261,36 +261,29 @@ public enum AnthologyCatalog {
         public let stories: [AnthologyStoryMeta]
     }
 
-    /// Story picker grouping — Scout, then each alignment path in play order.
-    public static let pickerSections: [PickerSection] = [
-        PickerSection(title: "Scout Patrol", systemImage: "binoculars.fill", stories: [meta(for: .storyZero)]),
-        PickerSection(
-            title: "Loyalist Path",
-            systemImage: "shield.lefthalf.filled",
-            stories: AnthologyPathProgress.stories(for: .loyalist).map { meta(for: $0) }
-        ),
-        PickerSection(
-            title: "Agroman Path",
-            systemImage: "figure.walk",
-            stories: AnthologyPathProgress.stories(for: .agroman).map { meta(for: $0) }
-        ),
-        PickerSection(
-            title: "Neutral Path",
-            systemImage: "signpost.right.fill",
-            stories: AnthologyPathProgress.stories(for: .neutral).map { meta(for: $0) }
+    /// Story picker grouping — Scout, then each alignment path (current release only).
+    public static let pickerSections: [PickerSection] = {
+        let scout = PickerSection(
+            title: "Scout Patrol",
+            systemImage: "binoculars.fill",
+            stories: [meta(for: .storyZero)]
         )
-    ]
-
-    /// 1-based step within an alignment path, e.g. `(2, 6)` for Good #2.
-    public static func pathStep(for story: AnthologyStoryID) -> (step: Int, total: Int)? {
-        for alignment in [AnthologyAlignment.loyalist, .agroman, .neutral] {
-            let path = AnthologyPathProgress.stories(for: alignment)
-            if let index = path.firstIndex(of: story) {
-                return (index + 1, path.count)
-            }
+        let paths: [(String, String, AnthologyAlignment)] = [
+            ("Loyalist Path", "shield.lefthalf.filled", .loyalist),
+            ("Agroman Path", "figure.walk", .agroman),
+            ("Neutral Path", "signpost.right.fill", .neutral)
+        ]
+        let sections = paths.map { title, icon, alignment in
+            PickerSection(
+                title: title,
+                systemImage: icon,
+                stories: AnthologyPathProgress.stories(for: alignment)
+                    .filter { AnthologyRelease.isStoryAvailable(meta(for: $0)) }
+                    .map { meta(for: $0) }
+            )
         }
-        return nil
-    }
+        return [scout] + sections
+    }()
 
     public static let shopTitle = "Training Shop"
     public static let shopSubtitle = "Arena gear and ring passes."
@@ -307,6 +300,9 @@ public enum AnthologyCatalog {
 
     public static func canPlay(_ story: AnthologyStoryID, state: AnthologyGameState) -> (allowed: Bool, reason: String?) {
         let meta = meta(for: story)
+        if !AnthologyRelease.isStoryAvailable(meta), !state.completedStories.contains(story) {
+            return (false, "That story isn't available yet.")
+        }
         if state.completedStories.contains(story) {
             return (true, nil)
         }
@@ -386,11 +382,16 @@ public enum AnthologyCatalog {
         if state.ringPasses > 0 {
             lines.append(.body("Ring passes: \(state.ringPasses) — excuse one FP unlock each."))
         }
-        if state.storyZeroComplete {
+        if state.storyZeroComplete, !AnthologyRelease.shipsFullAnthology {
+            if AnthologyPathProgress.isLaunchSliceComplete(state: state) {
+                lines.append(.body("Your first chapter is complete. Replay from Choose Story, or train in the arena."))
+                lines.append(.body("More Story Adventures are on the way."))
+            } else {
+                lines.append(.body("Choose Story — Training Arena — or the Training Shop."))
+                lines.append(.body("More Story Adventures arrive in future updates."))
+            }
+        } else if state.storyZeroComplete {
             lines.append(.body("Choose Story — Training Arena — or the Training Shop. Each path runs six stories from fork to finale."))
-        }
-        if let progress = AnthologyPathProgress.progressLabel(state: state) {
-            lines.append(.body(progress))
         }
         if AnthologyPathProgress.isActivePathComplete(state: state) {
             lines.append(.body("Your alignment path is complete. Replay any story from Choose Story."))
@@ -402,7 +403,8 @@ public enum AnthologyCatalog {
 
     public static func listLines(state: AnthologyGameState) -> [StyledLine] {
         var lines: [StyledLine] = [.title("Available Stories"), .blank]
-        for meta in all {
+        let catalog = AnthologyRelease.shipsFullAnthology ? all : shipsIn100
+        for meta in catalog {
             let (allowed, reason) = canPlay(meta.id, state: state)
             let done = state.completedStories.contains(meta.id)
             let cost = meta.fpCost == 0 ? "free" : "\(meta.fpCost) FP"
@@ -424,6 +426,15 @@ public enum AnthologyCatalog {
         case .agroman: return "agroman"
         case .neutral: return "neutral"
         }
+    }
+
+    /// Lines when the player finishes the current-release slice for their alignment path.
+    public static func launchSliceCompletionLines(state: AnthologyGameState) -> [StyledLine] {
+        guard AnthologyPathProgress.isLaunchSliceComplete(state: state) else { return [] }
+        return [
+            .blank,
+            .body("More Story Adventures are on the way. Replay this chapter, train in the arena, or try another alignment from Scout Patrol.")
+        ]
     }
 
     /// Celebration lines when the final story in an alignment path is completed.

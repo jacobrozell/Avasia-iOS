@@ -560,7 +560,7 @@ struct StoryZeroScoutEpilogueRoom: AnthologyRoomScript {
         case .agroman:
             return "PLAY BAD from the hub to march with Vashirr (500 FP)."
         case .neutral:
-            return "PLAY ELK from the hub (250 FP) · then The Cave Record (500 FP)."
+            return "PLAY ELK from the hub (250 FP)."
         case .none:
             return "Your patrol ends without a recorded choice."
         }

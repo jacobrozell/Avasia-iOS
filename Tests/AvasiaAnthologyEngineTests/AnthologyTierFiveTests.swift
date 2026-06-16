@@ -1,7 +1,7 @@
 import XCTest
 @testable import AvasiaAnthologyEngine
 
-final class AnthologyTierFiveTests: XCTestCase {
+final class AnthologyTierFiveTests: FullAnthologyTestCase {
     private func advance(_ engine: AnthologyGameEngine, _ command: String) {
         _ = engine.submit(command)
     }

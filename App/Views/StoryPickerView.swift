@@ -86,17 +86,14 @@ struct StoryPickerView: View {
                     .font(.caption.weight(.semibold))
                     .foregroundColor(Theme.parchment.opacity(0.7))
             }
-            if let progress = AnthologyPathProgress.progressLabel(state: vm.anthologyState) {
-                Text(progress)
-                    .font(.caption.weight(.semibold))
-                    .foregroundColor(
-                        AnthologyPathProgress.isActivePathComplete(state: vm.anthologyState)
-                            ? Theme.accent : Theme.parchment.opacity(0.65)
-                    )
-            }
             Text("Spend faction points to unlock paths matching your Scout Patrol choice.")
                 .font(.footnote)
                 .foregroundColor(Theme.parchment.opacity(0.65))
+            if vm.anthologyState.storyZeroComplete {
+                Text("More Story Adventures arrive in future updates.")
+                    .font(.caption)
+                    .foregroundColor(Theme.parchment.opacity(0.5))
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.bottom, 4)
@@ -154,7 +151,6 @@ struct StoryPickerView: View {
         let usesRingPass = allowed && !done && meta.fpCost > 0 && state.factionPoints < meta.fpCost
             && AnthologyRingPass.canSpendForStory(meta.id, state: state)
         let isActivePath = meta.requiredAlignment == state.alignment || meta.id == .storyZero
-        let pathStep = AnthologyCatalog.pathStep(for: meta.id)
 
         return Button {
             HapticManager.shared.play(allowed || done ? .confirm : .tap)
@@ -173,22 +169,10 @@ struct StoryPickerView: View {
                         Text(meta.title)
                             .font(.system(.headline, design: .serif).weight(.semibold))
                             .foregroundColor(Theme.parchment.opacity(allowed || done ? 1 : 0.45))
-                        if meta.shipsIn100 {
-                            Text("1.0")
-                                .font(.system(size: 9, weight: .bold))
-                                .foregroundColor(Theme.onAccent)
-                                .padding(.horizontal, 5)
-                                .padding(.vertical, 2)
-                                .background(Theme.accent.opacity(allowed || done ? 1 : 0.45), in: Capsule())
-                        }
                         Spacer(minLength: 4)
                         if done {
                             Image(systemName: "checkmark.circle.fill")
                                 .foregroundColor(Theme.accent)
-                        } else if let pathStep, isActivePath || state.alignment == .none {
-                            Text("\(pathStep.step)/\(pathStep.total)")
-                                .font(.caption2.weight(.semibold))
-                                .foregroundColor(Theme.parchment.opacity(allowed ? 0.55 : 0.35))
                         } else {
                             Text(costLabel)
                                 .font(.caption.weight(.semibold))
