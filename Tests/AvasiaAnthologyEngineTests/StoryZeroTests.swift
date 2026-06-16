@@ -150,4 +150,18 @@ final class StoryZeroTests: XCTestCase {
         let lines = engine.describeCurrent().map(\.text).joined(separator: "\n")
         XCTAssertTrue(lines.contains("Green smoke"))
     }
+
+    func testVashirrSchismMentionsAnchorLaw() {
+        var state = AnthologyGameState()
+        state.currentRoom = .vashirrParley
+        state.parleyPhase = .notStarted
+        let room = StoryZeroVashirrParleyRoom()
+
+        _ = room.onEnter(&state)
+        let result = room.handle(Parser.parse("continue", mode: .raw), &state)
+
+        let text = result.lines.map(\.text).joined(separator: " ")
+        XCTAssertTrue(text.contains("anchor"))
+        XCTAssertEqual(state.parleyPhase, .schism)
+    }
 }
