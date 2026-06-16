@@ -38,5 +38,8 @@
 | **Restoration Mobilization** | [stories/STORY_GOOD_FOUR.md](stories/STORY_GOOD_FOUR.md) | — | ✅ | 5,000 FP · after Good #3 |
 | **Cataracta Breach** | [stories/STORY_BAD_FOUR.md](stories/STORY_BAD_FOUR.md) | — | ✅ | 5,000 FP · after Bad #3 |
 | **Cellious at the Gate** | [stories/STORY_NEUTRAL_FOUR.md](stories/STORY_NEUTRAL_FOUR.md) | — | ✅ | 5,000 FP · after Neutral #3 |
+| **Witness Stone** | [stories/STORY_GOOD_FIVE.md](stories/STORY_GOOD_FIVE.md) | — | ✅ | 10,000 FP · loyalist capstone |
+| **Western Command** | [stories/STORY_BAD_FIVE.md](stories/STORY_BAD_FIVE.md) | — | ✅ | 10,000 FP · agroman capstone |
+| **The Unmarked Road** | [stories/STORY_NEUTRAL_FIVE.md](stories/STORY_NEUTRAL_FIVE.md) | — | ✅ | 10,000 FP · neutral capstone |
 | **Training Arena** | — | `arenaPit` | ✅ | Free · 75 gold / run |
 | **Training Shop** | — | `trainingShop` | ✅ | Gear + ring passes (100g) |

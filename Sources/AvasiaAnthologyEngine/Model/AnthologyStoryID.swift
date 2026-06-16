@@ -15,4 +15,7 @@ public enum AnthologyStoryID: String, Codable, CaseIterable, Sendable {
     case goodFour = "good_four"
     case badFour = "bad_four"
     case neutralFour = "neutral_four"
+    case goodFive = "good_five"
+    case badFive = "bad_five"
+    case neutralFive = "neutral_five"
 }

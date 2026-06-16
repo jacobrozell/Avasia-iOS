@@ -102,6 +102,21 @@ public enum AnthologyRoomID: String, Codable, CaseIterable, Sendable {
     case neutralFourGate = "neutral_four_gate"
     case neutralFourCrowd = "neutral_four_crowd"
     case neutralFourEpilogue = "neutral_four_epilogue"
+
+    // Good #5 — Witness Stone
+    case goodFiveSilvarium = "good_five_silvarium"
+    case goodFiveWitnessStone = "good_five_witness_stone"
+    case goodFiveEpilogue = "good_five_epilogue"
+
+    // Bad #5 — Western Command
+    case badFiveCamp = "bad_five_camp"
+    case badFiveCommandFire = "bad_five_command_fire"
+    case badFiveEpilogue = "bad_five_epilogue"
+
+    // Neutral #5 — Unmarked Road
+    case neutralFiveSplitpath = "neutral_five_splitpath"
+    case neutralFiveMileMarker = "neutral_five_mile_marker"
+    case neutralFiveEpilogue = "neutral_five_epilogue"
 }
 
 public extension AnthologyRoomID {
@@ -112,20 +127,22 @@ public extension AnthologyRoomID {
              .caveRecordTrail, .caveRecordEpilogue,
              .neutralThreeMarket, .neutralThreeTraderRow, .neutralThreeSchismStall,
              .neutralThreeAftermath, .neutralThreeEpilogue, .neutralFourKaefdenRoad, .neutralFourEpilogue,
+             .neutralFiveSplitpath, .neutralFiveEpilogue, .goodFiveEpilogue, .badFiveEpilogue,
              .badOneEpilogue, .badTwoEpilogue, .badThreeEpilogue, .badFourEpilogue, .elkSplitpath, .elkEpilogue:
             return .splitpath
         case .patrolCamp, .elkHoldfast, .elkFeast, .badTwoPeriphery, .badTwoOverlook,
-             .badThreeCamp, .badThreeMarch, .goodFourMobilizationCamp, .badFourApproach:
+             .badThreeCamp, .badThreeMarch, .goodFourMobilizationCamp, .badFourApproach, .badFiveCamp:
             return .forest
         case .scoutRidge, .scoutWithdraw, .scoutSignal, .scoutPicket,
              .vashirrParley, .scoutFork, .scoutCampExit, .badOneTraining, .badTwoBriefing,
              .badThreeRite, .badThreeOath, .badThreeAfterOath, .badThreeVashirrTent,
-             .badFourSiegeLine, .badFourGate, .goodFourCommandTent, .goodFourBriefing:
+             .badFourSiegeLine, .badFourGate, .goodFourCommandTent, .goodFourBriefing,
+             .badFiveCommandFire, .neutralFiveMileMarker:
             return .mountain
         case .goodOneOceandale, .goodOnePier, .badOneColumn, .badOneAudience, .badOneRecon,
              .arenaPit, .trainingShop, .goodThreeLanding, .neutralFourGate, .neutralFourCrowd:
             return .shore
-        case .goodOneSilvarium, .goodTwoSilvarium:
+        case .goodOneSilvarium, .goodTwoSilvarium, .goodFiveSilvarium, .goodFiveWitnessStone:
             return .tree
         case .goodTwoNacastrumGate, .goodThreeNacastrum, .goodThreeCouncil, .goodThreeVerdict,
              .goodThreeAntechamber, .goodThreeWitnessPrep, .goodThreeAftermath:

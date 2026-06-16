@@ -158,6 +158,36 @@ public enum AnthologyCatalog {
             fpReward: 5_000,
             requiredAlignment: .neutral,
             requiresPrior: .neutralThree
+        ),
+        AnthologyStoryMeta(
+            id: .goodFive,
+            title: "Witness Stone",
+            subtitle: "Carve your ridge truth into Sylvarium's living bark.",
+            systemImage: "leaf.fill",
+            fpCost: 10_000,
+            fpReward: 10_000,
+            requiredAlignment: .loyalist,
+            requiresPrior: .goodFour
+        ),
+        AnthologyStoryMeta(
+            id: .badFive,
+            title: "Western Command",
+            subtitle: "Accept Vashirr's field seal — or stay scout.",
+            systemImage: "star.circle.fill",
+            fpCost: 10_000,
+            fpReward: 10_000,
+            requiredAlignment: .agroman,
+            requiresPrior: .badFour
+        ),
+        AnthologyStoryMeta(
+            id: .neutralFive,
+            title: "The Unmarked Road",
+            subtitle: "Leave the war — or stay Splitpath's broker.",
+            systemImage: "signpost.right.fill",
+            fpCost: 10_000,
+            fpReward: 10_000,
+            requiredAlignment: .neutral,
+            requiresPrior: .neutralFour
         )
     ]
 
@@ -232,6 +262,9 @@ public enum AnthologyCatalog {
         case .goodFour: state.goodFourComplete = true
         case .badFour: state.badFourComplete = true
         case .neutralFour: state.neutralFourComplete = true
+        case .goodFive: state.goodFiveComplete = true
+        case .badFive: state.badFiveComplete = true
+        case .neutralFive: state.neutralFiveComplete = true
         }
         state.currentStory = nil
         state.clearInProgressStoryFlags()

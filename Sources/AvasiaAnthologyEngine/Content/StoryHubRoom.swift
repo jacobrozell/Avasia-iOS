@@ -43,6 +43,9 @@ struct StoryHubRoom: AnthologyRoomScript {
         if input.contains("GOOD4") || input.contains("GOOD 4") || input.contains("MOBILIZE") || input.contains("RESTORATION") {
             return .goodFour
         }
+        if input.contains("GOOD5") || input.contains("GOOD 5") || input.contains("WITNESS") && input.contains("STONE") {
+            return .goodFive
+        }
         if input.contains("CAVE") || input.contains("RECORD") || input.contains("ARCHIVE") { return .caveRecord }
         if input.contains("GOOD") || input.contains("OCEANDALE") || input.contains("WARNING") { return .goodOne }
         if input.contains("CATARACTA") || input.contains("BAD2") || input.contains("BAD 2") || input.contains("PERIPHERY") {
@@ -54,13 +57,19 @@ struct StoryHubRoom: AnthologyRoomScript {
         if input.contains("BAD4") || input.contains("BAD 4") || input.contains("BREACH") {
             return .badFour
         }
+        if input.contains("BAD5") || input.contains("BAD 5") || input.contains("COMMAND") {
+            return .badFive
+        }
         if input.contains("BAD") || input.contains("VASHIRR") || input.contains("WALK") { return .badOne }
         if input.contains("ELK") || input.contains("FEAST") { return .elkFeast }
         if input.contains("MARKET") || input.contains("NEUTRAL3") || input.contains("NEUTRAL 3") || input.contains("TWO HANDS") {
             return .neutralThree
         }
-        if input.contains("NEUTRAL4") || input.contains("NEUTRAL 4") || input.contains("CELLIOUS") || input.contains("GATE") {
+        if input.contains("NEUTRAL4") || input.contains("NEUTRAL 4") || input.contains("CELLIOUS") {
             return .neutralFour
+        }
+        if input.contains("NEUTRAL5") || input.contains("NEUTRAL 5") || input.contains("UNMARKED") || input.contains("ROAD") {
+            return .neutralFive
         }
         return nil
     }

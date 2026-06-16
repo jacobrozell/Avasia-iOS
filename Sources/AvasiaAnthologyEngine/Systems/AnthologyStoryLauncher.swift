@@ -124,6 +124,30 @@ public enum AnthologyStoryLauncher {
                 ],
                 .neutralFourKaefdenRoad
             )
+        case .goodFive:
+            return (
+                [
+                    .title("Witness Stone"),
+                    .body("Elder Venna summons you to Silvarium — the war wants your name in bark, not only in court records.")
+                ],
+                .goodFiveSilvarium
+            )
+        case .badFive:
+            return (
+                [
+                    .title("Western Command"),
+                    .body("After Cataracta's breach, Vashirr offers a field seal. Many Hands asks if you will lead.")
+                ],
+                .badFiveCamp
+            )
+        case .neutralFive:
+            return (
+                [
+                    .title("The Unmarked Road"),
+                    .body("Splitpath folds its market as armies close. Suformin asks whether you leave or stay between banners.")
+                ],
+                .neutralFiveSplitpath
+            )
         }
     }
 }
