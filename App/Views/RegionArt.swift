@@ -60,10 +60,26 @@ private func assetExists(_ name: String) -> Bool { false }
 /// Full-bleed background: the region's art if present, else a region gradient.
 struct RegionBackground: View {
     let media: RoomMedia
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var body: some View {
-        let p = RegionPalette.colors(media.region)
         ZStack {
-            LinearGradient(colors: [p.top, p.bottom], startPoint: .top, endPoint: .bottom)
+            RegionBackgroundLayer(media: media)
+                .id(media.region)
+                .transition(.opacity)
+        }
+        .animation(Motion.regionBackground(reduceMotion: reduceMotion), value: media.region)
+        .ignoresSafeArea()
+    }
+}
+
+private struct RegionBackgroundLayer: View {
+    let media: RoomMedia
+
+    var body: some View {
+        let palette = RegionPalette.colors(media.region)
+        ZStack {
+            LinearGradient(colors: [palette.top, palette.bottom], startPoint: .top, endPoint: .bottom)
             if assetExists(media.backgroundImage) {
                 Image(media.backgroundImage)
                     .resizable()
@@ -72,7 +88,6 @@ struct RegionBackground: View {
                     .blur(radius: 1)
             }
         }
-        .ignoresSafeArea()
     }
 }
 
@@ -81,16 +96,45 @@ struct RegionBackground: View {
 struct RegionIllustration: View {
     let media: RoomMedia
     var height: CGFloat = 96
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var labelPulse = false
 
     var body: some View {
-        let p = RegionPalette.colors(media.region)
+        ZStack {
+            RegionIllustrationLayer(media: media, height: height, labelPulse: labelPulse)
+                .id(media.region)
+                .transition(.opacity)
+        }
+        .animation(Motion.regionIllustration(reduceMotion: reduceMotion), value: media.region)
+        .onChange(of: media.region) { _ in pulseRegionLabel() }
+    }
+
+    private func pulseRegionLabel() {
+        guard !reduceMotion else { return }
+        labelPulse = true
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 200_000_000)
+            withAnimation(.easeOut(duration: 0.2)) {
+                labelPulse = false
+            }
+        }
+    }
+}
+
+private struct RegionIllustrationLayer: View {
+    let media: RoomMedia
+    let height: CGFloat
+    let labelPulse: Bool
+
+    var body: some View {
+        let palette = RegionPalette.colors(media.region)
         ZStack {
             if assetExists(media.illustration) {
                 Image(media.illustration)
                     .resizable()
                     .scaledToFill()
             } else {
-                LinearGradient(colors: [p.accent.opacity(0.25), p.bottom],
+                LinearGradient(colors: [palette.accent.opacity(0.25), palette.bottom],
                                startPoint: .topLeading, endPoint: .bottomTrailing)
                 HStack {
                     Image(systemName: "sparkle")
@@ -99,14 +143,14 @@ struct RegionIllustration: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
                 }
-                .foregroundColor(p.accent)
+                .foregroundColor(palette.accent)
                 .padding(.horizontal, 8)
             }
 
             VStack {
                 Spacer()
                 LinearGradient(
-                    colors: [.clear, p.bottom.opacity(0.85)],
+                    colors: [.clear, palette.bottom.opacity(0.85)],
                     startPoint: .top,
                     endPoint: .bottom
                 )
@@ -118,7 +162,11 @@ struct RegionIllustration: View {
                 HStack {
                     Text(media.region.title)
                         .font(.system(.caption, design: .serif).weight(.semibold).smallCaps())
-                        .foregroundColor(Theme.parchment.opacity(0.92))
+                        .foregroundColor(
+                            labelPulse
+                                ? Theme.accent
+                                : Theme.parchment.opacity(0.92)
+                        )
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
                     Spacer(minLength: 0)
@@ -129,7 +177,7 @@ struct RegionIllustration: View {
         }
         .frame(height: height)
         .clipped()
-        .overlay(Rectangle().frame(height: 1).foregroundColor(p.accent.opacity(0.5)), alignment: .bottom)
+        .overlay(Rectangle().frame(height: 1).foregroundColor(palette.accent.opacity(0.5)), alignment: .bottom)
         .accessibilityLabel("Region: \(media.region.title)")
     }
 }
