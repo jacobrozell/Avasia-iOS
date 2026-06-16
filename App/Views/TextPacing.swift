@@ -29,11 +29,22 @@ struct TranscriptDisplayLine: Identifiable, Equatable {
     /// When set, only this many characters of `line.text` are shown.
     let partialLength: Int?
     let showsCursor: Bool
+    let emphasis: CombatLineEmphasis?
+    let playReveal: Bool
 
-    init(id: Int, line: StyledLine, partialLength: Int?, showsCursor: Bool = false) {
+    init(
+        id: Int,
+        line: StyledLine,
+        partialLength: Int?,
+        showsCursor: Bool = false,
+        emphasis: CombatLineEmphasis? = nil,
+        playReveal: Bool = false
+    ) {
         self.id = id
         self.line = line
         self.partialLength = partialLength
         self.showsCursor = showsCursor
+        self.emphasis = emphasis
+        self.playReveal = playReveal
     }
 }
