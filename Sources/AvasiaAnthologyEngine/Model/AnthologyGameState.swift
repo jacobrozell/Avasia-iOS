@@ -83,6 +83,7 @@ public struct AnthologyGameState: Codable, Sendable {
     public var arenaHp: Int = 20
     public var arenaInCombat = false
     public var arenaEnemyHp: Int = 0
+    public var arenaEnemyMaxHp: Int = 0
     public var arenaEnemyAtk: Int = 0
     public var arenaEnemyName: String = ""
     public var arenaFirstClearDone = false
@@ -221,6 +222,7 @@ public struct AnthologyGameState: Codable, Sendable {
         arenaHp = arenaMaxHp
         arenaInCombat = false
         arenaEnemyHp = 0
+        arenaEnemyMaxHp = 0
         arenaEnemyAtk = 0
         arenaEnemyName = ""
     }

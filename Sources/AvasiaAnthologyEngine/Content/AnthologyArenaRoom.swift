@@ -20,6 +20,7 @@ enum AnthologyArenaCombat {
         state.arenaInCombat = true
         state.arenaEnemyName = enemy.name
         state.arenaEnemyHp = enemy.hp
+        state.arenaEnemyMaxHp = enemy.hp
         state.arenaEnemyAtk = enemy.atk
     }
 

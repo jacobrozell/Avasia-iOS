@@ -303,6 +303,7 @@ struct StoryZeroVashirrParleyRoom: AnthologyRoomScript {
             .blank,
             .speech("Vashirr: Two hands of one body — that is the schism fable every elder tells children."),
             .speech("Vashirr: One hand hoarded magic in towers. The other learned to bleed without it."),
+            .speech("Vashirr: Power must anchor somewhere — sky, earth, flesh, or oath. Kaefden chose towers. Agroman chose blood."),
             .speech("Vashirr: I was taught in Kaefden's halls that mages must serve the people. I believed it."),
             .body("Mira's jaw tightens. She does not look at you.")
         ]
