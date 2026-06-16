@@ -8,8 +8,6 @@ struct SoCNorthernMarchRoom: SoCRoomScript {
 
     private let advanceTriggers = ["CONTINUE", "MARCH", "PROCEED", "NORTH"]
 
-    private let stealthTriggers = ["SCOUT", "STEALTH", "SNEAK"]
-
     func onEnter(_ state: inout SoCGameState) -> [StyledLine]? {
         guard state.northernMarchPhase == .notStarted else { return nil }
         state.northernMarchPhase = .refugees
@@ -30,8 +28,8 @@ struct SoCNorthernMarchRoom: SoCRoomScript {
         switch state.northernMarchPhase {
         case .notStarted, .refugees:
             var hints: [StyledLine] = [.hint("CONTINUE along the road.")]
-            if state.playerClass == .scout {
-                hints.append(.hint("SCOUT to slip past the patrol."))
+            if let bypass = SoCClassIngenuity.bypassHint(for: state) {
+                hints.append(bypass)
             }
             return hints
         case .patrolCombat:
@@ -56,9 +54,8 @@ struct SoCNorthernMarchRoom: SoCRoomScript {
         }
 
         if [.notStarted, .refugees].contains(state.northernMarchPhase),
-           state.playerClass == .scout,
-           stealthTriggers.contains(where: { input.contains($0) }) {
-            return scoutBypass(&state)
+           SoCClassIngenuity.matches(input, playerClass: state.playerClass) {
+            return classBypass(&state)
         }
 
         if advances(input) {
@@ -110,12 +107,15 @@ struct SoCNorthernMarchRoom: SoCRoomScript {
 
     private func beginPatrol(state: inout SoCGameState) -> [StyledLine] {
         SoCCombat.begin(
-            enemy: SoCCombatant(name: "Agromanian Skirmisher", atk: 7, speed: 7, hp: 16, luck: 0),
+            enemy: SoCCombatant(name: "Agromanian Skirmisher", atk: 7, speed: 7, hp: 16, luck: 4),
             deathText: "The skirmisher's blade finds the gap in your guard.",
             state: &state,
             allowsFlee: true
         )
-        return SoCCombat.statLines(state: state) + [.hint("What do will you do?")]
+        return [
+            .body("The skirmisher's pauldron bears fresh chant-scores — flesh-magic not yet fully bred in."),
+            .blank
+        ] + SoCCombat.statLines(state: state) + [.hint("What do will you do?")]
     }
 
     private func roadLines() -> [StyledLine] {
@@ -164,16 +164,35 @@ struct SoCNorthernMarchRoom: SoCRoomScript {
         [.body("The column crests a low hill. Distant horns — and the flash of mage-fire on the ridgeline.")]
     }
 
-    private func scoutBypass(_ state: inout SoCGameState) -> SoCTurnResult {
+    private func classBypass(_ state: inout SoCGameState) -> SoCTurnResult {
         state.scoutShortcut = true
         state.northernMarchPhase = .done
         state.northernMarchCleared = true
-        return SoCTurnResult([
-            .body("You leave the column and ghost through the treeline, marking patrol routes for the sergeant."),
-            .speech("Coalition Sergeant: Good eyes. We slip past — Oceandale before sundown."),
-            .blank,
-            .symbol("Oceandale ridge lies ahead."),
-            .hint("CONTINUE toward the war front.")
-        ])
+        let lines: [StyledLine]
+        switch state.playerClass {
+        case .scout:
+            lines = [
+                .body("You leave the column and ghost through the treeline, marking patrol routes for the sergeant."),
+                .speech("Coalition Sergeant: Good eyes. We slip past — Oceandale before sundown.")
+            ]
+        case .hunter:
+            lines = [
+                .body("You read fresh boot-prints in the mud and cut uphill through the pines."),
+                .body("The skirmisher never reaches the road — your wolf-spirit already had their angle."),
+                .speech("Coalition Sergeant: Clean kill, no alarm. Column moves — Oceandale before sundown.")
+            ]
+        case .guardian:
+            lines = [
+                .body("You step into the open with shield raised. The skirmisher checks stride — one heartbeat of doubt."),
+                .body("The column melts into the roadside ditch while you hold the line."),
+                .speech("Coalition Sergeant: Bear work. They never saw the rest of us. Oceandale before sundown.")
+            ]
+        case .none:
+            lines = [.body("You find a gap in the patrol and slip through.")]
+        }
+        var output = lines
+        output.append(contentsOf: SoCQuestProgress.grantQuestExp(15, state: &state))
+        output.append(contentsOf: [.blank, .symbol("Oceandale ridge lies ahead."), .hint("CONTINUE toward the war front.")])
+        return SoCTurnResult(output)
     }
 }
