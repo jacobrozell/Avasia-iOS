@@ -112,7 +112,7 @@ struct BadTwoEpilogueRoom: AnthologyRoomScript {
 
     func describe(_ state: AnthologyGameState) -> [StyledLine] {
         if state.badTwoComplete {
-            return [.body("Cataracta Periphery — complete.")]
+            return [.body("Cataracta Periphery — complete."), .hint("Return to the story hub from the menu.")]
         }
         let line = state.badTwoSanitizedReport
             ? "A fox scout may find your scrap of truth. You will not be there to see if it matters."
@@ -130,7 +130,8 @@ struct BadTwoEpilogueRoom: AnthologyRoomScript {
         AnthologyCatalog.complete(.badTwo, state: &state)
         return AnthologyTurnResult([
             .title("Cataracta Periphery — complete"),
-            .body("+\(AnthologyCatalog.meta(for: .badTwo).fpReward) faction points.")
+            .body("+\(AnthologyCatalog.meta(for: .badTwo).fpReward) faction points."),
+            .hint("Story hub unlocked — continue from the menu.")
         ], .move(.storyHub))
     }
 }

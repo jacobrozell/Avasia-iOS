@@ -153,7 +153,7 @@ struct CaveRecordEpilogueRoom: AnthologyRoomScript {
 
     func describe(_ state: AnthologyGameState) -> [StyledLine] {
         if state.caveRecordComplete {
-            return [.body("The Cave Record — complete.")]
+            return [.body("The Cave Record — complete."), .hint("Return to the story hub from the menu.")]
         }
         if state.caveRecordCopiedArchive {
             return [
@@ -181,7 +181,8 @@ struct CaveRecordEpilogueRoom: AnthologyRoomScript {
         AnthologyCatalog.complete(.caveRecord, state: &state)
         return AnthologyTurnResult([
             .title("The Cave Record — complete"),
-            .body("+\(AnthologyCatalog.meta(for: .caveRecord).fpReward) faction points.")
+            .body("+\(AnthologyCatalog.meta(for: .caveRecord).fpReward) faction points."),
+            .hint("Story hub unlocked — continue from the menu.")
         ], .move(.storyHub))
     }
 }

@@ -21,8 +21,15 @@ struct BadSixOccupiedHallRoom: AnthologyRoomScript {
     }
 
     func handle(_ input: ParsedInput, _ state: inout AnthologyGameState) -> AnthologyTurnResult {
+        if input.contains("LOOK") || input.contains("HALL") || input.contains("BANNER") {
+            return AnthologyTurnResult([
+                .body("Druid moss scraped from stone. Agroman iron bolted where sigils grew. The fountain still throws copper — no one catches it."),
+                .body("Kimious will one day die in this courtyard. You helped write the map that opened the gate."),
+                .hint("CONTINUE into the occupied streets.")
+            ])
+        }
         guard advance.contains(where: { input.contains($0) }) else {
-            return AnthologyTurnResult([.hint("CONTINUE.")])
+            return AnthologyTurnResult([.hint("CONTINUE · LOOK at the hall.")])
         }
         return AnthologyTurnResult([], .move(.badSixOccupiedStreet))
     }
@@ -43,13 +50,28 @@ struct BadSixOccupiedStreetRoom: AnthologyRoomScript {
         } else {
             lines.append(.body("You walk without seal — eyes, not orders. Officers still part for the scout Vashirr trusts."))
         }
-        lines.append(.hint("CONTINUE to the officers' circle."))
+        lines.append(.hint("CONTINUE to the officers' circle · LOOK at the shopkeepers · TALK to an officer."))
         return lines
     }
 
     func handle(_ input: ParsedInput, _ state: inout AnthologyGameState) -> AnthologyTurnResult {
+        if input.contains("LOOK") || input.contains("SHOP") || input.contains("COURTYARD") {
+            return AnthologyTurnResult([
+                .body("Fox recruits practice silent movement under Paladin guard — wolf-names borrowed, bear-oaths not yet sworn."),
+                .body("The city remembers druid market days. Occupation is fresh enough to taste like theft."),
+                .hint("CONTINUE.")
+            ])
+        }
+        if input.contains("TALK") || input.contains("OFFICER") {
+            return AnthologyTurnResult([
+                .speech("Officer: Vashirr wants a governor before Restoration counterattacks. Not a sermon — a face the city can fear."),
+                .speech("You: And if the face refuses the crown?"),
+                .speech("Officer: Then the west keeps a knife instead. Vashirr accepts both."),
+                .hint("CONTINUE.")
+            ])
+        }
         guard advance.contains(where: { input.contains($0) }) else {
-            return AnthologyTurnResult([.hint("CONTINUE.")])
+            return AnthologyTurnResult([.hint("CONTINUE · LOOK · TALK.")])
         }
         return AnthologyTurnResult([], .move(.badSixOfficersCircle))
     }
@@ -91,7 +113,8 @@ struct BadSixThroneRoom: AnthologyRoomScript {
         return [
             .title("Western Seat"),
             .body("A druid high seat stripped of moss — Agroman steel bolted to stone. The city watches who sits."),
-            .hint("RULE the occupied hall · YIELD the seat.")
+            .body("Mira's ghost is not here. You chose FOLLOW — or walked another road. The throne does not ask."),
+            .hint("RULE the occupied hall · YIELD the seat · LOOK at the seat.")
         ]
     }
 
@@ -101,6 +124,13 @@ struct BadSixThroneRoom: AnthologyRoomScript {
                 return AnthologyTurnResult([], .move(.badSixAftermath))
             }
             return AnthologyTurnResult([.hint("CONTINUE.")])
+        }
+        if input.contains("LOOK") || input.contains("SEAT") || input.contains("THRONE") {
+            return AnthologyTurnResult([
+                .body("Carved for earth-anchor ritual — now a desk for curfew orders and grain tallies."),
+                .body("RULE and Cataracta learns your name in fear. YIELD and Vashirr keeps the weight you refused."),
+                .hint("RULE · YIELD.")
+            ])
         }
         if input.contains("RULE") || input.contains("CROWN") || input.contains("KEEP") {
             state.badSixThroneResolved = true
@@ -156,7 +186,7 @@ struct BadSixEpilogueRoom: AnthologyRoomScript {
 
     func describe(_ state: AnthologyGameState) -> [StyledLine] {
         if state.badSixComplete {
-            return [.body("Western Throne — complete.")]
+            return [.body("Western Throne — complete."), .hint("Return to the story hub from the menu.")]
         }
         let line = state.badSixAcceptedRule
             ? "Cataracta's hall answers to your voice. Agroman loyalty became governance — for better or for fire."
@@ -174,7 +204,8 @@ struct BadSixEpilogueRoom: AnthologyRoomScript {
         AnthologyCatalog.complete(.badSix, state: &state)
         var lines: [StyledLine] = [
             .title("Western Throne — complete"),
-            .body("+\(AnthologyCatalog.meta(for: .badSix).fpReward) faction points.")
+            .body("+\(AnthologyCatalog.meta(for: .badSix).fpReward) faction points."),
+            .hint("Story hub unlocked — continue from the menu.")
         ]
         lines.append(contentsOf: AnthologyCatalog.pathCompletionLines(state: state))
         return AnthologyTurnResult(lines, .move(.storyHub))

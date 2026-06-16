@@ -12,15 +12,22 @@ struct BadThreeMarchRoom: AnthologyRoomScript {
             .title("Western March"),
             .body("The column leaves Cataracta's foothills — your map folded in a sergeant's kit."),
             .body("Paladins talk about wolf-names and bear-oaths. You remember the courtyard overlook: recruits choosing war before they know its shape."),
-            .hint("CONTINUE toward camp · LOOK at the column.")
+            .hint("CONTINUE toward camp · LOOK at the column · TALK to a soldier.")
         ]
     }
 
     func handle(_ input: ParsedInput, _ state: inout AnthologyGameState) -> AnthologyTurnResult {
         if input.contains("LOOK") || input.contains("COLUMN") {
             return AnthologyTurnResult([
-                .body("Farmhands and deserters march in step. Many Hands turned them into something else — not yet Paladins, not anymore civilians."),
+                .body("Your Cataracta map folded in a sergeant's kit — every gate marked or softened at your briefing."),
+                .body("Ash ghosts some brows. The rite ground waits."),
                 .hint("CONTINUE.")
+            ])
+        }
+        if input.contains("TALK") || input.contains("SOLDIER") {
+            return AnthologyTurnResult([
+                .speech("Soldier: Vashirr says binding beats hesitation. The ring tonight asks if you believe it."),
+                .hint("CONTINUE toward camp.")
             ])
         }
         guard advance.contains(where: { input.contains($0) }) else {
@@ -183,7 +190,7 @@ struct BadThreeEpilogueRoom: AnthologyRoomScript {
 
     func describe(_ state: AnthologyGameState) -> [StyledLine] {
         if state.badThreeComplete {
-            return [.body("Many Hands Oath — complete.")]
+            return [.body("Many Hands Oath — complete."), .hint("Return to the story hub from the menu.")]
         }
         let line = state.badThreeSworeOath
             ? "The mark dries on your skin. You are Agroman now in a way REPORT never made you — bound, not merely aligned."
@@ -201,7 +208,8 @@ struct BadThreeEpilogueRoom: AnthologyRoomScript {
         AnthologyCatalog.complete(.badThree, state: &state)
         return AnthologyTurnResult([
             .title("Many Hands Oath — complete"),
-            .body("+\(AnthologyCatalog.meta(for: .badThree).fpReward) faction points.")
+            .body("+\(AnthologyCatalog.meta(for: .badThree).fpReward) faction points."),
+            .hint("Story hub unlocked — continue from the menu.")
         ], .move(.storyHub))
     }
 }

@@ -25,11 +25,19 @@ struct GoodSixAccordHallRoom: AnthologyRoomScript {
         if input.contains("LOOK") || input.contains("TABLE") {
             return AnthologyTurnResult([
                 .body("Two copies of the pact — one for floating court, one for Silvarium bark-archive. Neither side trusts the other's scribes."),
-                .hint("CONTINUE.")
+                .body("Oceandale's pier is named in the margin — your evacuation or your church bell, whichever you chose, still stains the draft."),
+                .hint("CONTINUE · TALK to Thekia.")
+            ])
+        }
+        if input.contains("TALK") || input.contains("THEKIA") || input.contains("VENNA") {
+            return AnthologyTurnResult([
+                .speech("Thekia: Six stories from ridge to table. You made ministers speak names they wanted filed under tragedy."),
+                .speech("Elder Venna: Sign and bind Sylva to Restoration — or walk and keep moral distance. Both are loyalty."),
+                .hint("CONTINUE to the antechamber.")
             ])
         }
         guard advance.contains(where: { input.contains($0) }) else {
-            return AnthologyTurnResult([.hint("CONTINUE.")])
+            return AnthologyTurnResult([.hint("CONTINUE · LOOK · TALK.")])
         }
         return AnthologyTurnResult([], .move(.goodSixAccordAntechamber))
     }
@@ -101,7 +109,8 @@ struct GoodSixSigningFloorRoom: AnthologyRoomScript {
         return [
             .title("Signing Floor"),
             .body("Quills dry. Every faction watches the scout who started as ridge eyes and became court memory."),
-            .hint("SIGN as Sylvian witness · WALK from the accord.")
+            .body("Mira is not in the hall — she broke away or stayed partner on another road. Your signature stands alone."),
+            .hint("SIGN as Sylvian witness · WALK from the accord · LOOK at the pact.")
         ]
     }
 
@@ -111,6 +120,13 @@ struct GoodSixSigningFloorRoom: AnthologyRoomScript {
                 return AnthologyTurnResult([], .move(.goodSixAftermath))
             }
             return AnthologyTurnResult([.hint("CONTINUE.")])
+        }
+        if input.contains("LOOK") || input.contains("PACT") || input.contains("READ") {
+            return AnthologyTurnResult([
+                .body("Mutual defense. Shared witness rolls. Agroman names redacted — Thekia's compromise, Venna's wound."),
+                .body("Perfect peace was never on the table. Honest pause might be."),
+                .hint("SIGN · WALK.")
+            ])
         }
         if input.contains("SIGN") || input.contains("WITNESS") || input.contains("ACCORD") {
             state.goodSixAccordResolved = true
@@ -166,7 +182,7 @@ struct GoodSixEpilogueRoom: AnthologyRoomScript {
 
     func describe(_ state: AnthologyGameState) -> [StyledLine] {
         if state.goodSixComplete {
-            return [.body("The Restoration Accord — complete.")]
+            return [.body("The Restoration Accord — complete."), .hint("Return to the story hub from the menu.")]
         }
         let line = state.goodSixSignedAccord
             ? "Two banners share a table at last. Loyalty, for you, meant staying until the ink dried."
@@ -184,7 +200,8 @@ struct GoodSixEpilogueRoom: AnthologyRoomScript {
         AnthologyCatalog.complete(.goodSix, state: &state)
         var lines: [StyledLine] = [
             .title("The Restoration Accord — complete"),
-            .body("+\(AnthologyCatalog.meta(for: .goodSix).fpReward) faction points.")
+            .body("+\(AnthologyCatalog.meta(for: .goodSix).fpReward) faction points."),
+            .hint("Story hub unlocked — continue from the menu.")
         ]
         lines.append(contentsOf: AnthologyCatalog.pathCompletionLines(state: state))
         return AnthologyTurnResult(lines, .move(.storyHub))
