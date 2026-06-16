@@ -14,6 +14,12 @@
 | `goodThree` | `goodThreeLanding` | `goodThreeComplete` | 2,500 | 2,500 | loyalist |
 | `badThree` | `badThreeMarch` | `badThreeComplete` | 2,500 | 2,500 | agroman |
 | `neutralThree` | `neutralThreeMarket` | `neutralThreeComplete` | 2,500 | 2,500 | neutral |
+| `goodFour` | `goodFourMobilizationCamp` | `goodFourComplete` | 5,000 | 5,000 | loyalist |
+| `badFour` | `badFourApproach` | `badFourComplete` | 5,000 | 5,000 | agroman |
+| `neutralFour` | `neutralFourKaefdenRoad` | `neutralFourComplete` | 5,000 | 5,000 | neutral |
+| `goodFive` | `goodFiveSilvarium` | `goodFiveComplete` | 10,000 | 10,000 | loyalist capstone |
+| `badFive` | `badFiveCamp` | `badFiveComplete` | 10,000 | 10,000 | agroman capstone |
+| `neutralFive` | `neutralFiveSplitpath` | `neutralFiveComplete` | 10,000 | 10,000 | neutral capstone |
 
 **Hub:** `storyHub` — story launchers + `PLAY ARENA` · `SHOP` · `LIST` · daily ring pass
 
