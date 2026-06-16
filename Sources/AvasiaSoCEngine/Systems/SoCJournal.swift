@@ -25,6 +25,7 @@ public enum SoCJournal {
         if !state.varathoCrossed { goals.append("Optional: cross the Varatho bridge to northern town.") }
         if !state.fountain { goals.append("Optional: toss a coin at the castle garden fountain (North).") }
         if !state.barracksTalked { goals.append("Optional: speak with the guards at the barracks (North → West).") }
+        if !state.hunterPathVisited { goals.append("Optional: walk the Hunter's Path west of housing.") }
         if state.athalosVisitCount < 2 { goals.append("Optional: visit Athalos (Shopping → South) — return to buy supplies.") }
         if !state.ulric { goals.append("Optional: visit Ulric the blacksmith (Shopping → East).") }
         if !state.trophies.contains(.brother), state.ulric {
@@ -54,7 +55,7 @@ public enum SoCJournal {
         case .silvariumElders:
             goals.append("MARCH to Varatro Falls for Kaefden's Blade.")
         case .varatroFalls where !state.varatroFallsCleared:
-            goals.append("Reach the tomb and recover the Blade of Courage.")
+            goals.append("Reach the tomb — fight the warden or use your class (SCOUT / HUNT / SHIELD).")
         case .varatroFalls:
             goals.append("MARCH to Ofelos with the Blade.")
         case .ofelos where !state.ofelosAllianceComplete:
@@ -62,11 +63,11 @@ public enum SoCJournal {
         case .ofelos:
             goals.append("MARCH north to join the war front.")
         case .northernMarch where !state.northernMarchCleared:
-            goals.append("Reach Oceandale ridge (fight or SCOUT past the patrol).")
+            goals.append("Reach Oceandale ridge — fight, or SCOUT / HUNT / SHIELD past the patrol.")
         case .oceandaleFront where !state.oceandaleFrontCleared:
-            goals.append("Break the ridge: two waves, then ADVANCE.")
+            goals.append("Break the ridge: flank wave one with your class, prep for the Paladin, then push through.")
         case .mageOutpost where !state.mageOutpostCleared:
-            goals.append("Steal maps at the mage outpost (SCOUT to infiltrate as Fox).")
+            goals.append("Steal maps at the mage outpost — infiltrate with your class or assault the gate.")
         case .vashirrStand where !state.vashirrDefeated:
             goals.append("Vashirr's redoubt — hold the line with Kaefden.")
         case .ageEpilogue:
