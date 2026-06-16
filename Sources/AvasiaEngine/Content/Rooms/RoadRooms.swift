@@ -48,6 +48,12 @@ struct ShoresideRoom: RoomScript {
 
     func handle(_ input: ParsedInput, _ state: inout GameState) -> TurnResult {
         if input.contains(["HUT", "SEARCH", "ENTER"]) { return TurnResult([], .move(.beachHut)) }
+        if input.contains(Verb.look) {
+            return TurnResult([
+                .body("The hut leans toward the western road — a quiet shore opposite Oceandale's burn."),
+                .body("Blue glass winks in the dune grass. Fishermen learn early what mages price in crystal.")
+            ])
+        }
         if input.contains("FISH") {
             guard state.has(.rod) else { return TurnResult([.hint("You have nothing to fish with.")]) }
             return Fishing.cast(&state)
@@ -145,7 +151,7 @@ struct RoadToNacastrumRoom: RoomScript {
                     .body("In front of you lies an enormous shadow. You slowly look to the skies and see it."),
                     .body("Nacastrum, Floating city of the Mage."),
                     .body("Vague memories return to you of Nacastrum. Without a second to waste, you rush onward to what lies ahead.")
-                ], .move(.teleporter))
+                ], .move(.teleporter), events: [.swamDreamBridge])
             }
             if input.contains(Flag.fireball.castSynonyms) {
                 return TurnResult([
@@ -178,6 +184,12 @@ struct RoadToNacastrumRoom: RoomScript {
         if state.roadProgress == 0 {
             // First round: any other action merely corners you.
             state.roadProgress = 1
+            if input.contains(["LOOK", "EXAMINE", "STUDY"]) {
+                return TurnResult([
+                    .body("One raider wears plate scored with chant-marks — not Agromanian steel, but something newer, uglier."),
+                    .body("He screams syllables that aren't words. The others flinch, then join in.")
+                ])
+            }
             if input.contains(["RUN", "FLEE", "ESCAPE", "BACK"]) {
                 return TurnResult([.body("You bolt — but they herd you back against the spires. Cornered.")])
             }
@@ -252,13 +264,17 @@ struct TeleporterRoom: RoomScript {
                 .blank,
                 .body("Then, at thirty-three: a blinding light at your window. Guards dragging citizens to Vashirr's castle. You among hundreds of mages."),
                 .body("Beside Vashirr stands a man in barbaric armor — an Agromanian — and a portal taking women and children."),
-                .body("One of the faces is your mother. Your father breaks free and runs to her — and is blasted with magic by Vashirr."),
+                .body("They took ground-oathed kin first — the anchors that kept sky-blood honest. Your mother wore that chain."),
+                .body("Your father was never king — he was the weight that kept your sky from drifting. He broke into the courtyard and ran to her — and is blasted with magic by Vashirr."),
                 .speech("You will touch the earth again — or die in the sky! I do this because Avasia cannot survive your nostalgia!"),
-                .body("Vashirr raises his hand and light falls from the sky. This is the last thing you remember before you woke up on the beach."),
+                .body("He screamed it to the courtyard — but his scarred eye found yours."),
+                .body("Vashirr raises his hand and light falls from the sky — hurled, not gentle, to the nearest shore-anchor. Oceandale's coast, where Agroman had already struck."),
+                .body("This is the last thing you remember before you woke on the beach."),
                 .blank,
                 .body("You fall to your knees and scream out in anger and pain."),
                 .speech("What did you see?"),
-                .body("You explain how your father was murdered and you mother kidnapped. She kneels to comfort you."),
+                .body("You explain how your father was murdered and your mother kidnapped. She kneels to comfort you."),
+                .speech("He did not hunt you. He hunted the city — and your father ran."),
                 .speech("Take as long as you need. We will move on when you are ready.")
             ], .move(.nacastrum))
         }
@@ -268,6 +284,13 @@ struct TeleporterRoom: RoomScript {
         // First discovery: unlock the return trip for the staff.
         state.teleporterDiscovered = true
         state.magehouseLocked = false
+        if input.contains(["LOOK", "EXAMINE", "RING"]) {
+            return TurnResult([
+                .body("Runes circle the platform — sky-anchors, fixed in silver. Malkos bound travel to stone so mages could not wander war into being."),
+                .body("You'll need help to make this work — and you know who has it."),
+                .speech("(You should return to the Old Mage in Oceandale.)")
+            ], .move(.roadToNacastrum))
+        }
         return TurnResult([
             .body("You'll need help to make this work — and you know who has it."),
             .speech("(You should return to the Old Mage in Oceandale.)")
