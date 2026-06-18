@@ -1,10 +1,29 @@
 import Foundation
 
 /// Player-facing text pacing for the transcript.
-public enum TextDelay: String, Codable, Sendable {
+public enum TextDelay: String, Codable, Sendable, CaseIterable {
     case on             // typewriter + short pause between lines
     case off            // instant
     case tapToAdvance   // typewriter, then tap between lines
+
+    public var settingsLabel: String {
+        switch self {
+        case .on: return "On"
+        case .off: return "Off"
+        case .tapToAdvance: return "Tap"
+        }
+    }
+
+    public var settingsDetail: String {
+        switch self {
+        case .on:
+            return "Lines appear one at a time, automatically."
+        case .off:
+            return "All text appears at once."
+        case .tapToAdvance:
+            return "Lines appear one at a time; tap to advance."
+        }
+    }
 }
 
 /// The complete, serializable game state. This replaces the original's loose

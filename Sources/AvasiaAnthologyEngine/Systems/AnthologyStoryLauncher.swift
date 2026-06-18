@@ -39,7 +39,7 @@ public enum AnthologyStoryLauncher {
         case .goodTwo:
             return (
                 [
-                    .title("Nascastrum Courier"),
+                    .title("Nacastrum Courier"),
                     .body("Elder Venna seals a report with sap. \"Kaefden must hear Oceandale before the next tide.\"")
                 ],
                 .goodTwoSilvarium

@@ -66,7 +66,11 @@ struct SettingsView: View {
                 Text("Text pacing")
                     .font(.headline)
                     .foregroundColor(Theme.parchment)
-                Text("On types each line in gradually. Tap the transcript to skip ahead.")
+                Text(vm.textDelay.settingsDetail)
+                    .font(.caption)
+                    .foregroundColor(Theme.parchment.opacity(0.6))
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("Tap the transcript anytime to skip ahead.")
                     .font(.caption)
                     .foregroundColor(Theme.parchment.opacity(0.6))
                     .fixedSize(horizontal: false, vertical: true)
@@ -74,9 +78,9 @@ struct SettingsView: View {
                     get: { vm.textDelay },
                     set: { vm.textDelay = $0 }
                 )) {
-                    Text("On").tag(TextDelay.on)
-                    Text("Off").tag(TextDelay.off)
-                    Text("Tap").tag(TextDelay.tapToAdvance)
+                    ForEach(TextDelay.allCases, id: \.self) { mode in
+                        Text(mode.settingsLabel).tag(mode)
+                    }
                 }
                 .pickerStyle(.segmented)
             }
@@ -89,6 +93,10 @@ struct SettingsView: View {
                 Text("Typewriter speed")
                     .font(.headline)
                     .foregroundColor(Theme.parchment)
+                Text("How quickly each line types in when text pacing is on.")
+                    .font(.caption)
+                    .foregroundColor(Theme.parchment.opacity(0.6))
+                    .fixedSize(horizontal: false, vertical: true)
                 Picker("Typewriter speed", selection: $vm.typewriterSpeed) {
                     ForEach(TypewriterSpeed.allCases) { speed in
                         Text(speed.label).tag(speed)

@@ -103,7 +103,7 @@ struct SoCThroneRoom: SoCRoomScript {
 
     private func throneRoomLines() -> [StyledLine] {
         [
-            .title("Nascastrum Throne Room"),
+            .title("Nacastrum Throne Room"),
             .body("Blue crystal light washes the hall — the same hue as Anula's fountain, far away in Cataracta."),
             .body("Upon the dais sits King Kaefden IV."),
             .body("His pointed ears mark him as mage-blood; seven years of wearing the crown have not dulled the grief in his eyes."),
@@ -228,7 +228,7 @@ struct SoCThroneRoom: SoCRoomScript {
 
     private func epilogueLines(_ state: SoCGameState) -> [StyledLine] {
         [
-            .title("Nascastrum Throne Room"),
+            .title("Nacastrum Throne Room"),
             .body("The audience is over. Horns echo somewhere beyond the castle walls."),
             .body("Kaefden IV has returned to the map table with his generals."),
             .hint("MARCH to Aylova war camp.")

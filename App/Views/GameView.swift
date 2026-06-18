@@ -480,19 +480,19 @@ struct GameView: View {
                         )
                         .id(entry.id)
                     }
-                    if vm.isPacingWaiting {
+                    if let hint = vm.transcriptPacingHint {
                         HStack(spacing: 6) {
                             Image(systemName: "hand.tap.fill")
                                 .font(.caption2)
                                 .foregroundColor(Theme.accent.opacity(0.7))
-                            Text("Tap to continue")
+                            Text(hint)
                                 .font(.caption)
                                 .foregroundColor(Theme.parchment.opacity(0.45))
                                 .italic()
                         }
                         .id("pacing-hint")
                         .accessibilityElement(children: .combine)
-                        .accessibilityLabel("Tap to continue")
+                        .accessibilityLabel(hint)
                         .accessibilityAddTraits(.isButton)
                     }
                 }
@@ -508,8 +508,8 @@ struct GameView: View {
             .accessibilityLabel("Game transcript")
             .onChange(of: vm.completedLineCount) { _ in scrollTranscript(proxy) }
             .onChange(of: vm.typingVisibleCount) { _ in scrollTranscript(proxy) }
-            .onChange(of: vm.isPacingWaiting) { waiting in
-                if waiting {
+            .onChange(of: vm.transcriptPacingHint) { hint in
+                if hint != nil {
                     withAnimation { proxy.scrollTo("pacing-hint", anchor: .bottom) }
                 }
             }

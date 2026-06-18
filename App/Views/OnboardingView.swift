@@ -202,7 +202,7 @@ private struct OnboardingPage: Hashable {
             title: "How you play",
             body: """
             Classic text adventure: read the story, then type a command or tap a suggestion. \
-            Tap the transcript while text is typing to skip ahead.
+            Story text appears gradually — tap the transcript to skip ahead.
 
             Adjust pacing, typewriter speed, cursor style, sound, and haptics in Settings.
             """,

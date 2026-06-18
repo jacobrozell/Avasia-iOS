@@ -154,64 +154,65 @@ struct TitleView: View {
             if vm.product == .soc {
                 VStack(spacing: 8) {
                     if vm.socCampaignComplete {
-                        HStack(spacing: 8) {
-                            Image(systemName: "checkmark.seal.fill")
-                                .foregroundColor(Theme.accent)
-                            Text("Campaign complete — replay anytime from New Game.")
-                                .font(.footnote)
-                                .foregroundColor(Theme.parchment.opacity(0.85))
-                        }
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 10)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Theme.accent.opacity(0.15), in: RoundedRectangle(cornerRadius: 10))
+                        TitleHintBanner(
+                            systemImage: "checkmark.seal.fill",
+                            text: "Campaign complete — replay anytime from New Game.",
+                            emphasis: true
+                        )
                     }
-                    HStack(alignment: .top, spacing: 8) {
-                        Image(systemName: "hammer.fill")
-                            .font(.caption)
-                            .foregroundColor(Theme.accent.opacity(0.8))
-                            .accessibilityHidden(true)
-                        Text("Full campaign through the Age epilogue. Level up via quest and combat exp.")
-                            .font(.footnote)
-                            .foregroundColor(Theme.parchment.opacity(0.62))
-                            .multilineTextAlignment(.leading)
-                    }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 10)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Theme.accent.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
+                    TitleHintBanner(
+                        systemImage: "hammer.fill",
+                        text: "Full campaign through the Age epilogue. Level up through quests and combat."
+                    )
+                    TitleHintBanner(
+                        systemImage: "sparkles",
+                        text: TitleHints.pacing
+                    )
                 }
             } else if vm.product == .stories {
-                HStack(alignment: .top, spacing: 8) {
-                    Image(systemName: "book.fill")
-                        .font(.caption)
-                        .foregroundColor(Theme.accent.opacity(0.8))
-                        .accessibilityHidden(true)
-                    Text("Story hub — finish Scout Patrol, then spend FP on your alignment story.")
-                        .font(.footnote)
-                        .foregroundColor(Theme.parchment.opacity(0.62))
-                        .multilineTextAlignment(.leading)
+                VStack(spacing: 8) {
+                    TitleHintBanner(
+                        systemImage: "book.fill",
+                        text: "Story hub — finish Scout Patrol, then spend FP on your alignment story."
+                    )
+                    TitleHintBanner(
+                        systemImage: "sparkles",
+                        text: TitleHints.pacing
+                    )
                 }
-                .padding(.horizontal, 14)
-                .padding(.vertical, 10)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Theme.accent.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
             } else {
-                HStack(alignment: .top, spacing: 8) {
-                    Image(systemName: "sparkles")
-                        .font(.caption)
-                        .foregroundColor(Theme.accent.opacity(0.8))
-                        .accessibilityHidden(true)
-                    Text("Text pacing On types lines in gradually. Tap the transcript to skip.")
-                        .font(.footnote)
-                        .foregroundColor(Theme.parchment.opacity(0.62))
-                        .multilineTextAlignment(.leading)
-                }
-                .padding(.horizontal, 14)
-                .padding(.vertical, 10)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Theme.accent.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
+                TitleHintBanner(
+                    systemImage: "sparkles",
+                    text: TitleHints.pacing
+                )
             }
         }
+    }
+}
+
+enum TitleHints {
+    static let pacing = "Story text appears gradually. Tap the transcript to skip ahead."
+}
+
+struct TitleHintBanner: View {
+    var systemImage: String
+    var text: String
+    var emphasis: Bool = false
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: systemImage)
+                .font(.caption)
+                .foregroundColor(Theme.accent.opacity(emphasis ? 1 : 0.8))
+                .accessibilityHidden(true)
+            Text(text)
+                .font(.footnote)
+                .foregroundColor(Theme.parchment.opacity(emphasis ? 0.85 : 0.62))
+                .multilineTextAlignment(.leading)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Theme.accent.opacity(emphasis ? 0.15 : 0.08), in: RoundedRectangle(cornerRadius: 10))
     }
 }
