@@ -112,7 +112,7 @@ public enum KonCodexEntry: String, CaseIterable, Sendable {
         case .cataractaGate:
             return "Dentros opens the Anula-enriched western gate. Cataracta's druids guard crystal as gift, not commodity."
         case .memoryFlash:
-            return "The Ring of Malkos restores what exile stole: gradation day, Vashirr's coup, your mother's portal, your father's death."
+            return "The Ring of Malkos restores what exile stole: graduation day, Vashirr's coup, your mother's portal, your father's death."
         case .nacastrumReturn:
             return "Ruined towers, Thekia unmasked, Aylova rallied — banished mages remember home and swear to stop Vashirr."
         case .victory:

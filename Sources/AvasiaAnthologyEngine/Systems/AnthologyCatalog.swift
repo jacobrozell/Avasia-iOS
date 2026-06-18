@@ -65,7 +65,7 @@ public enum AnthologyCatalog {
         ),
         AnthologyStoryMeta(
             id: .goodTwo,
-            title: "Nascastrum Courier",
+            title: "Nacastrum Courier",
             subtitle: "Carry Oceandale's truth to the floating city.",
             synopsis: "Smoke still stains your report when Elder Venna presses a wax seal into your palm. Refugees pass you on the Western Road while Nacastrum rebuilds in blue crystal. Thekia waits at the gate — tell her everything, or trim the truth for the court.",
             systemImage: "envelope.fill",
@@ -259,6 +259,12 @@ public enum AnthologyCatalog {
         public let title: String
         public let systemImage: String
         public let stories: [AnthologyStoryMeta]
+
+        public init(title: String, systemImage: String, stories: [AnthologyStoryMeta]) {
+            self.title = title
+            self.systemImage = systemImage
+            self.stories = stories
+        }
     }
 
     /// Story picker grouping — Scout, then each alignment path (current release only).

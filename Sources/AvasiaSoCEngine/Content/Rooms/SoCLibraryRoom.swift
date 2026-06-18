@@ -48,7 +48,7 @@ struct SoCLibraryRoom: SoCRoomScript {
 
     private func openingLines() -> [StyledLine] {
         [
-            .title("Nascastrum Library"),
+            .title("Nacastrum Library"),
             .body("The library is covered from wall to wall with seemingly endless shelves of books."),
             .body("Some of the texts are as ancient, as they are endless."),
             .body("Suddenly, a woman in ornate purple robes approaches you."),

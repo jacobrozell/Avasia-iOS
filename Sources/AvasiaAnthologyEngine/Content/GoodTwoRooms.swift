@@ -118,7 +118,7 @@ struct GoodTwoEpilogueRoom: AnthologyRoomScript {
 
     func describe(_ state: AnthologyGameState) -> [StyledLine] {
         if state.goodTwoComplete {
-            return [.body("Nascastrum Courier — complete."), .hint("Return to the story hub from the menu.")]
+            return [.body("Nacastrum Courier — complete."), .hint("Return to the story hub from the menu.")]
         }
         let line = state.goodTwoFullTruth
             ? "Thekia's hand on your shoulder — thin comfort, real witness. Mobilization stirs in the towers."
@@ -135,7 +135,7 @@ struct GoodTwoEpilogueRoom: AnthologyRoomScript {
         }
         AnthologyCatalog.complete(.goodTwo, state: &state)
         return AnthologyTurnResult([
-            .title("Nascastrum Courier — complete"),
+            .title("Nacastrum Courier — complete"),
             .body("+\(AnthologyCatalog.meta(for: .goodTwo).fpReward) faction points."),
             .hint("Story hub unlocked — continue from the menu.")
         ], .move(.storyHub))

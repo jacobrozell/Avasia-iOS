@@ -78,6 +78,7 @@ final class GameViewModel: ObservableObject {
     private var pendingSocName = false
     private var pendingSocNameConfirm: String?
     private var pacingTask: Task<Void, Never>?
+    private var pacingGeneration = 0
     private var pacingContinuation: CheckedContinuation<Void, Never>?
     private var healthBarFlashTask: Task<Void, Never>?
     private var combatLineTriggers: [Int: [CombatTriggerAction]] = [:]
@@ -117,6 +118,13 @@ final class GameViewModel: ObservableObject {
 
     var isPacingActive: Bool {
         completedLineCount < transcript.count || typingVisibleCount != nil || isPacingWaiting
+    }
+
+    var transcriptPacingHint: String? {
+        guard textDelay != .off else { return nil }
+        if isPacingWaiting { return "Tap to continue" }
+        if typingVisibleCount != nil { return "Tap to skip ahead" }
+        return nil
     }
 
     init(
@@ -817,14 +825,12 @@ final class GameViewModel: ObservableObject {
     // MARK: - Text pacing
 
     func advancePacing() {
-        pacingTask?.cancel()
-        pacingTask = nil
-
         if isPacingWaiting {
-            pacingContinuation?.resume()
-            pacingContinuation = nil
+            resumePacingWait()
             return
         }
+
+        invalidatePacingTask()
 
         if typingVisibleCount != nil {
             typingVisibleCount = nil
@@ -841,12 +847,8 @@ final class GameViewModel: ObservableObject {
     }
 
     func flushPacing() {
-        pacingTask?.cancel()
-        pacingTask = nil
-        if isPacingWaiting {
-            pacingContinuation?.resume()
-            pacingContinuation = nil
-        }
+        invalidatePacingTask()
+        resumePacingWait()
         isPacingWaiting = false
         typingVisibleCount = nil
         completedLineCount = transcript.count
@@ -854,8 +856,7 @@ final class GameViewModel: ObservableObject {
     }
 
     private func resetTranscript() {
-        pacingTask?.cancel()
-        pacingTask = nil
+        invalidatePacingTask()
         healthBarFlashTask?.cancel()
         healthBarFlashTask = nil
         combatBusyTask?.cancel()
@@ -878,11 +879,7 @@ final class GameViewModel: ObservableObject {
         revealLineIndex = nil
         revealLineTask?.cancel()
         revealLineTask = nil
-        if isPacingWaiting {
-            pacingContinuation?.resume()
-            pacingContinuation = nil
-        }
-        isPacingWaiting = false
+        resumePacingWait()
         transcript = []
         completedLineCount = 0
         typingVisibleCount = nil
@@ -894,8 +891,22 @@ final class GameViewModel: ObservableObject {
         startPacing()
     }
 
-    private func startPacing() {
+    private func invalidatePacingTask() {
+        pacingGeneration += 1
         pacingTask?.cancel()
+        pacingTask = nil
+    }
+
+    private func resumePacingWait() {
+        guard isPacingWaiting else { return }
+        isPacingWaiting = false
+        let continuation = pacingContinuation
+        pacingContinuation = nil
+        continuation?.resume()
+    }
+
+    private func startPacing() {
+        invalidatePacingTask()
         let mode = activeTextDelay
         if mode == .off {
             completedLineCount = transcript.count
@@ -906,14 +917,15 @@ final class GameViewModel: ObservableObject {
         }
         guard completedLineCount < transcript.count else { return }
 
+        let generation = pacingGeneration
         pacingTask = Task { @MainActor [weak self] in
-            await self?.runPacingLoop()
+            await self?.runPacingLoop(generation: generation)
         }
     }
 
-    private func runPacingLoop() async {
+    private func runPacingLoop(generation: Int) async {
         while completedLineCount < transcript.count {
-            if Task.isCancelled { return }
+            guard generation == pacingGeneration, !Task.isCancelled else { return }
 
             let line = transcript[completedLineCount]
             let mode = activeTextDelay
@@ -924,6 +936,7 @@ final class GameViewModel: ObservableObject {
             }
 
             await typeLine(line)
+            guard generation == pacingGeneration, !Task.isCancelled else { return }
             completeCurrentLine()
 
             guard completedLineCount < transcript.count else {
@@ -936,8 +949,8 @@ final class GameViewModel: ObservableObject {
                 await withCheckedContinuation { continuation in
                     pacingContinuation = continuation
                 }
+                guard generation == pacingGeneration, !Task.isCancelled else { return }
                 isPacingWaiting = false
-                if Task.isCancelled { return }
                 continue
             }
 
