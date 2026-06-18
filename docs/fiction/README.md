@@ -23,6 +23,7 @@
 | [`OFKELOS.md`](OFKELOS.md) | Neutral city bible — districts, Blade clause, observer corps |
 | [`THEKIA_GROUND_HOUSE.md`](THEKIA_GROUND_HOUSE.md) | **Thekia bible** — Stories 2b, 4b, 9b + prose draft |
 | [`STORY_ZERO_SCOUT_PATROL.md`](STORY_ZERO_SCOUT_PATROL.md) | **Story #0** — alignment fork, Vashirr first contact (future anthology) |
+| [`ASH_VAULT/`](ASH_VAULT/README.md) | **Ash Vault prequel** — prose + cross-promo to dungeon crawler app (AV-01–03) |
 
 ---
 
@@ -58,8 +59,9 @@ text wins.
 
 ## Scope
 
-**Age era only** — *King of Nacastrum* and *Blade of Courage*. Game 3 (first 2D
-title, post–Age era) is noted in the series index as **Volume III — TBD**.
+**Age era only** — *King of Nacastrum* and *Blade of Courage*, plus **Ash Vault**
+prequel fiction (~70 yr before KoN). Game 3 (first 2D title, post–Age era) is noted
+in the series index as **Volume III — TBD**.
 
 ---
 
