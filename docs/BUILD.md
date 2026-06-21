@@ -57,10 +57,10 @@ SwiftPM remains the fastest loop for engine-only work (`swift test --filter Avas
 
 ### Code signing (real device)
 
-1. Open **Xcode → Settings → Accounts** and sign in with the Apple ID that owns
-   team `QMQUNRJSLH` (or your own team).
+1. Open **Xcode → Settings → Accounts** and sign in with the Apple ID for team
+   `7JT2JB89AV`.
 2. Copy `Config/Signing.xcconfig.example` → `Config/Signing.xcconfig` if needed
-   and set `DEVELOPMENT_TEAM` to your team ID.
+   (`DEVELOPMENT_TEAM` is already `7JT2JB89AV` for personal repos).
 3. Regenerate: `xcodegen generate`, then build from Xcode or CLI.
 
 CLI device builds need `-allowProvisioningUpdates` so Xcode can create the

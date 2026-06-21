@@ -1,3 +1,3 @@
 // Local signing overrides. Copy Signing.xcconfig.example if this file is missing.
-DEVELOPMENT_TEAM = QMQUNRJSLH
+DEVELOPMENT_TEAM = 7JT2JB89AV
 CODE_SIGN_STYLE = Automatic

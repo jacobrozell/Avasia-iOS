@@ -1,4 +1,3 @@
-// Copy to Signing.xcconfig and set your Apple Developer team ID.
-// Find it at https://developer.apple.com/account → Membership details.
-DEVELOPMENT_TEAM = YOUR_TEAM_ID
+// Copy to Signing.xcconfig. Personal repos use team 7JT2JB89AV.
+DEVELOPMENT_TEAM = 7JT2JB89AV
 CODE_SIGN_STYLE = Automatic
