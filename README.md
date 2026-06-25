@@ -3,6 +3,8 @@
 Native iOS home for the **Avasia** text-adventure saga — a saga picker with
 separate chapters, each with its own engine, save file, and story.
 
+**Status:** Story slice / polish · v1.0.0 (1) · **Branch:** `main` · [Polish roadmap](docs/POLISH_ROADMAP.md)
+
 | Chapter | Status | Engine |
 |---|---|---|
 | **King of Nacastrum** | Complete critical path + achievements | `AvasiaEngine` |
