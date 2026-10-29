@@ -1,6 +1,6 @@
 # Game 3 — Opening Town *(design sketch)*
 
-> **Era:** Commodity Era · **Format:** 2D · **Status:** not implemented
+> **Era:** Commodity Era · **Format:** 2D · **Status:** sketch. The playable opening is the Hearth, not this town. See SAGA §7 (2026-10-28) and [Hearthdelve `docs/avasia-game3.md`](../../../Hearthdelve/docs/avasia-game3.md). Splitpath Station stays the nearest rail-head. The mine road leaves it heading north.
 >
 > Sacred pillars: [`../SAGA.md`](../SAGA.md) §0 · Foreshadow map: [`../FORESHADOWING.md`](../FORESHADOWING.md)
 

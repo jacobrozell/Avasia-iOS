@@ -6,6 +6,7 @@
 > Game-specific docs:
 > - [KoN story](../STORY.md) · [KoN engine](../ENGINE_SPEC.md)
 > - [SoC story](sequel/STORY.md) · [SoC roadmap](sequel/ROADMAP.md)
+> - [Game 3](../../Hearthdelve/docs/avasia-game3.md) — *Avasia: Hearthdelve*
 >
 > **Holy canon:** §0 — saga pillars locked by author intent. Do not contradict in
 > new prose, games, or anthology without an explicit saga-level decision.
@@ -133,14 +134,16 @@ inherits, not an unfinished text cliffhanger.
 
 ---
 
-## 3. Game 3 — first 2D game
+## 3. Game 3 — *Avasia: Hearthdelve*
 
 | | |
 |---|---|
+| **Title** | *Avasia: Hearthdelve* (App Store name: **Hearthdelve**) |
 | **Format** | **2D** — exploration, movement, and combat on a visual plane |
-| **Era** | Opens the **post–Age era** in-world (technology and society have moved on) |
-| **Scope** | TBD — new protagonist generation, new regions, new threats or aftermath |
-| **Status** | Not started |
+| **Era** | **Commodity Era** |
+| **Place** | NW mountain, north of Splitpath Station on the mine road, above the sealed Ash Vault |
+| **Scope** | One delver, an endless vein, a village ledger. Anula is one meter: currency and ward-fuel |
+| **Status** | Named 2026-10-28. Saga-facing content waits on Hearthdelve's demo-on-device gate. Canon: [Hearthdelve `docs/avasia-game3.md`](../../Hearthdelve/docs/avasia-game3.md) |
 
 Game 3 is the **format leap**, not a third text chapter. Towns and battlefields are
 rendered, not described. The fiction should explain why the world now "plays" in 2D
@@ -162,8 +165,8 @@ to fill gaps.
 | **New era begins** — game 3 | 2D tile engine, visible geography |
 | Later eras | TBD |
 
-Anchor law and era containers: **§8**. Pick game 3's primary in-world invention
-when that project is scoped (§8.6).
+Anchor law and era containers: **§8**. Game 3's primary container is the Anula
+economy on a surveyed continent (§8.6; decision 2026-10-28).
 
 ---
 
@@ -173,7 +176,7 @@ when that project is scoped (§8.6).
 |---|---|---|
 | KoN | Mage (amnesiac → Kaefden IV) | Personal destiny, restoration |
 | SoC | Druid soldier | Ground-level war; Kaefden IV is NPC commander |
-| Game 3 (2D) | TBD | New generation in a changed world |
+| *Avasia: Hearthdelve* | A delver at the Hearth | New generation; no Age-era cast on screen |
 | Future | TBD | Era dictates format |
 
 KoN's protagonist appears in SoC as **King Kaefden IV**. The SoC player is a
@@ -220,6 +223,7 @@ Blade is the ultimate symbol of honor the coalition needs.
 | 2026-06-15 | **Sacred pillars locked** — §0 holy canon; saga sauce protected from casual retcon |
 | 2026-06-15 | **KoN foreshadowing pass** — Anula, anchors, proto-Paladin; see [`FORESHADOWING.md`](FORESHADOWING.md) |
 | 2026-06-15 | **SoC epilogue seeds** — commodity debt, chain line, chaplain; game 3 opening sketch in [`sequel/GAME3_OPENING.md`](sequel/GAME3_OPENING.md) |
+| 2026-10-28 | **Game 3 = *Avasia: Hearthdelve*.** First 2D game; Commodity Era; NW mountain above the sealed Ash Vault. Anula is one meter (currency + fuel). The Rift is an uncharted vein; Depth is grade. See [Hearthdelve `docs/avasia-game3.md`](../../Hearthdelve/docs/avasia-game3.md) |
 
 ---
 
@@ -324,7 +328,7 @@ Track ~5–7 pillars across games (save-import optional; lore must reference the
 | Vashirr's fate | Bound at redoubt | Prison, cult, leaked garrison rites |
 | Ofelos commitment | Blade alliance | Neutral resentment, draft law |
 | Cataracta destruction | Diaspora survivors | Druid culture in exile; ruins pilgrimage |
-| SoC PC survival | Memorial by name | Living cameo vs propaganda reliquary |
+| SoC PC survival | Memorial by name | Myth on broadsheets, songs, and cards. No in-person appearance |
 
 ### 8.8 Game 3 antagonism (survivor's legend)
 
@@ -439,9 +443,9 @@ When revising SoC's ending, thread 1–2 lines that pay off here without info-du
 
 #### Game 3 player fantasy
 
-A new protagonist — dock clerk, mine surveyor, courier, diaspora druid — navigates
-a continent where **magic is on the price board**. They may intersect the **survivor's
-legend** (living Messenger or myth on every broadsheet) without being them.
+A new protagonist — a delver at the Hearth, above the sealed vein — navigates
+a continent where **magic is on the price board**. They meet the **survivor's
+legend** as myth on broadsheets, songs, and cards, never in person.
 
 Victory is not slaying a boss alone; it is **breaking, reforming, or escaping** a
 system that prices courage by the gram.
@@ -549,11 +553,11 @@ fighting true believers.
 
 - [x] Name the post–Age era → **Commodity Era** (working)
 - [x] Primary game 3 spine → **Anula economy**; crystal lines secondary; Ring Roads tertiary
-- [ ] Exact Anula mechanics in game 3 (wallet + spell fuel unified or separate meters?)
-- [ ] Mining geography — new western pits vs Sylvian border conflict
-- [ ] Does Kaefden IV live to Era 3, abdicate, or become historical figure on currency?
+- [x] Exact Anula mechanics in game 3 → **one meter** (currency + ward-fuel). Gear, buildings, and wards spend the same Anula
+- [x] Mining geography → **NW mountain**, north of Splitpath Station on the mine road, above the sealed Ash Vault (III-M01, III-M04)
+- [ ] Does Kaefden IV live to Era 3, abdicate, or become historical figure on currency? His face is on the stamped shard (III-M08). Whether he is alive stays open
 - [ ] Hard rules: flesh-anchor **echo** thresholds — how many rites before personality loss?
 - [ ] Cult proper noun: **Red Litany** vs Unbound Hands vs Warm Below
 - [ ] Agroman faction post-war — defeated, partitioned, or integrated labor force?
-- [ ] In-game primer: commodity tutorial in first town (market board, ward price, rent due)
+- [x] In-game primer → the first Delve. Come home with crystal, then choose what to spend it on
 - [ ] How blatant should real-world parallels be in NPC dialogue vs environmental storytelling?

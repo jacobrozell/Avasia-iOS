@@ -26,7 +26,7 @@ data-driven, testable engine suitable for iOS.
 | Doc | Purpose |
 |---|---|
 | [`DEVELOPERS.md`](DEVELOPERS.md) | **Onboarding** — setup, repo layout, workflows, doc map. |
-| [`SAGA.md`](SAGA.md) | Series bible — **§0 sacred pillars** (holy canon), Age-era duology, Commodity Era, game 3 (2D). |
+| [`SAGA.md`](SAGA.md) | Series bible — **§0 sacred pillars** (holy canon), Age-era duology, Commodity Era, game 3 (*Avasia: Hearthdelve*). |
 | [`FORESHADOWING.md`](FORESHADOWING.md) | **Saga payoff map** — KoN/SoC seeds for anchor law, Anula, flesh cults. |
 | [`NARRATIVE_LOGIC.md`](NARRATIVE_LOGIC.md) | **Continuity tracker** — open plot holes, proposed canon, where to plant fixes. |
 | [`LORE_ARCHIVE.md`](LORE_ARCHIVE.md) | **Found lore** — schism fable, Silvarium/Oceandale history, archived future systems. |
